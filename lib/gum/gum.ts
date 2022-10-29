@@ -31,7 +31,7 @@ export async function input(options?: {
 	options?.prompt && args.push(`--prompt=${options.prompt}`);
 	options?.defaultValue && args.push(`--value=${options.defaultValue}`);
 
-	return await gum(['input', ...args]);
+	return await gum(['input', '--width=80', ...args]);
 }
 
 interface GumStyleOptions {
