@@ -6,8 +6,13 @@ import {
 import { pickCommand } from './commands/pick/pick-command.ts';
 import { parseFlags } from 'https://deno.land/x/cliffy@v0.25.4/flags/flags.ts';
 import { colors } from 'https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts';
+import { dependenciesMet, verifyCommand } from './commands/verify/verify-command.ts';
 // Learn more at https://deno.land/manual/examples/module_metadata#concepts
 if (import.meta.main) {
+	if (!await dependenciesMet()) {
+		console.log(colors.red.bold('✗ Missing dependencies, run \'pr-cli verify\' for details'));
+	}
+
 	const main = new Command()
 		.name('pr-cli')
 		.version('0.3.0')
@@ -18,6 +23,7 @@ if (import.meta.main) {
 		.meta('v8', Deno.version.v8)
 		.meta('typescript', Deno.version.typescript)
 		.default('help');
+
 	// cliffy built-ins
 	main.command('help', new HelpCommand().global());
 	main.command('completions', new CompletionsCommand());
@@ -25,6 +31,7 @@ if (import.meta.main) {
 
 	// our commands
 	main.command(pickCommand.getName(), pickCommand);
+	main.command(verifyCommand.getName(), verifyCommand);
 
 	try {
 		await main.parse(Deno.args);
