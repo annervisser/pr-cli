@@ -1,0 +1,21 @@
+{
+	"fmt": {
+		"options": {
+			"useTabs": true,
+			"singleQuote": true,
+			"lineWidth": 100
+		}
+	},
+	"compilerOptions": {
+		"strict": true,
+		"strictPropertyInitialization": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"noImplicitAny": true,
+		"allowJs": false,
+		"noImplicitReturns": true,
+		"noImplicitOverride": true,
+		"noUncheckedIndexedAccess": true
+	}
+}
