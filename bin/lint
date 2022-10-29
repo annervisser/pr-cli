@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euv
+
+deno fmt --check
+
+deno lint
+
+deno check main.ts
+
+deno test --allow-run --allow-read
