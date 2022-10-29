@@ -65,12 +65,13 @@ async function parseCommits(
 	}
 
 	// Ask user to pick from 'new' commits (local not on remote)
-	const newCommits = (await getCommits(`${upstreamRef}..`)).reverse(); // getCommits(upstream/develop..) returns commits new-old we want to process them old-new
+	const newCommits = (await getCommits(`${upstreamRef}..`));
 	if (newCommits.length < 1) {
 		throw new Error('No commits to pick');
 	}
 
-	return await chooseCommits(newCommits);
+	const chosenCommits = await chooseCommits(newCommits); // select in new-old order
+	return chosenCommits.reverse(); // return in old-new order
 }
 
 function suggestBranchNameForCommitMessage(message: string): string {
