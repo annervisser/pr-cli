@@ -24,12 +24,9 @@ export const pickCommand = new Command()
 	})
 	.arguments('<upstreamBranch:string>') // TODO make optional with default value (or ENV?)
 	.action(async (options, upstreamBranch) => {
-		console.debug('Pick command called with options:', options);
-
 		const upstreamRef = `${options.pullRemote}/${upstreamBranch}`;
 
 		const pickedCommits = await parseCommits(upstreamRef, options.commits ?? null);
-		console.debug('picked commits:', pickedCommits);
 
 		if (pickedCommits.length < 1) {
 			throw new Error('No commits chosen');
@@ -82,7 +79,6 @@ async function askForBranchName(selectedCommits: Commit[]): Promise<string> {
 	let suggestion = undefined;
 	if (selectedCommits.length === 1) {
 		suggestion = suggestBranchNameForCommitMessage(selectedCommits[0]!.message);
-		console.debug('suggesting branch name', suggestion);
 	}
 
 	// @TODO prompt color
