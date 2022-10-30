@@ -10,6 +10,10 @@ export const verifyCommand = new Command()
 	)
 	.action(async () => {
 		await printDependencyStatuses();
+
+		if (!await dependenciesMet()) {
+			Deno.exit(1);
+		}
 	});
 
 const dependencies = ['gh', 'git', 'gum'];
