@@ -1,4 +1,4 @@
-import { CommandExecutionException, runAndCapture } from '../shell/shell.ts';
+import { runAndCapture } from '../shell/shell.ts';
 
 export interface Commit {
 	sha: string;
@@ -17,8 +17,8 @@ export async function verifyAndExpandCommitSHAs(
 				'--verify',
 				`${commitSHA}^{commit}`,
 			);
-		} catch (e) {
-			throw e instanceof CommandExecutionException ? new Error('Given commits are invalid') : e;
+		} catch {
+			throw new Error('Given commits are invalid');
 		}
 	}));
 }
@@ -35,10 +35,8 @@ export async function getCommits(revisionRange: string): Promise<Commit[]> {
 		return result
 			.split('\n')
 			.map(lineToCommit);
-	} catch (e) {
-		throw e instanceof CommandExecutionException
-			? new Error('Failed to retrieve recent commits')
-			: e;
+	} catch {
+		throw new Error('Failed to retrieve recent commits');
 	}
 }
 
