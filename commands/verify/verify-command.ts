@@ -1,6 +1,7 @@
 import { Command } from 'https://deno.land/x/cliffy@v0.25.4/command/mod.ts';
 import { Table } from 'https://deno.land/x/cliffy@v0.25.4/table/table.ts';
 import { colors } from 'https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts';
+import { runVoid } from '../../lib/shell/shell.ts';
 
 export const verifyCommand = new Command()
 	.name('verify')
@@ -38,15 +39,10 @@ async function printDependencyStatuses() {
 }
 
 async function binaryExists(binary: string): Promise<boolean> {
-	const p = await Deno.run({
-		cmd: ['env', 'sh', '-c', `command -v ${binary}`], // `command` is a built-in, not a program. We cannot run it directly
-		stdin: 'null',
-		stderr: 'null',
-		stdout: 'null',
-	});
-
-	const { success } = await p.status();
-	await p.close();
-
-	return success;
+	try {
+		await runVoid('env', 'sh', '-c', `command -v ${binary}`);
+		return true;
+	} catch {
+		return false;
+	}
 }

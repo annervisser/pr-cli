@@ -1,4 +1,4 @@
-import { CommandExecutionException, runCommandQuiet } from '../shell/shell.ts';
+import { CommandExecutionException, runAndCapture } from '../shell/shell.ts';
 
 export interface Commit {
 	sha: string;
@@ -9,35 +9,37 @@ export async function verifyAndExpandCommitSHAs(
 	commitSHAs: string[],
 ): Promise<string[]> {
 	return await Promise.all(commitSHAs.map(async (commitSHA) => {
-		const result = await runCommandQuiet([
-			'git',
-			'rev-parse',
-			'--quiet',
-			'--verify',
-			`${commitSHA}^{commit}`,
-		]);
-		if (result instanceof CommandExecutionException) {
-			throw new Error('Given commits are invalid');
+		try {
+			return await runAndCapture(
+				'git',
+				'rev-parse',
+				'--quiet',
+				'--verify',
+				`${commitSHA}^{commit}`,
+			);
+		} catch (e) {
+			throw e instanceof CommandExecutionException ? new Error('Given commits are invalid') : e;
 		}
-		return result;
 	}));
 }
 
 export async function getCommits(revisionRange: string): Promise<Commit[]> {
-	const result = await runCommandQuiet([
-		'git',
-		'show',
-		'--quiet',
-		'--pretty=format:%h %s',
-		revisionRange,
-	]);
-	if (result instanceof CommandExecutionException) {
-		throw new Error('Failed to retrieve recent commits');
+	try {
+		const result = await runAndCapture(
+			'git',
+			'show',
+			'--quiet',
+			'--pretty=format:%h %s',
+			revisionRange,
+		);
+		return result
+			.split('\n')
+			.map(lineToCommit);
+	} catch (e) {
+		throw e instanceof CommandExecutionException
+			? new Error('Failed to retrieve recent commits')
+			: e;
 	}
-
-	return result
-		.split('\n')
-		.map(lineToCommit);
 }
 
 function lineToCommit(line: string): Commit {

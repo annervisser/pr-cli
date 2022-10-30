@@ -1,54 +1,68 @@
-import { colors } from 'https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts';
-import RunOptions = Deno.RunOptions;
+import ProcessStatus = Deno.ProcessStatus;
 
 export class CommandExecutionException extends Error {
 	constructor(
 		public readonly code: number,
+		public readonly signal?: number,
 	) {
-		super(`Command execution failed with code ${code}`);
+		let message = `Command execution failed with code ${code}`;
+		if (signal) {
+			message += ` (signal: ${signal})`;
+		}
+		super(message);
 		this.name = 'CommandExecutionException';
 	}
 }
 
-export async function runCommandOrThrow(
-	cmd: RunOptions['cmd'],
-) {
-	const result = await runCommand(cmd);
-
-	if (result instanceof CommandExecutionException) {
-		throw result;
-	}
-	return result;
-}
-
-export async function runCommand(
-	cmd: RunOptions['cmd'],
-): Promise<string | CommandExecutionException> {
-	const result = await runCommandQuiet(cmd);
-
-	if (!(result instanceof CommandExecutionException)) {
-		console.log(result);
-	}
-	return result;
-}
-
-export async function runCommandQuiet(
-	cmd: RunOptions['cmd'],
-): Promise<string | CommandExecutionException> {
+export async function runCommand(command: string, ...args: string[]): Promise<void> {
 	const p = Deno.run({
-		cmd: cmd,
-		stdout: 'piped',
-		stderr: 'piped',
-		// @TODO is setting cwd needed?
+		cmd: [command, ...args],
+		stdin: 'inherit',
+		stdout: 'inherit',
+		stderr: 'inherit',
 	});
 
-	const { success, code } = await p.status();
-	if (success) {
-		const output = await p.output();
-		return new TextDecoder().decode(output).trim();
-	} else {
-		const stderr = await p.stderrOutput();
-		console.error(colors.red(new TextDecoder().decode(stderr)));
-		return new CommandExecutionException(code);
+	const status = await p.status();
+	await p.close();
+
+	throwErrorIfFailed(status);
+}
+
+export async function runAndCapture(command: string, ...args: string[]): Promise<string> {
+	const p = Deno.run({
+		cmd: [command, ...args],
+		stdin: 'inherit',
+		stdout: 'piped',
+		stderr: 'inherit',
+	});
+
+	const [status, output] = await Promise.all([
+		p.status(),
+		p.output(),
+	]);
+	await p.close();
+
+	throwErrorIfFailed(status);
+
+	return new TextDecoder().decode(output).trim();
+}
+
+export async function runVoid(command: string, ...args: string[]): Promise<void> {
+	const p = Deno.run({
+		cmd: [command, ...args],
+		stdin: 'null',
+		stdout: 'null',
+		stderr: 'null',
+	});
+
+	const status = await p.status();
+	await p.close();
+
+	throwErrorIfFailed(status);
+}
+
+function throwErrorIfFailed(status: ProcessStatus) {
+	if (!status.success) {
+		throw new CommandExecutionException(status.code, status.signal);
 	}
 }

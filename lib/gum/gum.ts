@@ -1,7 +1,7 @@
-import { CommandExecutionException } from '../shell/shell.ts';
-
 // TODO: refactor this code to fix half reuse of gum() function
 // TODO: always call p.close()
+
+import { CommandExecutionException, runAndCapture, runCommand } from '../shell/shell.ts';
 
 export async function chooseOne(options: string[]): Promise<string[]> {
 	return await choose(options, false);
@@ -17,7 +17,7 @@ async function choose(
 ): Promise<string[]> {
 	const limit = multiselect ? '--no-limit' : '--limit=1';
 
-	const output = await gum(['choose', limit, ...options]);
+	const output = await runAndCapture('gum', ...['choose', limit, ...options]);
 	return output.split('\n');
 }
 
@@ -31,7 +31,7 @@ export async function input(options?: {
 	options?.prompt && args.push(`--prompt=${options.prompt}`);
 	options?.defaultValue && args.push(`--value=${options.defaultValue}`);
 
-	return await gum(['input', '--width=80', ...args]);
+	return await runAndCapture('gum', ...['input', '--width=80', ...args]);
 }
 
 interface GumStyleOptions {
@@ -76,12 +76,15 @@ export async function confirm(options?: {
 		args.push(`--default=${options?.startOnAffirmative}`);
 	}
 
-	const p = await Deno.run({
-		cmd: ['gum', 'confirm', ...args],
-	});
-
-	const { success } = await p.status();
-	return success;
+	try {
+		await runCommand('gum', 'confirm', ...args);
+		return true;
+	} catch (e) {
+		if (e instanceof CommandExecutionException) {
+			return false;
+		}
+		throw e;
+	}
 }
 
 /** @see https://github.com/charmbracelet/gum/blob/main/style/options.go */
@@ -101,27 +104,5 @@ export async function style(lines: string[], options?: GumStyleOptions) {
 		}
 	}
 
-	const p = await Deno.run({
-		cmd: ['gum', 'style', ...args, ...lines],
-	});
-
-	const { success, code } = await p.status();
-	if (!success) {
-		throw new CommandExecutionException(code);
-	}
-}
-
-async function gum(cmd: string[]): Promise<string> {
-	const p = await Deno.run({
-		cmd: ['gum', ...cmd],
-		stdout: 'piped',
-	});
-
-	const { success, code } = await p.status();
-	if (!success) {
-		throw new CommandExecutionException(code);
-	}
-	const output = await p.output();
-	const decoded = new TextDecoder().decode(output);
-	return decoded.trim();
+	await runCommand('gum', 'style', ...args, ...lines);
 }
