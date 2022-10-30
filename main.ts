@@ -9,7 +9,9 @@ import { colors } from 'https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts';
 import { dependenciesMet, verifyCommand } from './commands/verify/verify-command.ts';
 // Learn more at https://deno.land/manual/examples/module_metadata#concepts
 if (import.meta.main) {
-	if (!await dependenciesMet()) {
+	const rawFlags = parseFlags(Deno.args);
+
+	if (!await dependenciesMet() && rawFlags.unknown[0] !== 'verify') {
 		console.log(colors.red.bold('✗ Missing dependencies, run \'pr-cli verify\' for details'));
 	}
 
@@ -36,7 +38,7 @@ if (import.meta.main) {
 	try {
 		await main.parse(Deno.args);
 	} catch (err) {
-		if (parseFlags(Deno.args).flags.debug === true) {
+		if (rawFlags.flags.debug === true) {
 			console.error(colors.red(err));
 		} else if (err instanceof Error) {
 			console.error(colors.bgRed.brightWhite.bold(` ❗ ${err.message} `));
