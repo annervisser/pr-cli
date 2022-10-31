@@ -4,6 +4,25 @@
 			"useTabs": true,
 			"singleQuote": true,
 			"lineWidth": 100
+		},
+		"files": {
+			"exclude": [
+				"e2e-test"
+			]
+		}
+	},
+	"lint": {
+		"files": {
+			"exclude": [
+				"e2e-test"
+			]
+		}
+	},
+	"test": {
+		"files": {
+			"exclude": [
+				"e2e-test"
+			]
 		}
 	},
 	"compilerOptions": {

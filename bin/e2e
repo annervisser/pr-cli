@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -eu
+
+BASEDIR=$(dirname "$0")
+cd "$BASEDIR/.."
+
+cd e2e-test
+docker build .

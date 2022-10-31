@@ -1,9 +1,7 @@
 # PR-CLI
 
-Pretty, Rad, Cool, Lovely, Impressive
-
-or
-
+Pretty, Rad, Cool, Lovely, Impressive\
+or\
 Pull Request - Command Line Interface
 
 ### Links

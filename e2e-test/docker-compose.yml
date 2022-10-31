@@ -1,0 +1,25 @@
+services:
+  runtime:
+    build: ./docker
+    volumes:
+      - "../:/src"
+      - "./docker/run.sh:/home/docker/run.sh"
+      - "./scripts:/home/docker/scripts"
+    ports:
+      - 7681:7681
+    command: ['./run.sh']
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.27.1-jammy
+    user: pwuser
+    security_opt:
+      - 'seccomp=./docker/playwright_seccomp_profile.json'
+    ipc: host # Recommended when running chrome
+    init: true
+    environment:
+      BASE_URL: 'http://runtime:7681'
+    volumes:
+      - "./:/src"
+    working_dir: /src
+    command: tail -f /dev/null
+
