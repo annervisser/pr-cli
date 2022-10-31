@@ -27,7 +27,7 @@ if (import.meta.main) {
 		.default('help');
 
 	// cliffy built-ins
-	main.command('help', new HelpCommand().global());
+	main.command('help', new HelpCommand());
 	main.command('completions', new CompletionsCommand());
 	// TODO support upgrade command: https://cliffy.io/docs@v0.25.4/command/build-in-commands#upgrade-command
 
