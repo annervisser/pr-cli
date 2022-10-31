@@ -5,6 +5,9 @@ import { slugify } from '../../lib/slug/slug.ts';
 import { chooseCommits } from './choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
 import { GitPickSettings, runCherryPick } from './git-pick.ts';
+import { dependenciesMet } from '../verify/verify-command.ts';
+import { colors } from 'https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts';
+import { Confirm } from 'https://deno.land/x/cliffy@v0.25.4/prompt/mod.ts';
 
 export const pickCommand = new Command()
 	.name('pick')
@@ -24,6 +27,18 @@ export const pickCommand = new Command()
 	})
 	.arguments('<upstreamBranch:string>') // TODO make optional with default value (or ENV?)
 	.action(async (options, upstreamBranch) => {
+		if (!await dependenciesMet()) {
+			console.log(colors.red.bold('✗ Missing dependencies, run \'pr-cli verify\' for details'));
+			const exit = !await Confirm.prompt({
+				message: 'Continue with missing dependencies?',
+				default: false,
+			});
+			if (exit) {
+				Deno.exit(1);
+			}
+		}
+
+
 		const upstreamRef = `${options.pullRemote}/${upstreamBranch}`;
 
 		const pickedCommits = await parseCommits(upstreamRef, options.commits ?? null);
