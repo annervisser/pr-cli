@@ -1,4 +1,4 @@
-import { runAndCapture } from '../shell/shell.ts';
+import { runAndCapture, runVoid } from '../shell/shell.ts';
 
 export interface Commit {
 	sha: string;
@@ -38,6 +38,12 @@ export async function getCommits(revisionRange: string): Promise<Commit[]> {
 	} catch {
 		throw new Error('Failed to retrieve recent commits');
 	}
+}
+
+export async function gitFetch(remote: string): Promise<void> {
+	const args = [];
+	remote && args.push(remote);
+	await runVoid('git', 'fetch', ...args);
 }
 
 function lineToCommit(line: string): Commit {

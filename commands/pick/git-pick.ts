@@ -16,12 +16,6 @@ export interface GitPickSettings {
 }
 
 export async function runCherryPick(settings: GitPickSettings): Promise<void> {
-	if (settings.fetch) {
-		await runCommand('git', 'fetch', settings.pullRemote);
-	} else {
-		console.log(colors.white('-️ Skipping fetch'));
-	}
-
 	console.log(colors.green('▶️ Creating temporary directory'));
 	const tmpDir = await runAndCapture('mktemp', '-d');
 

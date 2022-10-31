@@ -1,5 +1,5 @@
 import { Command } from 'https://deno.land/x/cliffy@v0.25.4/command/mod.ts';
-import { Commit, getCommits, verifyAndExpandCommitSHAs } from '../../lib/git/git.ts';
+import { Commit, getCommits, gitFetch, verifyAndExpandCommitSHAs } from '../../lib/git/git.ts';
 import { input } from '../../lib/gum/gum.ts';
 import { slugify } from '../../lib/slug/slug.ts';
 import { chooseCommits } from './choose-commits.ts';
@@ -38,6 +38,11 @@ export const pickCommand = new Command()
 			}
 		}
 
+		if (options.fetch) {
+			await gitFetch(options.pullRemote);
+		} else {
+			console.log(colors.white('-️ Skipping fetch'));
+		}
 
 		const upstreamRef = `${options.pullRemote}/${upstreamBranch}`;
 
@@ -64,6 +69,8 @@ export const pickCommand = new Command()
 		}
 		console.log('Go time!');
 		await runCherryPick(settings);
+
+		console.log(colors.bgGreen.brightWhite('✔ Done!'));
 	});
 
 async function parseCommits(
