@@ -1,0 +1,40 @@
+name: E2E Tests
+on:
+  push:
+    branches: [ "trunk" ]
+  pull_request:
+    branches: [ "trunk" ]
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: Run E2E test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: e2e-test
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+          cache-dependency-path: e2e-test/package-lock.json
+
+      - name: Install playwright deps
+        run: npx playwright install --with-deps
+
+      - name: Run e2e tests
+        run: ../bin/e2e
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-html-report
+          path: e2e-test/playwright-report
+          retention-days: 5

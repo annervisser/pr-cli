@@ -8,6 +8,6 @@ const config: PlaywrightTestConfig = {
 	testDir: './tests',
 	fullyParallel: true,
 	forbidOnly: !!process.env.CI,
-	reporter: 'html',
+	reporter: [['html'], process.env.CI ? ['github'] : ['list']],
 };
 export default config;

@@ -2,8 +2,24 @@
 
 set -eu
 
-BASEDIR=$(dirname "$0")
-cd "$BASEDIR/.."
+cd "$(dirname "$0")/.."
 
 cd e2e-test
-docker build .
+
+npm ci
+npm run lint
+
+containers_to_start=("runtime")
+run_cmd="exec"
+
+if [[ -z ${CI:-} && -z ${RUN_ON_MACHINE:-} ]]; then
+	echo Running playwright in docker
+	echo If you want to run playwright directly on your machine, re-run this command with RUN_ON_MACHINE=1
+
+	containers_to_start+=("playwright")
+	run_cmd="docker compose exec playwright"
+fi
+
+docker compose up --build --quiet-pull --detach "${containers_to_start[@]}"
+trap "docker compose down" EXIT
+$run_cmd npx playwright test
