@@ -1,4 +1,4 @@
-import { runAndCapture, runVoid } from 'lib/shell/shell.ts';
+import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
 
 export interface Commit {
 	sha: string;
@@ -43,7 +43,7 @@ export async function getCommits(revisionRange: string): Promise<Commit[]> {
 export async function gitFetch(remote: string): Promise<void> {
 	const args = [];
 	remote && args.push(remote);
-	await runVoid('git', 'fetch', ...args);
+	await runCommand('git', 'fetch', ...args);
 }
 
 function lineToCommit(line: string): Commit {
