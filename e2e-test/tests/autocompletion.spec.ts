@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
-import { test } from '../helpers/cli-test.ts';
+import { test } from '@helpers/cli-test';
 
-test('Autocompletion', async ({cli}) => {
+test('Autocompletion', async ({ cli }) => {
 	await cli.command('source <(pr-cli completions bash)');
 
 	await cli.type('pr-cli verif');

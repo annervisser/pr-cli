@@ -1,7 +1,23 @@
 {
 	"name": "pr-cli-e2e-test",
 	"version": "1.0.0",
+	"scripts": {
+		"lint": "run-p lint:*",
+		"lint:typecheck": "tsc --noEmit",
+		"lint:eslint": "eslint .",
+		"lint:prettier": "prettier --check .",
+		"fix": "run-s fix:*",
+		"fix:eslint": "eslint --fix .",
+		"fix:prettier": "prettier --write ."
+	},
 	"devDependencies": {
-		"@playwright/test": "^1.27.1"
+		"@playwright/test": "^1.27.1",
+		"@typescript-eslint/eslint-plugin": "^5.42.0",
+		"@typescript-eslint/parser": "^5.42.0",
+		"eslint": "^8.26.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-playwright": "^0.11.2",
+		"npm-run-all": "^4.1.5",
+		"prettier": "2.7.1"
 	}
 }

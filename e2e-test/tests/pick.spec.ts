@@ -1,11 +1,11 @@
 import { expect } from '@playwright/test';
-import { test } from '../helpers/cli-test.ts';
+import { test } from '@helpers/cli-test';
 
-test('pr-cli pick', async ({cli, _tmpdir}) => {
+test('pr-cli pick', async ({ cli, _tmpdir }) => {
 	// PICK
 	await cli.command([
 		'~/scripts/setup.sh', // setup repositories
-		'cd local'
+		'cd local',
 	]);
 
 	async function createCommit(message: string) {
@@ -53,11 +53,8 @@ test('pr-cli pick', async ({cli, _tmpdir}) => {
 
 	await cli.clear();
 
-	await cli.command([
-		'cd ../origin',
-		'git checkout commit-1-branch',
-	]);
-	await expect(cli.lines.getByText('Switched to branch \'commit-1-branch\'')).toBeVisible();
+	await cli.command(['cd ../origin', 'git checkout commit-1-branch']);
+	await expect(cli.lines.getByText("Switched to branch 'commit-1-branch'")).toBeVisible();
 
 	await cli.clear();
 	await cli.command('git log -1 --pretty="%s%d"');
