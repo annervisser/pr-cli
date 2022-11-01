@@ -1,4 +1,4 @@
-import { runAndCapture, runVoid } from '../shell/shell.ts';
+import { runAndCapture, runVoid } from 'lib/shell/shell.ts';
 
 export interface Commit {
 	sha: string;

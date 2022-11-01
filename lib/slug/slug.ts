@@ -1,4 +1,4 @@
-import { slug } from 'https://deno.land/x/slug@v0.1.1/mod.ts';
+import { slug } from 'slug';
 
 export function slugify(s: string): string {
 	return slug(s, {

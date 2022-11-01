@@ -1,7 +1,7 @@
-import { Command } from 'https://deno.land/x/cliffy@v0.25.4/command/mod.ts';
-import { Table } from 'https://deno.land/x/cliffy@v0.25.4/table/table.ts';
-import { colors } from 'https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts';
-import { runVoid } from '../../lib/shell/shell.ts';
+import { runVoid } from 'lib/shell/shell.ts';
+import { Table } from 'cliffy/table';
+import { colors } from 'cliffy/ansi';
+import { Command } from 'cliffy/command';
 
 export const verifyCommand = new Command()
 	.name('verify')
