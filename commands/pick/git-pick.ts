@@ -3,6 +3,7 @@ import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
 import { colors } from 'cliffy/ansi';
 
 export interface GitPickSettings {
+	push: boolean;
 	fetch: boolean;
 	pr: boolean;
 
@@ -38,8 +39,10 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 	const commitSHAsToPick = settings.commits.map((c) => c.sha);
 	await runCommand('git', 'cherry-pick', ...commitSHAsToPick);
 
-	console.log(colors.green(`▶️ Pushing to ${settings.pushRemote}/${settings.branchName}`));
-	await runCommand('git', 'push', '-u', settings.pushRemote, settings.branchName);
+	if (settings.push) {
+		console.log(colors.green(`▶️ Pushing to ${settings.pushRemote}/${settings.branchName}`));
+		await runCommand('git', 'push', '-u', settings.pushRemote, settings.branchName);
+	}
 
 	if (settings.pr) {
 		console.log(colors.green('▶️ Creating pull request'));

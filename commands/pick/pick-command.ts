@@ -17,6 +17,9 @@ export const pickCommand = new Command()
 	)
 	.option('--no-fetch', 'Don\'t run git fetch before creating the branch')
 	.option('--no-pr', 'Skip creating a pull request on Github')
+	.option('--no-push', 'Skip pushing to push remote (implies --no-pr)', {
+		action: (options) => options.pr = false,
+	})
 	.option('-b, --branch <branchName:string>', 'Name to use for the new branch')
 	.option('-c, --commits <commitSha...:string>', 'Commits to cherry-pick')
 	.option('--pull-remote <remote:string>', 'Remote to use for fetching', {
