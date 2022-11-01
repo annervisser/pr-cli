@@ -2,10 +2,9 @@ import { expect, Page } from '@playwright/test';
 
 export class CLI {
 	root = this.page.locator('div.xterm-accessibility');
-	lines = this.root.locator('div[role=listitem]', {hasText: /\S/}); // \S = any non-whitespace character
+	lines = this.root.locator('div[role=listitem]', { hasText: /\S/ }); // \S = any non-whitespace character
 
-	constructor(private readonly page: Page) {
-	}
+	constructor(private readonly page: Page) {}
 
 	lineN(line: number) {
 		return this.lines.nth(line);
@@ -19,8 +18,8 @@ export class CLI {
 		await this.page.keyboard.press(key);
 	}
 
-	async command(command: string): Promise<void>
-	async command(commands: string[]): Promise<void>
+	async command(command: string): Promise<void>;
+	async command(commands: string[]): Promise<void>;
 	async command(commands: string | string[]): Promise<void> {
 		commands = typeof commands === 'string' ? [commands] : commands;
 		for (const command of commands) {
