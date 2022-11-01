@@ -1,13 +1,13 @@
-import { Command } from 'https://deno.land/x/cliffy@v0.25.4/command/mod.ts';
-import { Commit, getCommits, gitFetch, verifyAndExpandCommitSHAs } from '../../lib/git/git.ts';
-import { input } from '../../lib/gum/gum.ts';
-import { slugify } from '../../lib/slug/slug.ts';
+import { Commit, getCommits, gitFetch, verifyAndExpandCommitSHAs } from 'lib/git/git.ts';
+import { input } from 'lib/gum/gum.ts';
+import { slugify } from 'lib/slug/slug.ts';
 import { chooseCommits } from './choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
 import { GitPickSettings, runCherryPick } from './git-pick.ts';
 import { dependenciesMet } from '../verify/verify-command.ts';
-import { colors } from 'https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts';
-import { Confirm } from 'https://deno.land/x/cliffy@v0.25.4/prompt/mod.ts';
+import { Command } from 'cliffy/command';
+import { colors } from 'cliffy/ansi';
+import { Confirm } from 'cliffy/prompt';
 
 export const pickCommand = new Command()
 	.name('pick')

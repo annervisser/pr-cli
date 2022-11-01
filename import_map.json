@@ -1,0 +1,11 @@
+{
+	"imports": {
+		"lib/": "./lib/",
+		"cliffy/command": "https://deno.land/x/cliffy@v0.25.4/command/mod.ts",
+		"cliffy/table": "https://deno.land/x/cliffy@v0.25.4/table/table.ts",
+		"cliffy/flags": "https://deno.land/x/cliffy@v0.25.4/flags/flags.ts",
+		"cliffy/prompt": "https://deno.land/x/cliffy@v0.25.4/prompt/mod.ts",
+		"cliffy/ansi": "https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts",
+		"slug": "https://deno.land/x/slug@v0.1.1/mod.ts"
+	}
+}

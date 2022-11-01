@@ -1,6 +1,3 @@
-// TODO: refactor this code to fix half reuse of gum() function
-// TODO: always call p.close()
-
 import { CommandExecutionException, runAndCapture, runCommand } from '../shell/shell.ts';
 
 export async function chooseOne(options: string[]): Promise<string[]> {

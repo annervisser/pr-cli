@@ -1,13 +1,9 @@
-import {
-	Command,
-	CompletionsCommand,
-	HelpCommand,
-} from 'https://deno.land/x/cliffy@v0.25.4/command/mod.ts';
 import { pickCommand } from './commands/pick/pick-command.ts';
-import { parseFlags } from 'https://deno.land/x/cliffy@v0.25.4/flags/flags.ts';
-import { colors } from 'https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts';
 import { verifyCommand } from './commands/verify/verify-command.ts';
-// Learn more at https://deno.land/manual/examples/module_metadata#concepts
+import { Command, CompletionsCommand, HelpCommand } from 'cliffy/command';
+import { colors } from 'cliffy/ansi';
+import { parseFlags } from 'cliffy/flags';
+
 if (import.meta.main) {
 	const main = new Command()
 		.name('pr-cli')

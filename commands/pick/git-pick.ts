@@ -1,6 +1,6 @@
-import { Commit } from '../../lib/git/git.ts';
-import { colors } from 'https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts';
-import { runAndCapture, runCommand } from '../../lib/shell/shell.ts';
+import { Commit } from 'lib/git/git.ts';
+import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
+import { colors } from 'cliffy/ansi';
 
 export interface GitPickSettings {
 	fetch: boolean;
