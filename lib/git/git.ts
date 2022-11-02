@@ -5,7 +5,13 @@ export interface Commit {
 	message: string;
 }
 
-export async function verifyAndExpandCommitSHAs(
+export class Git {
+	public static verifyAndExpandCommitSHAs = verifyAndExpandCommitSHAs;
+	public static getCommits = getCommits;
+	public static fetch = gitFetch;
+}
+
+async function verifyAndExpandCommitSHAs(
 	commitSHAs: string[],
 ): Promise<string[]> {
 	return await Promise.all(commitSHAs.map(async (commitSHA) => {
@@ -23,7 +29,7 @@ export async function verifyAndExpandCommitSHAs(
 	}));
 }
 
-export async function getCommits(revisionRange: string): Promise<Commit[]> {
+async function getCommits(revisionRange: string): Promise<Commit[]> {
 	try {
 		const result = await runAndCapture(
 			'git',
@@ -40,7 +46,7 @@ export async function getCommits(revisionRange: string): Promise<Commit[]> {
 	}
 }
 
-export async function gitFetch(remote: string): Promise<void> {
+async function gitFetch(remote: string): Promise<void> {
 	const args = [];
 	remote && args.push(remote);
 	await runCommand('git', 'fetch', ...args);

@@ -1,4 +1,4 @@
-import { Commit, getCommits, gitFetch, verifyAndExpandCommitSHAs } from 'lib/git/git.ts';
+import { Commit, Git } from 'lib/git/git.ts';
 import { input } from 'lib/gum/gum.ts';
 import { slugify } from 'lib/slug/slug.ts';
 import { chooseCommits } from './steps/choose-commits.ts';
@@ -42,7 +42,7 @@ export const pickCommand = new Command()
 		}
 
 		if (options.fetch) {
-			await gitFetch(options.pullRemote);
+			await Git.fetch(options.pullRemote);
 		} else {
 			console.log(colors.white('-️ Skipping fetch'));
 		}
@@ -82,12 +82,12 @@ async function parseOrPromptForCommits(
 ): Promise<Commit[]> {
 	if (commitShas !== null) {
 		// Use provided comments
-		commitShas = await verifyAndExpandCommitSHAs(commitShas);
-		return await getCommits(commitShas.join(' '));
+		commitShas = await Git.verifyAndExpandCommitSHAs(commitShas);
+		return await Git.getCommits(commitShas.join(' '));
 	}
 
 	// Ask user to pick from 'new' commits (local not on remote)
-	const newCommits = (await getCommits(`${upstreamRef}..`));
+	const newCommits = (await Git.getCommits(`${upstreamRef}..`));
 	if (newCommits.length < 1) {
 		throw new Error('No commits to pick');
 	}
