@@ -1,9 +1,9 @@
 import { Commit, getCommits, gitFetch, verifyAndExpandCommitSHAs } from 'lib/git/git.ts';
 import { input } from 'lib/gum/gum.ts';
 import { slugify } from 'lib/slug/slug.ts';
-import { chooseCommits } from './choose-commits.ts';
+import { chooseCommits } from './steps/choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
-import { GitPickSettings, runCherryPick } from './git-pick.ts';
+import { GitPickSettings, runCherryPick } from './steps/git-pick.ts';
 import { dependenciesMet } from '../verify/verify-command.ts';
 import { Command } from 'cliffy/command';
 import { colors } from 'cliffy/ansi';
@@ -49,7 +49,7 @@ export const pickCommand = new Command()
 
 		const upstreamRef = `${options.pullRemote}/${upstreamBranch}`;
 
-		const pickedCommits = await parseCommits(upstreamRef, options.commits ?? null);
+		const pickedCommits = await parseOrPromptForCommits(upstreamRef, options.commits ?? null);
 
 		if (pickedCommits.length < 1) {
 			throw new Error('No commits chosen');
@@ -76,7 +76,7 @@ export const pickCommand = new Command()
 		console.log(colors.bgGreen.brightWhite('✔ Done!'));
 	});
 
-async function parseCommits(
+async function parseOrPromptForCommits(
 	upstreamRef: string,
 	commitShas: string[] | null,
 ): Promise<Commit[]> {

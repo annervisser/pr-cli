@@ -1,4 +1,4 @@
-import { GitPickSettings } from '../git-pick.ts';
+import { GitPickSettings } from './git-pick.ts';
 import { colors } from 'cliffy/ansi';
 import { confirm, style } from 'lib/gum/gum.ts';
 
