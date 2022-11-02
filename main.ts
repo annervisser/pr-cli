@@ -3,6 +3,7 @@ import { verifyCommand } from './commands/verify/verify-command.ts';
 import { Command, CompletionsCommand, HelpCommand } from 'cliffy/command';
 import { colors } from 'cliffy/ansi';
 import { parseFlags } from 'cliffy/flags';
+import { pullRequestCommand } from './commands/pr/pull-request-command.ts';
 
 if (import.meta.main) {
 	const main = new Command()
@@ -23,6 +24,7 @@ if (import.meta.main) {
 
 	// our commands
 	main.command(pickCommand.getName(), pickCommand);
+	main.command(pullRequestCommand.getName(), pullRequestCommand);
 	main.command(verifyCommand.getName(), verifyCommand);
 
 	try {

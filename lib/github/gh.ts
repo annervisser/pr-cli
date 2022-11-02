@@ -5,8 +5,11 @@ export class GH {
 }
 
 async function createPullRequest(options: {
-	baseBranch: string;
+	baseBranch?: string;
 }) {
+	const args: string[] = [];
+	options.baseBranch && args.push('--base', options.baseBranch);
+
 	await runCommand(
 		'gh',
 		'pr',
@@ -14,7 +17,6 @@ async function createPullRequest(options: {
 		'--fill',
 		'--assignee',
 		'@me',
-		'--base',
-		options.baseBranch,
+		...args,
 	);
 }
