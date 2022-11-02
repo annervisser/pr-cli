@@ -1,5 +1,5 @@
-import { Commit } from 'lib/git';
-import { Gum } from 'lib/gum';
+import { Commit } from 'lib/git/git.ts';
+import { Gum } from 'lib/gum/gum.ts';
 
 const separator = `\t`;
 

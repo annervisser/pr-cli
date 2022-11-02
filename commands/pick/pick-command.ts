@@ -1,4 +1,4 @@
-import { Commit, Git } from 'lib/git';
+import { Commit, Git } from 'lib/git/git.ts';
 import { slugify } from 'lib/slug/slug.ts';
 import { chooseCommits } from './steps/choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
@@ -7,7 +7,7 @@ import { dependenciesMet } from '../verify/verify-command.ts';
 import { Command } from 'cliffy/command';
 import { colors } from 'cliffy/ansi';
 import { Confirm } from 'cliffy/prompt';
-import { Gum } from 'lib/gum';
+import { Gum } from 'lib/gum/gum.ts';
 
 export const pickCommand = new Command()
 	.name('pick')

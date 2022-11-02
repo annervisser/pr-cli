@@ -1,9 +1,9 @@
 {
 	"imports": {
 		"lib/": "./lib/",
-		"lib/git": "./lib/git/git.ts",
-		"lib/github": "./lib/github/gh.ts",
-		"lib/gum": "./lib/gum/gum.ts",
+		"lib/git/": "./lib/git/",
+		"lib/github/": "./lib/github/",
+		"lib/gum/": "./lib/gum/",
 		"cliffy/command": "https://deno.land/x/cliffy@v0.25.4/command/mod.ts",
 		"cliffy/table": "https://deno.land/x/cliffy@v0.25.4/table/table.ts",
 		"cliffy/flags": "https://deno.land/x/cliffy@v0.25.4/flags/flags.ts",

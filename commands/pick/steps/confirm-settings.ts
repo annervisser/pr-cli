@@ -1,6 +1,6 @@
 import { GitPickSettings } from './git-pick.ts';
 import { colors } from 'cliffy/ansi';
-import { Gum } from 'lib/gum';
+import { Gum } from 'lib/gum/gum.ts';
 
 export async function confirmSettings(options: GitPickSettings): Promise<boolean> {
 	const infoSign = colors.brightGreen('ℹ');
