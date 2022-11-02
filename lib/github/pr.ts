@@ -1,6 +1,10 @@
 import { runCommand } from '../shell/shell.ts';
 
-export async function createPullRequest(options: {
+export class GH {
+	public static createPullRequest = createPullRequest;
+}
+
+async function createPullRequest(options: {
 	baseBranch: string;
 }) {
 	await runCommand(

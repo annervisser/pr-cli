@@ -1,7 +1,7 @@
 import { Commit } from 'lib/git/git.ts';
 import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
 import { colors } from 'cliffy/ansi';
-import { createPullRequest } from '../../../lib/github/pr.ts';
+import { GH } from 'lib/github/pr.ts';
 
 export interface GitPickSettings {
 	push: boolean;
@@ -47,7 +47,7 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 
 	if (settings.pr) {
 		console.log(colors.green('▶️ Creating pull request'));
-		await createPullRequest({ baseBranch: settings.upstreamBranch });
+		await GH.createPullRequest({ baseBranch: settings.upstreamBranch });
 	}
 
 	// TODO still do this if an error occurs
