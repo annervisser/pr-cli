@@ -1,5 +1,4 @@
 import { Commit, Git } from 'lib/git/git.ts';
-import { input } from 'lib/gum/gum.ts';
 import { slugify } from 'lib/slug/slug.ts';
 import { chooseCommits } from './steps/choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
@@ -8,6 +7,7 @@ import { dependenciesMet } from '../verify/verify-command.ts';
 import { Command } from 'cliffy/command';
 import { colors } from 'cliffy/ansi';
 import { Confirm } from 'cliffy/prompt';
+import { Gum } from 'lib/gum';
 
 export const pickCommand = new Command()
 	.name('pick')
@@ -107,7 +107,7 @@ async function askForBranchName(selectedCommits: Commit[]): Promise<string> {
 	}
 
 	// @TODO prompt color
-	return await input({
+	return await Gum.input({
 		defaultValue: suggestion,
 		prompt: suggestion ? 'Branch name: (Ctrl+U to clear) ' : 'Branch name: ',
 		placeholder: 'What to call the new branch...',

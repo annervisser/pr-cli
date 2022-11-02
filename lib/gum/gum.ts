@@ -1,10 +1,20 @@
 import { CommandExecutionException, runAndCapture, runCommand } from '../shell/shell.ts';
 
-export async function chooseOne(options: string[]): Promise<string[]> {
+export class Gum {
+	public static chooseOne = chooseOne;
+	public static chooseMultiple = chooseMultiple;
+
+	public static input = input;
+	public static confirm = confirm;
+
+	public static style = style;
+}
+
+async function chooseOne(options: string[]): Promise<string[]> {
 	return await choose(options, false);
 }
 
-export async function chooseMultiple(options: string[]): Promise<string[]> {
+async function chooseMultiple(options: string[]): Promise<string[]> {
 	return await choose(options, true);
 }
 
@@ -18,7 +28,7 @@ async function choose(
 	return output.split('\n');
 }
 
-export async function input(options?: {
+async function input(options?: {
 	placeholder?: string;
 	prompt?: string;
 	defaultValue?: string;
@@ -56,7 +66,7 @@ interface GumStyleOptions {
 	underline?: true;
 }
 
-export async function confirm(options?: {
+async function confirm(options?: {
 	prompt?: string;
 	affirmativeLabel?: string;
 	negativeLabel?: string;
@@ -85,7 +95,7 @@ export async function confirm(options?: {
 }
 
 /** @see https://github.com/charmbracelet/gum/blob/main/style/options.go */
-export async function style(lines: string[], options?: GumStyleOptions) {
+async function style(lines: string[], options?: GumStyleOptions) {
 	const args: string[] = [];
 	for (let [key, value] of Object.entries(options ?? {})) {
 		if (['margin', 'padding'].includes(key) && Array.isArray(value)) {
