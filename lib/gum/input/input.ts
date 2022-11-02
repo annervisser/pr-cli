@@ -1,4 +1,5 @@
-import { runAndCapture } from '../../shell/shell.ts';
+import { runAndCapture } from 'lib/shell/shell.ts';
+import { ColorScheme } from 'lib/colors.ts';
 
 export async function _gum_input(options?: {
 	placeholder?: string;
@@ -10,5 +11,11 @@ export async function _gum_input(options?: {
 	options?.prompt && args.push(`--prompt=${options.prompt}`);
 	options?.defaultValue && args.push(`--value=${options.defaultValue}`);
 
-	return await runAndCapture('gum', ...['input', '--width=80', ...args]);
+	return await runAndCapture(
+		'gum',
+		'input',
+		'--width=80',
+		`--prompt.foreground=${ColorScheme.primary}`,
+		...args,
+	);
 }

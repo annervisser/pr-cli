@@ -106,10 +106,9 @@ async function askForBranchName(selectedCommits: Commit[]): Promise<string> {
 		suggestion = suggestBranchNameForCommitMessage(selectedCommits[0]!.message);
 	}
 
-	// @TODO prompt color
 	return await Gum.input({
 		defaultValue: suggestion,
-		prompt: suggestion ? 'Branch name: (Ctrl+U to clear) ' : 'Branch name: ',
+		prompt: suggestion ? `Branch name: ${colors.dim.white('(Ctrl+U to clear)')} ` : 'Branch name: ',
 		placeholder: 'What to call the new branch...',
 	});
 }

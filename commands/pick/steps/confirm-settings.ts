@@ -1,6 +1,7 @@
 import { GitPickSettings } from './git-pick.ts';
 import { colors } from 'cliffy/ansi';
 import { Gum } from 'lib/gum/gum.ts';
+import { ColorScheme } from 'lib/colors.ts';
 
 export async function confirmSettings(options: GitPickSettings): Promise<boolean> {
 	const infoSign = colors.brightGreen('ℹ');
@@ -18,11 +19,11 @@ export async function confirmSettings(options: GitPickSettings): Promise<boolean
 	];
 
 	await Gum.style(lines, {
-		foreground: '#ff88ff',
+		foreground: ColorScheme.primary,
 		border: 'double',
 		margin: [1, 1],
 		padding: [0, 2],
-		'border-foreground': '#ff88ff',
+		'border-foreground': ColorScheme.primary,
 	});
 
 	return await Gum.confirm({
