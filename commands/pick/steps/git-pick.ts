@@ -1,7 +1,7 @@
-import { Commit } from 'lib/git/git.ts';
+import { Commit } from 'lib/git';
 import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
 import { colors } from 'cliffy/ansi';
-import { GH } from 'lib/github/pr.ts';
+import { GH } from 'lib/github';
 
 export interface GitPickSettings {
 	push: boolean;

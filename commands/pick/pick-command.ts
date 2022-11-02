@@ -1,4 +1,4 @@
-import { Commit, Git } from 'lib/git/git.ts';
+import { Commit, Git } from 'lib/git';
 import { slugify } from 'lib/slug/slug.ts';
 import { chooseCommits } from './steps/choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
