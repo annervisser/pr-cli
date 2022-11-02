@@ -6,7 +6,7 @@ export const pullRequestCommand = new Command()
 	.name('pull-request')
 	.alias('pr')
 	.description('Create a pull request for the current branch')
-	.arguments('[upstreamBranch:string]') // TODO make optional with default value (or ENV?)
+	.arguments('[baseBranch:string]')
 	.action(async (_options, upstreamBranch) => {
 		await GH.createPullRequest({ baseBranch: upstreamBranch });
 
