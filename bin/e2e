@@ -22,4 +22,4 @@ fi
 
 docker compose up --build --quiet-pull --detach "${containers_to_start[@]}"
 trap "docker compose down" EXIT
-$run_cmd npx playwright test
+$run_cmd npx playwright test "$@"
