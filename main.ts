@@ -1,7 +1,6 @@
 import { pickCommand } from './commands/pick/pick-command.ts';
 import { verifyCommand } from './commands/verify/verify-command.ts';
 import { Command, CompletionsCommand, HelpCommand } from 'cliffy/command';
-import { DenoLandProvider, UpgradeCommand } from 'cliffy/upgrade';
 import { colors } from 'cliffy/ansi';
 import { parseFlags } from 'cliffy/flags';
 import { pullRequestCommand } from './commands/pr/pull-request-command.ts';
@@ -9,7 +8,7 @@ import { pullRequestCommand } from './commands/pr/pull-request-command.ts';
 if (import.meta.main) {
 	const main = new Command()
 		.name('pr-cli')
-		.version('0.3.2')
+		.version('0.3.0')
 		.description(
 			'Command line utility for quickly creating pull requests on Github',
 		)
@@ -21,12 +20,6 @@ if (import.meta.main) {
 	// cliffy built-ins
 	main.command('help', new HelpCommand());
 	main.command('completions', new CompletionsCommand());
-	main.command('upgrade', new UpgradeCommand({
-		provider: new DenoLandProvider({name: 'prcli'}),
-		importMap: 'import_map.json',
-		main: 'main.ts',
-		args: ['--allow-run', '--allow-read']
-	}));
 	// TODO support upgrade command: https://cliffy.io/docs@v0.25.4/command/build-in-commands#upgrade-command
 
 	// our commands
