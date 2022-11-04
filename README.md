@@ -5,10 +5,12 @@ or\
 Pull Request - Command Line Interface
 
 ### Installation
+
 - Install deno: https://deno.land/manual/getting_started/installation
 - Install Gum: https://github.com/charmbracelet/gum
 - Install GH CLI: https://github.com/cli/cli#installation
 - Install pr-cli:
+
 ```shell
 deno install --name pr-cli \
 	--allow-run --allow-read \
