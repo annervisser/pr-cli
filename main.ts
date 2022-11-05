@@ -3,7 +3,7 @@ import { verifyCommand } from './commands/verify/verify-command.ts';
 import { Command, CompletionsCommand, HelpCommand } from 'cliffy/command';
 import { colors } from 'cliffy/ansi';
 import { parseFlags } from 'cliffy/flags';
-import { pullRequestCommand } from './commands/pr/pull-request-command.ts';
+import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
 
 if (import.meta.main) {
 	const main = new Command()
