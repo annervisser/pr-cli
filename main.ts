@@ -4,11 +4,13 @@ import { Command, CompletionsCommand, HelpCommand } from 'cliffy/command';
 import { colors } from 'cliffy/ansi';
 import { parseFlags } from 'cliffy/flags';
 import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
+import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
 
 if (import.meta.main) {
 	const main = new Command()
 		.name('pr-cli')
 		.version('0.3.0')
+		.option('--debug', 'enable verbose error logging', { global: true })
 		.description(
 			'Command line utility for quickly creating pull requests on Github',
 		)
@@ -26,12 +28,13 @@ if (import.meta.main) {
 	main.command(pickCommand.getName(), pickCommand);
 	main.command(pullRequestCommand.getName(), pullRequestCommand);
 	main.command(verifyCommand.getName(), verifyCommand);
+	main.command(installDepsCommand.getName(), installDepsCommand);
 
 	try {
 		await main.parse(Deno.args);
 	} catch (err) {
 		if (parseFlags(Deno.args).flags.debug === true) {
-			console.error(colors.red(err));
+			console.error(err);
 		} else if (err instanceof Error) {
 			console.error(colors.bgRed.brightWhite.bold(` ❗ ${err.message} `));
 		}
