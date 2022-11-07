@@ -1,6 +1,6 @@
 # PR-CLI
 
-Pretty, Rad, Cool, Lovely, Impressive\
+Pretty Rad Cool Lovely Interface\
 or\
 Pull Request - Command Line Interface
 
