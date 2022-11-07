@@ -7,7 +7,9 @@ Pull Request - Command Line Interface
 ### Installation
 
 - Install deno: https://deno.land/manual/getting_started/installation
-- Install Gum: https://github.com/charmbracelet/gum
+- Install Gum:
+  - Option 1: manually via https://github.com/charmbracelet/gum
+  - Option 2: run `pr-cli install-deps` after installation
 - Install GH CLI: https://github.com/cli/cli#installation
 - Install pr-cli:
 
