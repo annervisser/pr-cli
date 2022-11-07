@@ -1,4 +1,4 @@
-import { runVoid } from 'lib/shell/shell.ts';
+import { runAndCapture, runVoid } from 'lib/shell/shell.ts';
 import { Table } from 'cliffy/table';
 import { colors } from 'cliffy/ansi';
 import { Command } from 'cliffy/command';
@@ -33,10 +33,10 @@ async function printDependencyStatuses() {
 
 	const table = new Table();
 	table.header(
-		[colors.bold('Program'), colors.bold('Status')],
+		['Program', 'Status', 'Version'].map(colors.bold),
 	);
 	for (const dependency of dependencies) {
-		table.push([dependency, await getStatus(dependency)]);
+		table.push([dependency, await getStatus(dependency), await getVersion(dependency)]);
 	}
 	table.padding(2);
 	table.render();
@@ -48,5 +48,14 @@ async function binaryExists(binary: string): Promise<boolean> {
 		return true;
 	} catch {
 		return false;
+	}
+}
+
+async function getVersion(binary: string): Promise<string> {
+	try {
+		const versionOutput = await runAndCapture(binary, '--version');
+		return versionOutput.split('\n')[0]!;
+	} catch {
+		return '<unknown>';
 	}
 }
