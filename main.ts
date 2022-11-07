@@ -5,6 +5,7 @@ import { colors } from 'cliffy/ansi';
 import { parseFlags } from 'cliffy/flags';
 import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
+import { getBinDir } from './lib/pr-cli/pr-cli-utils.ts';
 
 if (import.meta.main) {
 	const main = new Command()
@@ -31,6 +32,8 @@ if (import.meta.main) {
 	main.command(installDepsCommand.getName(), installDepsCommand);
 
 	try {
+		// Prepend our own bin dir to path
+		Deno.env.set('PATH', [getBinDir(), Deno.env.get('PATH')].join(':'));
 		await main.parse(Deno.args);
 	} catch (err) {
 		if (parseFlags(Deno.args).flags.debug === true) {

@@ -4,6 +4,7 @@ import * as path from 'https://deno.land/std@0.162.0/path/mod.ts';
 import * as semver from 'https://deno.land/std@0.162.0/semver/mod.ts';
 import { colors } from 'cliffy/ansi';
 import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
+import { getBinDir } from 'lib/pr-cli/pr-cli-utils.ts';
 
 interface GithubReleaseAsset {
 	name: string;
@@ -23,20 +24,15 @@ export const installDepsCommand = new Command()
 	.option('-i, --ignore-system', 'Install, even if system installation is found')
 	.option('-f, --force', 'Install, even if current version is the same or a newer version')
 	.action(async (options) => {
-		console.log(colors.blue(`Getting path to HOME directory`));
-		const homeDir = Deno.env.get('HOME');
-		if (!homeDir) {
-			throw new Error('Unable to determine HOME directory');
-		}
-		const binDir = path.join(homeDir, '.pr-cli', 'bin');
+		const binDir = getBinDir();
 		const gumInstall = path.join(binDir, 'gum');
 
-		const pathToGum = await getExistingGumPath();
-		if (pathToGum) {
-			console.info(colors.green(`ℹ found gum installation(s): ${pathToGum}`));
-			if (!options.ignoreSystem && pathToGum !== gumInstall) {
+		const pathsToGum = await getExistingGumPaths();
+		if (pathsToGum.length) {
+			console.info(colors.green(`ℹ found gum installation(s): ${pathsToGum.join(', ')}`));
+			if (!options.ignoreSystem && pathsToGum.some(path => path !== gumInstall)) {
 				console.error(colors.brightYellow(
-					`Existing gum installation is not managed by pr-cli. To install anyway, use --ignore-system`,
+					`Existing gum installation not managed by pr-cli. To install anyway, use --ignore-system`,
 				));
 				Deno.exit(1);
 			}
@@ -94,10 +90,12 @@ export const installDepsCommand = new Command()
 		await Deno.remove(tempDir, { recursive: true });
 	});
 
-async function getExistingGumPath(): Promise<string | null> {
-	let pathToGum: string | null = null;
+async function getExistingGumPaths(): Promise<string[]> {
+	let pathToGum: string[] = [];
 	try {
-		pathToGum = await runAndCapture('which', 'gum');
+		pathToGum = (await runAndCapture('which', '-a', 'gum'))
+			.split('\n')
+			.filter(Boolean);
 	} catch {
 		// gum is not in $PATH
 	}
