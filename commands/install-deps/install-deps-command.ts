@@ -30,7 +30,7 @@ export const installDepsCommand = new Command()
 		const pathsToGum = await getExistingGumPaths();
 		if (pathsToGum.length) {
 			console.info(colors.green(`ℹ found gum installation(s): ${pathsToGum.join(', ')}`));
-			if (!options.ignoreSystem && pathsToGum.some(path => path !== gumInstall)) {
+			if (!options.ignoreSystem && pathsToGum.some((path) => path !== gumInstall)) {
 				console.error(colors.brightYellow(
 					`Existing gum installation not managed by pr-cli. To install anyway, use --ignore-system`,
 				));
