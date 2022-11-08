@@ -1,5 +1,6 @@
 {
 	"imports": {
+		"deps": "./deps.ts",
 		"lib/": "./lib/",
 		"lib/git/": "./lib/git/",
 		"lib/github/": "./lib/github/",

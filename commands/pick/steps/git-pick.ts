@@ -2,6 +2,7 @@ import { Commit } from 'lib/git/git.ts';
 import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
 import { colors } from 'cliffy/ansi';
 import { GH } from 'lib/github/gh.ts';
+import { log } from 'deps';
 
 export interface GitPickSettings {
 	push: boolean;
@@ -18,10 +19,10 @@ export interface GitPickSettings {
 }
 
 export async function runCherryPick(settings: GitPickSettings): Promise<void> {
-	console.log(colors.green('▶️ Creating temporary directory'));
+	log.info(colors.green('▶️ Creating temporary directory'));
 	const tmpDir = await runAndCapture('mktemp', '-d');
 
-	console.log(colors.green(`▶️ Creating temporary worktree in ${tmpDir}`));
+	log.info(colors.green(`▶️ Creating temporary worktree in ${tmpDir}`));
 	const upstreamRef = `${settings.pullRemote}/${settings.upstreamBranch}`;
 	await runCommand(
 		'git',
@@ -36,21 +37,21 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 
 	Deno.chdir(tmpDir);
 
-	console.log(colors.green('▶️ cherry picking commits'));
+	log.info(colors.green('▶️ cherry picking commits'));
 	const commitSHAsToPick = settings.commits.map((c) => c.sha);
 	await runCommand('git', 'cherry-pick', ...commitSHAsToPick);
 
 	if (settings.push) {
-		console.log(colors.green(`▶️ Pushing to ${settings.pushRemote}/${settings.branchName}`));
+		log.info(colors.green(`▶️ Pushing to ${settings.pushRemote}/${settings.branchName}`));
 		await runCommand('git', 'push', '-u', settings.pushRemote, settings.branchName);
 	}
 
 	if (settings.pr) {
-		console.log(colors.green('▶️ Creating pull request'));
+		log.info(colors.green('▶️ Creating pull request'));
 		await GH.createPullRequest({ baseBranch: settings.upstreamBranch });
 	}
 
 	// TODO still do this if an error occurs
-	console.log(colors.green('▶️ Cleaning up temporary worktree'));
+	log.info(colors.green('▶️ Cleaning up temporary worktree'));
 	await runCommand('git', 'worktree', 'remove', tmpDir);
 }

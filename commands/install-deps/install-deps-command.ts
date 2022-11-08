@@ -5,6 +5,7 @@ import * as semver from 'https://deno.land/std@0.162.0/semver/mod.ts';
 import { colors } from 'cliffy/ansi';
 import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
 import { getBinDir } from 'lib/pr-cli/pr-cli-utils.ts';
+import { log } from 'deps';
 
 interface GithubReleaseAsset {
 	name: string;
@@ -29,9 +30,9 @@ export const installDepsCommand = new Command()
 
 		const pathsToGum = await getExistingGumPaths();
 		if (pathsToGum.length) {
-			console.info(colors.green(`ℹ found gum installation(s): ${pathsToGum.join(', ')}`));
+			log.info(colors.green(`ℹ found gum installation(s): ${pathsToGum.join(', ')}`));
 			if (!options.ignoreSystem && pathsToGum.some((path) => path !== gumInstall)) {
-				console.error(colors.brightYellow(
+				log.error(colors.brightYellow(
 					`Existing gum installation not managed by pr-cli. To install anyway, use --ignore-system`,
 				));
 				Deno.exit(1);
@@ -40,23 +41,23 @@ export const installDepsCommand = new Command()
 
 		const existingGumVersion = await getGumVersion(gumInstall);
 
-		console.log(colors.blue(`Creating ${binDir} if needed`));
+		log.info(colors.blue(`Creating ${binDir} if needed`));
 		await fs.ensureDir(binDir);
 
 		const osRelease = `${Deno.build.os}_${Deno.build.arch}`;
-		console.log(colors.green(`ℹ OS type: ${osRelease}`));
+		log.info(colors.green(`ℹ OS type: ${osRelease}`));
 
 		const latestRelease = await getLatestGumRelease();
 
 		const latestVersion = latestRelease.tag_name;
-		console.log(colors.green(`Latest version is ${latestVersion}`));
+		log.info(colors.green(`Latest version is ${latestVersion}`));
 
 		if (
 			!options.force &&
 			existingGumVersion instanceof semver.SemVer &&
 			semver.gte(existingGumVersion, latestVersion)
 		) {
-			console.log(colors.brightGreen('Installed version >= the latest version. Nothing to do!'));
+			log.info(colors.brightGreen('Installed version >= the latest version. Nothing to do!'));
 			Deno.exit(0);
 		}
 
@@ -67,9 +68,9 @@ export const installDepsCommand = new Command()
 		if (!matchedAsset) {
 			throw new Error('Unable to find matching release file');
 		}
-		console.log(colors.green(`Found release file ${matchedAsset.name}`));
+		log.info(colors.green(`Found release file ${matchedAsset.name}`));
 
-		console.log(colors.blue(`Downloading...`));
+		log.info(colors.blue(`Downloading...`));
 		const tempDir = await Deno.makeTempDir();
 		const downloadFilePath = path.join(tempDir, matchedAsset.name);
 		const downloadFile = await Deno.open(downloadFilePath, { create: true, write: true });
@@ -80,13 +81,13 @@ export const installDepsCommand = new Command()
 		}
 		await download.body.pipeTo(downloadFile.writable);
 
-		console.log(colors.blue(`Extracting...`));
+		log.info(colors.blue(`Extracting...`));
 		await runCommand('tar', '-xzf', downloadFilePath, '-C', tempDir);
 
-		console.log(colors.blue(`Moving gum binary to ${gumInstall}`));
+		log.info(colors.blue(`Moving gum binary to ${gumInstall}`));
 		await Deno.rename(path.join(tempDir, 'gum'), gumInstall);
 
-		console.log(colors.gray(`Cleaning up in ${tempDir}`));
+		log.info(colors.gray(`Cleaning up in ${tempDir}`));
 		await Deno.remove(tempDir, { recursive: true });
 	});
 
@@ -117,9 +118,9 @@ async function getGumVersion(gumInstall: string): Promise<semver.SemVer | 'none'
 		const gumVersionOutputRegex = /gum version (?<version>v?[0-9.-]+)(?:$| )/;
 		const versionString = gumVersionOutputRegex.exec(versionOutput)?.groups?.version;
 		existingGumVersion = semver.parse(versionString ?? null) ?? 'unknown';
-		console.log(colors.green(`ℹ Existing gum installation is version ${existingGumVersion}`));
+		log.info(colors.green(`ℹ Existing gum installation is version ${existingGumVersion}`));
 	} else {
-		console.log(colors.green('ℹ No existing gum installation in target directory'));
+		log.info(colors.green('ℹ No existing gum installation in target directory'));
 	}
 
 	return existingGumVersion;
