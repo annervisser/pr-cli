@@ -8,6 +8,7 @@ import { Command } from 'cliffy/command';
 import { colors } from 'cliffy/ansi';
 import { Confirm } from 'cliffy/prompt';
 import { Gum } from 'lib/gum/gum.ts';
+import { log } from 'deps';
 
 export const pickCommand = new Command()
 	.name('pick')
@@ -30,8 +31,9 @@ export const pickCommand = new Command()
 	})
 	.arguments('<upstreamBranch:string>') // TODO make optional with default value (or ENV?)
 	.action(async (options, upstreamBranch) => {
+		log.debug('Checking dependencies');
 		if (!await dependenciesMet()) {
-			console.log(colors.red.bold('✗ Missing dependencies, run \'pr-cli verify\' for details'));
+			log.info(colors.red.bold('✗ Missing dependencies, run \'pr-cli verify\' for details'));
 			const exit = !await Confirm.prompt({
 				message: 'Continue with missing dependencies?',
 				default: false,
@@ -42,9 +44,11 @@ export const pickCommand = new Command()
 		}
 
 		if (options.fetch) {
+			log.debug('Running git fetch');
 			await Git.fetch(options.pullRemote);
+			log.debug('Completed git fetch');
 		} else {
-			console.log(colors.white('-️ Skipping fetch'));
+			log.info(colors.white('-️ Skipping fetch'));
 		}
 
 		const upstreamRef = `${options.pullRemote}/${upstreamBranch}`;
@@ -67,13 +71,13 @@ export const pickCommand = new Command()
 		if (
 			!await confirmSettings(settings)
 		) {
-			console.log('Exitting');
+			log.info('Exitting');
 			return;
 		}
-		console.log('Go time!');
+		log.info('Go time!');
 		await runCherryPick(settings);
 
-		console.log(colors.bgGreen.brightWhite('✔ Done!'));
+		log.info(colors.bgGreen.brightWhite('✔ Done!'));
 	});
 
 async function parseOrPromptForCommits(
@@ -81,12 +85,12 @@ async function parseOrPromptForCommits(
 	commitShas: string[] | null,
 ): Promise<Commit[]> {
 	if (commitShas !== null) {
-		// Use provided comments
+		log.debug('Use provided comments');
 		commitShas = await Git.verifyAndExpandCommitSHAs(commitShas);
 		return await Git.getCommits(commitShas.join(' '));
 	}
 
-	// Ask user to pick from 'new' commits (local not on remote)
+	log.debug('Ask user to pick from \'new\' commits (local not on remote)');
 	const newCommits = (await Git.getCommits(`${upstreamRef}..`));
 	if (newCommits.length < 1) {
 		throw new Error('No commits to pick');
@@ -103,9 +107,11 @@ function suggestBranchNameForCommitMessage(message: string): string {
 async function askForBranchName(selectedCommits: Commit[]): Promise<string> {
 	let suggestion = undefined;
 	if (selectedCommits.length === 1) {
+		log.debug('Generating branch name based on commit message');
 		suggestion = suggestBranchNameForCommitMessage(selectedCommits[0]!.message);
 	}
 
+	log.debug('Prompting for branch name');
 	return await Gum.input({
 		defaultValue: suggestion,
 		prompt: suggestion ? `Branch name: ${colors.dim.white('(Ctrl+U to clear)')} ` : 'Branch name: ',

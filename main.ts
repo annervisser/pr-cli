@@ -6,6 +6,7 @@ import { parseFlags } from 'cliffy/flags';
 import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
 import { getBinDir } from './lib/pr-cli/pr-cli-utils.ts';
+import { log } from 'deps';
 
 if (import.meta.main) {
 	const main = new Command()
@@ -31,16 +32,33 @@ if (import.meta.main) {
 	main.command(verifyCommand.getName(), verifyCommand);
 	main.command(installDepsCommand.getName(), installDepsCommand);
 
+	// Prepend our own bin dir to path
+	Deno.env.set('PATH', [getBinDir(), Deno.env.get('PATH')].join(':'));
+
+	const debugMode = parseFlags(Deno.args).flags.debug !== undefined;
+	setupLogger(debugMode);
+
 	try {
-		// Prepend our own bin dir to path
-		Deno.env.set('PATH', [getBinDir(), Deno.env.get('PATH')].join(':'));
 		await main.parse(Deno.args);
 	} catch (err) {
-		if (parseFlags(Deno.args).flags.debug === true) {
-			console.error(err);
-		} else if (err instanceof Error) {
-			console.error(colors.bgRed.brightWhite.bold(` ❗ ${err.message} `));
-		}
+		log.error(colors.bgRed.brightWhite.bold(` ❗ ${err.message ?? err} `));
+		log.debug(err);
 		Deno.exit(1);
 	}
+}
+
+function setupLogger(debugMode: boolean) {
+	const logLevel = debugMode ? 'DEBUG' : 'INFO';
+
+	log.setup({
+		handlers: {
+			default: new log.handlers.ConsoleHandler('NOTSET', { formatter: '{msg}' }), // let handler log everything, decide level on loggers instead
+		},
+		loggers: {
+			default: {
+				level: logLevel,
+				handlers: ['default'],
+			},
+		},
+	});
 }
