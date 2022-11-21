@@ -16,11 +16,14 @@ export const pickCommand = new Command()
 	.description(
 		'cherry-pick specific commits onto a new branch and create a PR for it',
 	)
+	.group('Toggles')
 	.option('--no-fetch', 'Don\'t run git fetch before creating the branch')
 	.option('--no-pr', 'Skip creating a pull request on Github')
 	.option('--no-push', 'Skip pushing to push remote (implies --no-pr)', {
 		action: (options) => options.pr = false,
 	})
+	.option('--force', 'Overwrite existing branch, and force push to it')
+	.group('Inputs')
 	.option('-b, --branch <branchName:string>', 'Name to use for the new branch')
 	.option('-c, --commits <commitSha...:string>', 'Commits to cherry-pick')
 	.option('--pull-remote <remote:string>', 'Remote to use for fetching')
@@ -39,19 +42,8 @@ export const pickCommand = new Command()
 			}
 		}
 
-		options.pullRemote ??= await getPullRemote();
-		if (!options.pullRemote) {
-			throw new Error(
-				'Unable to determine what remote to fetch from, please specify it using --pull-remote',
-			);
-		}
-
-		options.pushRemote ??= await getPushRemote();
-		if (!options.pushRemote) {
-			throw new Error(
-				'Unable to determine what remote to push to, please specify it using --push-remote',
-			);
-		}
+		options.pullRemote = await getPullRemote();
+		options.pushRemote = await getPushRemote();
 
 		log.debug(options);
 
@@ -74,20 +66,43 @@ export const pickCommand = new Command()
 		const branchName = options.branch ?? await askForBranchName(pickedCommits);
 		validateBranchName(branchName);
 
+		const localBranchExists = await Git.doesBranchExist(branchName);
+		const remoteBranchExists = await Git.doesBranchExist(`${options.pushRemote}/${branchName}`);
+
+		let overwriteLocalBranch = !!options.force;
+		if (!overwriteLocalBranch && localBranchExists) {
+			overwriteLocalBranch = await Gum.confirm({
+				prompt: 'Local branch already exists, do you wish to overwrite it?',
+				startOnAffirmative: true,
+			});
+			log.info(overwriteLocalBranch ? 'Overwriting local branch!' : 'Not overwriting local branch');
+		}
+
+		let forcePush = !!options.force;
+		if (!forcePush && options.push && remoteBranchExists) {
+			forcePush = await Gum.confirm({
+				prompt: `Branch on ${options.pushRemote} already exists, do you want to force push?`,
+				startOnAffirmative: true,
+			});
+			log.info(forcePush ? 'Force pushing!' : 'Not force pushing');
+		}
+
 		const settings: GitPickSettings = {
-			...options,
-			pullRemote: options.pullRemote, // specify these explicitly because we know these aren't undefined
-			pushRemote: options.pushRemote, // specify these explicitly because we know these aren't undefined
+			push: options.push,
+			pr: options.pr,
+			pullRemote: options.pullRemote,
+			pushRemote: options.pushRemote,
+			overwriteLocalBranch,
+			forcePush,
 			branchName,
 			upstreamBranch,
 			commits: pickedCommits,
 		};
-		if (
-			!await confirmSettings(settings)
-		) {
+		if (!await confirmSettings(settings, { branchExists: localBranchExists })) {
 			log.info('Exitting');
 			return;
 		}
+
 		log.info('Go time!');
 		await runCherryPick(settings);
 
@@ -140,14 +155,26 @@ function validateBranchName(branchName: string) {
 	}
 }
 
-async function getPullRemote(): Promise<string | undefined> {
+async function getPullRemote(): Promise<string> {
 	const remotes = await Git.listRemotes();
-	return chooseRemote(remotes, ['upstream']);
+	const pullRemote = chooseRemote(remotes, ['upstream']);
+	if (!pullRemote) {
+		throw new Error(
+			'Unable to determine what remote to fetch from, please specify it using --pull-remote',
+		);
+	}
+	return pullRemote;
 }
 
-async function getPushRemote(): Promise<string | undefined> {
+async function getPushRemote(): Promise<string> {
 	const remotes = await Git.listRemotes();
-	return chooseRemote(remotes, ['origin']);
+	const pushRemote = chooseRemote(remotes, ['origin']);
+	if (!pushRemote) {
+		throw new Error(
+			'Unable to determine what remote to fetch from, please specify it using --pull-remote',
+		);
+	}
+	return pushRemote;
 }
 
 function chooseRemote(remotes: string[], orderedOptions: string[]): string | undefined {

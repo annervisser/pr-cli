@@ -1,4 +1,4 @@
-import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
+import { runAndCapture, runCommand, runVoid } from 'lib/shell/shell.ts';
 
 export interface Commit {
 	sha: string;
@@ -10,6 +10,7 @@ export class Git {
 	public static getCommits = getCommits;
 	public static fetch = gitFetch;
 	public static listRemotes = listRemotes;
+	public static doesBranchExist = doesBranchExist;
 }
 
 async function verifyAndExpandCommitSHAs(
@@ -69,4 +70,13 @@ async function gitFetch(remote: string): Promise<void> {
 async function listRemotes(): Promise<string[]> {
 	const output = await runAndCapture('git', 'remote');
 	return output.split('\n').map((line) => line.trim());
+}
+
+async function doesBranchExist(branch: string): Promise<boolean> {
+	try {
+		await runVoid('git', 'rev-parse', '--verify', branch);
+		return true;
+	} catch {
+		return false;
+	}
 }

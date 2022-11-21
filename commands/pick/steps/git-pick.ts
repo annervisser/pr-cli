@@ -6,8 +6,9 @@ import { log } from 'deps';
 
 export interface GitPickSettings {
 	push: boolean;
-	fetch: boolean;
 	pr: boolean;
+	overwriteLocalBranch: boolean;
+	forcePush: boolean;
 
 	pullRemote: string;
 	pushRemote: string;
@@ -29,7 +30,7 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 		'worktree',
 		'add',
 		'--no-track',
-		'-b',
+		settings.overwriteLocalBranch ? '-B' : '-b',
 		settings.branchName,
 		tmpDir,
 		upstreamRef,
@@ -43,11 +44,14 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 
 	if (settings.push) {
 		log.info(colors.green(`▶️ Pushing to ${settings.pushRemote}/${settings.branchName}`));
-		await runCommand('git', 'push', '-u', settings.pushRemote, settings.branchName);
+		const args = ['-u', settings.pushRemote];
+		settings.forcePush && args.push('--force');
+		await runCommand('git', 'push', ...args, settings.branchName);
 	}
 
 	if (settings.pr) {
 		log.info(colors.green('▶️ Creating pull request'));
+		// Check if a pr is already open, using: `gh api "/repos/{owner}/{repo}/pulls?state=all&head={owner}:install-deps-command-for-gum" -q ".[] | {url}"`
 		await GH.createPullRequest({ baseBranch: settings.upstreamBranch });
 	}
 

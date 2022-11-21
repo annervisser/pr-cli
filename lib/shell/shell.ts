@@ -1,4 +1,6 @@
 import ProcessStatus = Deno.ProcessStatus;
+import { log } from 'deps';
+import RunOptions = Deno.RunOptions;
 
 export class CommandExecutionException extends Error {
 	constructor(
@@ -15,7 +17,7 @@ export class CommandExecutionException extends Error {
 }
 
 export async function runCommand(command: string, ...args: string[]): Promise<void> {
-	const p = Deno.run({
+	const p = run({
 		cmd: [command, ...args],
 		stdin: 'inherit',
 		stdout: 'inherit',
@@ -29,7 +31,7 @@ export async function runCommand(command: string, ...args: string[]): Promise<vo
 }
 
 export async function runAndCapture(command: string, ...args: string[]): Promise<string> {
-	const p = Deno.run({
+	const p = run({
 		cmd: [command, ...args],
 		stdin: 'inherit',
 		stdout: 'piped',
@@ -48,7 +50,7 @@ export async function runAndCapture(command: string, ...args: string[]): Promise
 }
 
 export async function runVoid(command: string, ...args: string[]): Promise<void> {
-	const p = Deno.run({
+	const p = run({
 		cmd: [command, ...args],
 		stdin: 'null',
 		stdout: 'null',
@@ -59,6 +61,12 @@ export async function runVoid(command: string, ...args: string[]): Promise<void>
 	await p.close();
 
 	throwErrorIfFailed(status);
+}
+
+function run(opt: RunOptions) {
+	log.debug(`Running command: ${opt.cmd.join(' ')}`);
+	log.debug(opt);
+	return Deno.run(opt);
 }
 
 function throwErrorIfFailed(status: ProcessStatus) {

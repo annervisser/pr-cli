@@ -41,7 +41,8 @@ test('pr-cli pick', async ({ cli, _tmpdir }) => {
 		/About to cherry pick commits:/,
 		/commit 1/,
 		/Base branch: upstream\/trunk/,
-		/Branch name: commit-1-branch/,
+		/Branch name: origin\/commit-1-branch/,
+		/✔ push .* ✗ pull request/,
 		/Continue?/,
 	]);
 
