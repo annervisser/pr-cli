@@ -9,6 +9,7 @@ export class Git {
 	public static verifyAndExpandCommitSHAs = verifyAndExpandCommitSHAs;
 	public static getCommits = getCommits;
 	public static fetch = gitFetch;
+	public static listRemotes = listRemotes;
 }
 
 async function verifyAndExpandCommitSHAs(
@@ -46,12 +47,6 @@ async function getCommits(revisionRange: string): Promise<Commit[]> {
 	}
 }
 
-async function gitFetch(remote: string): Promise<void> {
-	const args = [];
-	remote && args.push(remote);
-	await runCommand('git', 'fetch', ...args);
-}
-
 function lineToCommit(line: string): Commit {
 	// Please note, javascript's String.prototype.split() omits any remaining text when it hits the specific limit,
 	// rendering it useless for our purposes here
@@ -63,4 +58,15 @@ function lineToCommit(line: string): Commit {
 		sha: line.slice(0, firstSpace),
 		message: line.slice(firstSpace + 1),
 	};
+}
+
+async function gitFetch(remote: string): Promise<void> {
+	const args = [];
+	remote && args.push(remote);
+	await runCommand('git', 'fetch', ...args);
+}
+
+async function listRemotes(): Promise<string[]> {
+	const output = await runAndCapture('git', 'remote');
+	return output.split('\n').map((line) => line.trim());
 }

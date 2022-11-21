@@ -23,12 +23,8 @@ export const pickCommand = new Command()
 	})
 	.option('-b, --branch <branchName:string>', 'Name to use for the new branch')
 	.option('-c, --commits <commitSha...:string>', 'Commits to cherry-pick')
-	.option('--pull-remote <remote:string>', 'Remote to use for fetching', {
-		default: 'upstream',
-	})
-	.option('--push-remote <remote:string>', 'Remote to push to', {
-		default: 'origin',
-	})
+	.option('--pull-remote <remote:string>', 'Remote to use for fetching')
+	.option('--push-remote <remote:string>', 'Remote to push to')
 	.arguments('<upstreamBranch:string>') // TODO make optional with default value (or ENV?)
 	.action(async (options, upstreamBranch) => {
 		log.debug('Checking dependencies');
@@ -42,6 +38,22 @@ export const pickCommand = new Command()
 				Deno.exit(1);
 			}
 		}
+
+		options.pullRemote ??= await getPullRemote();
+		if (!options.pullRemote) {
+			throw new Error(
+				'Unable to determine what remote to fetch from, please specify it using --pull-remote',
+			);
+		}
+
+		options.pushRemote ??= await getPushRemote();
+		if (!options.pushRemote) {
+			throw new Error(
+				'Unable to determine what remote to push to, please specify it using --push-remote',
+			);
+		}
+
+		log.debug(options);
 
 		if (options.fetch) {
 			log.debug('Running git fetch');
@@ -64,6 +76,8 @@ export const pickCommand = new Command()
 
 		const settings: GitPickSettings = {
 			...options,
+			pullRemote: options.pullRemote, // specify these explicitly because we know these aren't undefined
+			pushRemote: options.pushRemote, // specify these explicitly because we know these aren't undefined
 			branchName,
 			upstreamBranch,
 			commits: pickedCommits,
@@ -124,4 +138,21 @@ function validateBranchName(branchName: string) {
 	if (branchName.length < minLength) {
 		throw new Error(`Branch name should be at least ${minLength} characters long`);
 	}
+}
+
+async function getPullRemote(): Promise<string | undefined> {
+	const remotes = await Git.listRemotes();
+	return chooseRemote(remotes, ['upstream']);
+}
+
+async function getPushRemote(): Promise<string | undefined> {
+	const remotes = await Git.listRemotes();
+	return chooseRemote(remotes, ['origin']);
+}
+
+function chooseRemote(remotes: string[], orderedOptions: string[]): string | undefined {
+	if (remotes.length === 1) {
+		return remotes[0]!;
+	}
+	return orderedOptions.find((remote) => remotes.includes(remote));
 }
