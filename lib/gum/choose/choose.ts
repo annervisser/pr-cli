@@ -13,8 +13,6 @@ async function choose(
 	options: string[],
 	multiselect: boolean,
 ): Promise<string[]> {
-	console.log('hello');
-
 	const output = await runAndCapture(
 		'gum',
 		'choose',
