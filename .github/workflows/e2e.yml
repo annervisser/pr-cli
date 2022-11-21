@@ -26,7 +26,9 @@ jobs:
           cache-dependency-path: e2e-test/package-lock.json
 
       - name: Install playwright deps
-        run: npx playwright install --with-deps
+        run: |
+          npm ci
+          npx playwright install --with-deps
 
       - name: Run e2e tests
         run: ../bin/e2e
