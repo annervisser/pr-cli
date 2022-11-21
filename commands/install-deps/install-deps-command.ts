@@ -128,5 +128,9 @@ async function getGumVersion(gumInstall: string): Promise<semver.SemVer | 'none'
 async function getLatestGumRelease(): Promise<GithubReleaseResponse> {
 	const latestGumReleaseEndPoint = 'https://api.github.com/repos/charmbracelet/gum/releases/latest';
 	const ghResponse = await fetch(latestGumReleaseEndPoint);
+	if (!ghResponse.ok) {
+		const body = await ghResponse.text();
+		throw new Error(`Error retrieving gum version from github: [${ghResponse.status}]: ${body}`);
+	}
 	return await ghResponse.json();
 }
