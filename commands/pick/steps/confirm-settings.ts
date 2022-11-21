@@ -3,24 +3,44 @@ import { colors } from 'cliffy/ansi';
 import { Gum } from 'lib/gum/gum.ts';
 import { ColorScheme } from 'lib/colors.ts';
 
-export async function confirmSettings(options: GitPickSettings): Promise<boolean> {
-	const infoSign = colors.brightGreen('ℹ');
+interface ConfirmationContext {
+	branchExists: boolean;
+}
+
+export async function confirmSettings(
+	options: GitPickSettings,
+	context: ConfirmationContext,
+): Promise<boolean> {
+	const i = '‣' + colors.reset(' '); //colors.green('‣');
 	const commitLines = options.commits.map((commit) =>
-		`  └▷ ${colors.magenta(commit.sha)} ${colors.cyan(commit.message)}`
+		`  └▷ ${colors.dim.cyan(commit.sha)} ${colors.cyan(commit.message)}`
 	);
 
+	const check = (check: boolean) => check ? colors.green('✔') : colors.red.bold('✗');
+
+	let branchExistsWarning = '';
+	if (context.branchExists) {
+		branchExistsWarning = options.overwriteLocalBranch
+			? ` ${colors.brightRed('! Overwriting')}`
+			: ` ${colors.bold.red('! branch exists')}`;
+	}
+	const forceString = options.forcePush ? `${colors.red('force')} ` : '';
+
 	const lines = [
-		`${infoSign} About to cherry pick commits:`,
+		`${i}About to cherry pick commits:`,
 		...commitLines,
-		`${infoSign} Base branch: ${colors.cyan(options.pullRemote)}/${
-			colors.cyan(options.upstreamBranch)
+		`${i}Base branch: ${colors.dim.yellow(options.pullRemote)}/${
+			colors.yellow(options.upstreamBranch)
 		}`,
-		`${infoSign} Branch name: ${colors.cyan(options.branchName)}`,
+		`${i}Branch name: ${colors.dim.yellow(options.pushRemote)}/${
+			colors.yellow(options.branchName)
+		}${branchExistsWarning}`,
+		`${i}${check(options.push)} ${forceString}push  |  ${check(options.pr)} pull request`,
 	];
 
 	await Gum.style(lines, {
 		foreground: ColorScheme.primary,
-		border: 'double',
+		border: 'rounded',
 		margin: [1, 1],
 		padding: [0, 2],
 		'border-foreground': ColorScheme.primary,

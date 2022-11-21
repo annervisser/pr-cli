@@ -8,4 +8,4 @@ deno lint
 
 deno check main.ts
 
-deno test --allow-run --allow-read --allow-env
+#deno test --allow-run --allow-read --allow-env
