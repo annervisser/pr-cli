@@ -1,7 +1,7 @@
 import { Command } from 'cliffy/command';
-import * as fs from 'https://deno.land/std@0.162.0/fs/ensure_dir.ts';
-import * as path from 'https://deno.land/std@0.162.0/path/mod.ts';
-import * as semver from 'https://deno.land/std@0.162.0/semver/mod.ts';
+import * as fs from 'https://deno.land/std@0.173.0/fs/ensure_dir.ts';
+import * as path from 'https://deno.land/std@0.173.0/path/mod.ts';
+import * as semver from 'https://deno.land/std@0.173.0/semver/mod.ts';
 import { colors } from 'cliffy/ansi';
 import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
 import { getBinDir } from 'lib/pr-cli/pr-cli-utils.ts';
