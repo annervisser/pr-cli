@@ -9,6 +9,7 @@ export interface GitPickSettings {
 	pr: boolean;
 	overwriteLocalBranch: boolean;
 	forcePush: boolean;
+	draftPR: boolean;
 
 	pullRemote: string;
 	pushRemote: string;
@@ -52,7 +53,10 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 	if (settings.pr) {
 		log.info(colors.green('▶️ Creating pull request'));
 		// Check if a pr is already open, using: `gh api "/repos/{owner}/{repo}/pulls?state=all&head={owner}:install-deps-command-for-gum" -q ".[] | {url}"`
-		await GH.createPullRequest({ baseBranch: settings.upstreamBranch });
+		await GH.createPullRequest({
+			baseBranch: settings.upstreamBranch,
+			draftPR: settings.draftPR,
+		});
 	}
 
 	// TODO still do this if an error occurs

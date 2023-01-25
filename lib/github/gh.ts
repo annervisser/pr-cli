@@ -6,9 +6,11 @@ export class GH {
 
 async function createPullRequest(options: {
 	baseBranch?: string;
+	draftPR?: boolean;
 }) {
 	const args: string[] = [];
 	options.baseBranch && args.push('--base', options.baseBranch);
+	options.draftPR && args.push('--draft');
 
 	await runCommand(
 		'gh',

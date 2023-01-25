@@ -18,10 +18,13 @@ export const pickCommand = new Command()
 	)
 	.group('Toggles')
 	.option('--no-fetch', 'Don\'t run git fetch before creating the branch')
-	.option('--no-pr', 'Skip creating a pull request on Github')
+	.option('--no-pr', 'Skip creating a pull request on Github', {
+		conflicts: ['draft'],
+	})
 	.option('--no-push', 'Skip pushing to push remote (implies --no-pr)', {
 		action: (options) => options.pr = false,
 	})
+	.option('--draft', 'Mark the created pull request as Draft')
 	.option('--force', 'Overwrite existing branch, and force push to it')
 	.group('Inputs')
 	.option('-b, --branch <branchName:string>', 'Name to use for the new branch')
@@ -90,6 +93,7 @@ export const pickCommand = new Command()
 		const settings: GitPickSettings = {
 			push: options.push,
 			pr: options.pr,
+			draftPR: options.draft ?? false,
 			pullRemote: options.pullRemote,
 			pushRemote: options.pushRemote,
 			overwriteLocalBranch,
