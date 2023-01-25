@@ -7,6 +7,7 @@ import { pullRequestCommand } from './commands/pull-request/pull-request-command
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
 import { getBinDir } from './lib/pr-cli/pr-cli-utils.ts';
 import { log } from 'deps';
+import { CommandExecutionException } from './lib/shell/shell.ts';
 
 if (import.meta.main) {
 	const main = new Command()
@@ -41,8 +42,12 @@ if (import.meta.main) {
 	try {
 		await main.parse(Deno.args);
 	} catch (err) {
-		log.error(colors.bgRed.brightWhite.bold(` ❗ ${err.message ?? err} `));
-		log.debug(err);
+		if (err instanceof CommandExecutionException && err.code === 130) {
+			log.info('Command Aborted');
+		} else {
+			log.error(colors.bgRed.brightWhite.bold(` ❗ ${err.message ?? err} `));
+			log.debug(err);
+		}
 		Deno.exit(1);
 	}
 }

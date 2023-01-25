@@ -21,7 +21,7 @@ export async function _gum_confirm(options?: {
 		await runCommand('gum', 'confirm', ...args);
 		return true;
 	} catch (e) {
-		if (e instanceof CommandExecutionException) {
+		if (e instanceof CommandExecutionException && e.code === 1) {
 			return false;
 		}
 		throw e;
