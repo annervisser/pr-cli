@@ -6,13 +6,13 @@ RUN apt-get update \
     tini
 
 # Deno
-COPY --from=docker.io/denoland/deno:bin-1.27.0 /deno /usr/bin/deno
+COPY --from=docker.io/denoland/deno:bin-1.29.4 /deno /usr/bin/deno
 
 # Gum
-COPY --from=docker.io/charmcli/gum:v0.8 /usr/local/bin/gum /usr/bin/gum
+COPY --from=docker.io/charmcli/gum:v0.9 /usr/local/bin/gum /usr/bin/gum
 
 # ttyd
-COPY --from=docker.io/tsl0922/ttyd:1.7.2 /usr/bin/ttyd /usr/bin/ttyd
+COPY --from=docker.io/tsl0922/ttyd:1.7.3 /usr/bin/ttyd /usr/bin/ttyd
 
 RUN useradd --uid 1000 --user-group --create-home docker
 
