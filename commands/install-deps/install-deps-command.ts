@@ -61,8 +61,11 @@ export const installDepsCommand = new Command()
 			Deno.exit(0);
 		}
 
+		log.debug(`Trying to find asset containing ${osRelease} and ending with .tar.gz`);
 		const matchedAsset = latestRelease.assets.find(
-			(asset) => asset.name.includes(osRelease) && asset.name.endsWith('.tar.gz'),
+			(asset) =>
+				asset.name.toLowerCase().includes(osRelease.toLowerCase()) &&
+				asset.name.endsWith('.tar.gz'),
 		);
 
 		if (!matchedAsset) {
