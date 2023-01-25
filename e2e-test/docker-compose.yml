@@ -10,7 +10,7 @@ services:
     command: ['./run.sh']
 
   playwright:
-    image: mcr.microsoft.com/playwright:v1.27.1-jammy
+    image: mcr.microsoft.com/playwright:v1.30.0-jammy
     user: pwuser
     security_opt:
       - 'seccomp=./docker/playwright_seccomp_profile.json'
