@@ -42,8 +42,8 @@ export const pickCommand = new Command()
 			}
 		}
 
-		options.pullRemote = await getPullRemote();
-		options.pushRemote = await getPushRemote();
+		options.pullRemote ??= await getPullRemote();
+		options.pushRemote ??= await getPushRemote();
 
 		log.debug(options);
 
