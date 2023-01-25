@@ -9,6 +9,7 @@ import { colors } from 'cliffy/ansi';
 import { Confirm } from 'cliffy/prompt';
 import { Gum } from 'lib/gum/gum.ts';
 import { log } from 'deps';
+import { GH } from 'lib/github/gh.ts';
 
 export const pickCommand = new Command()
 	.name('pick')
@@ -79,6 +80,16 @@ export const pickCommand = new Command()
 				startOnAffirmative: true,
 			});
 			log.info(overwriteLocalBranch ? 'Overwriting local branch!' : 'Not overwriting local branch');
+		}
+
+		if (options.pr && remoteBranchExists) {
+			if (await GH.doesBranchHavePullRequest(branchName)) {
+				options.pr = !(await Gum.confirm({
+					prompt: 'A pull request for this branch already exists, skip recreating it?',
+					startOnAffirmative: true,
+				}));
+				log.info(options.pr ? 'Trying to create PR anyway!' : 'Skipping PR');
+			}
 		}
 
 		let forcePush = !!options.force;
