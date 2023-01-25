@@ -24,18 +24,24 @@ export async function confirmSettings(
 			? ` ${colors.brightRed('! Overwriting')}`
 			: ` ${colors.bold.red('! branch exists')}`;
 	}
+
+	const pullRemote = colors.dim.yellow(options.pullRemote);
+	const upstreamBranch = colors.yellow(options.upstreamBranch);
+	const pushRemote = colors.dim.yellow(options.pushRemote);
+	const branchName = colors.yellow(options.branchName);
+
 	const forceString = options.forcePush ? `${colors.red('force')} ` : '';
+	const pushOptions = `${check(options.push)} ${forceString}push`;
+
+	const draftString = options.draftPR ? `${colors.underline.white('draft')} ` : '';
+	const prOptions = `${check(options.pr)} ${draftString}pull request`;
 
 	const lines = [
 		`${i}About to cherry pick commits:`,
 		...commitLines,
-		`${i}Base branch: ${colors.dim.yellow(options.pullRemote)}/${
-			colors.yellow(options.upstreamBranch)
-		}`,
-		`${i}Branch name: ${colors.dim.yellow(options.pushRemote)}/${
-			colors.yellow(options.branchName)
-		}${branchExistsWarning}`,
-		`${i}${check(options.push)} ${forceString}push  |  ${check(options.pr)} pull request`,
+		`${i}Base branch: ${pullRemote}/${upstreamBranch}`,
+		`${i}Branch name: ${pushRemote}/${branchName}${branchExistsWarning}`,
+		`${i}${pushOptions}  |  ${prOptions}`,
 	];
 
 	await Gum.style(lines, {
