@@ -12,7 +12,7 @@ import { CommandExecutionException } from './lib/shell/shell.ts';
 if (import.meta.main) {
 	const main = new Command()
 		.name('pr-cli')
-		.version('0.6.0')
+		.version('0.7.1')
 		.option('--debug', 'enable verbose error logging', { global: true })
 		.description(
 			'Command line utility for quickly creating pull requests on Github',
