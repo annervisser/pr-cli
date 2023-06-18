@@ -1,15 +1,12 @@
-import { Commit, Git } from 'lib/git/git.ts';
-import { slugify } from 'lib/slug/slug.ts';
 import { chooseCommits } from './steps/choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
 import { GitPickSettings, runCherryPick } from './steps/git-pick.ts';
 import { dependenciesMet } from '../verify/verify-command.ts';
-import { Command } from 'cliffy/command';
-import { colors } from 'cliffy/ansi';
-import { Confirm } from 'cliffy/prompt';
-import { Gum } from 'lib/gum/gum.ts';
-import { log } from 'deps';
-import { GH } from 'lib/github/gh.ts';
+import { colors, Command, Confirm, log } from '../../deps.ts';
+import { Commit, Git } from '../../lib/git/git.ts';
+import { GH } from '../../lib/github/gh.ts';
+import { slugify } from '../../lib/slug/slug.ts';
+import { Gum } from '../../lib/gum/gum.ts';
 
 export const pickCommand = new Command()
 	.name('pick')

@@ -16,7 +16,6 @@ Pull Request - Command Line Interface
 ```shell
 deno install --name pr-cli \
 	--allow-run --allow-read --allow-env \
-	--import-map https://deno.land/x/prcli/import_map.json \
 	https://deno.land/x/prcli/main.ts
 ```
 

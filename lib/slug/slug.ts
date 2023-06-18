@@ -1,4 +1,4 @@
-import { slug } from 'slug';
+import { slug } from '../../deps.ts';
 
 export function slugify(s: string): string {
 	return slug(s, {

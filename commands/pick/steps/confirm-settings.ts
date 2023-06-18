@@ -1,7 +1,7 @@
 import { GitPickSettings } from './git-pick.ts';
-import { colors } from 'cliffy/ansi';
-import { Gum } from 'lib/gum/gum.ts';
-import { ColorScheme } from 'lib/colors.ts';
+import { Gum } from '../../../lib/gum/gum.ts';
+import { ColorScheme } from '../../../lib/colors.ts';
+import { colors } from '../../../deps.ts';
 
 interface ConfirmationContext {
 	branchExists: boolean;

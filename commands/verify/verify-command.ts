@@ -1,7 +1,5 @@
-import { runAndCapture, runVoid } from 'lib/shell/shell.ts';
-import { Table } from 'cliffy/table';
-import { colors } from 'cliffy/ansi';
-import { Command } from 'cliffy/command';
+import { colors, Command, Table } from '../../deps.ts';
+import { runAndCapture, runVoid } from '../../lib/shell/shell.ts';
 
 export const verifyCommand = new Command()
 	.name('verify')

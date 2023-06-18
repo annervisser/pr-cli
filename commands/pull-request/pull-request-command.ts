@@ -1,7 +1,6 @@
-import { Command } from 'cliffy/command';
-import { colors } from 'cliffy/ansi';
-import { GH } from 'lib/github/gh.ts';
-import { log } from 'deps';
+import { colors, Command } from '../../deps.ts';
+import { log } from '../../deps.ts';
+import { GH } from '../../lib/github/gh.ts';
 
 export const pullRequestCommand = new Command()
 	.name('pull-request')

@@ -1,11 +1,9 @@
-import ProcessStatus = Deno.ProcessStatus;
-import { log } from 'deps';
-import RunOptions = Deno.RunOptions;
+import { log } from '../../deps.ts';
 
 export class CommandExecutionException extends Error {
 	constructor(
 		public readonly code: number,
-		public readonly signal?: number,
+		public readonly signal?: number | Deno.Signal | null,
 	) {
 		let message = `Command execution failed with code ${code}`;
 		if (signal) {
@@ -17,59 +15,47 @@ export class CommandExecutionException extends Error {
 }
 
 export async function runCommand(command: string, ...args: string[]): Promise<void> {
-	const p = run({
-		cmd: [command, ...args],
+	const output = await run(command, {
+		args: args,
 		stdin: 'inherit',
 		stdout: 'inherit',
 		stderr: 'inherit',
 	});
 
-	const status = await p.status();
-	await p.close();
-
-	throwErrorIfFailed(status);
+	throwErrorIfFailed(output);
 }
 
 export async function runAndCapture(command: string, ...args: string[]): Promise<string> {
-	const p = run({
-		cmd: [command, ...args],
+	const output = await run(command, {
+		args,
 		stdin: 'inherit',
 		stdout: 'piped',
 		stderr: 'inherit',
 	});
 
-	const [status, output] = await Promise.all([
-		p.status(),
-		p.output(),
-	]);
-	await p.close();
+	throwErrorIfFailed(output);
 
-	throwErrorIfFailed(status);
-
-	return new TextDecoder().decode(output).trim();
+	return new TextDecoder().decode(output.stdout).trim();
 }
 
 export async function runVoid(command: string, ...args: string[]): Promise<void> {
-	const p = run({
-		cmd: [command, ...args],
+	const output = await run(command, {
+		args,
 		stdin: 'null',
 		stdout: 'null',
 		stderr: 'null',
 	});
 
-	const status = await p.status();
-	await p.close();
-
-	throwErrorIfFailed(status);
+	throwErrorIfFailed(output);
 }
 
-function run(opt: RunOptions) {
-	log.debug(`Running command: ${opt.cmd.join(' ')}`);
-	log.debug(opt);
-	return Deno.run(opt);
+async function run(command: string, options?: Deno.CommandOptions) {
+	log.debug(`Running command: ${command} ${options?.args?.join(' ')}`);
+	log.debug(options);
+	return await new Deno.Command(command, options).output();
 }
 
-function throwErrorIfFailed(status: ProcessStatus) {
+function throwErrorIfFailed(status: Deno.CommandStatus) {
 	if (!status.success) {
 		throw new CommandExecutionException(status.code, status.signal);
 	}

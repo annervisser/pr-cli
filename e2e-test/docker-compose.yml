@@ -7,10 +7,18 @@ services:
       - './scripts:/home/docker/scripts'
     ports:
       - 7681:7681
+    healthcheck:
+      test: curl --fail http://localhost:7681/ || exit 1
+      start_period: '5s'
+      interval: '250ms'
+
     command: ['./run.sh']
 
   playwright:
-    image: mcr.microsoft.com/playwright:v1.30.0-jammy
+    depends_on:
+      runtime:
+        condition: service_healthy
+    image: mcr.microsoft.com/playwright:v1.35.1-jammy
     user: pwuser
     security_opt:
       - 'seccomp=./docker/playwright_seccomp_profile.json'
@@ -18,7 +26,10 @@ services:
     init: true
     environment:
       BASE_URL: 'http://runtime:7681'
+      DOCKER: true
     volumes:
       - './:/src'
+    ports:
+      - 9323:9323
     working_dir: /src
     command: tail -f /dev/null

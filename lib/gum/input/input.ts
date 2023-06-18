@@ -1,5 +1,5 @@
-import { runAndCapture } from 'lib/shell/shell.ts';
-import { ColorScheme } from 'lib/colors.ts';
+import { runAndCapture } from '../../shell/shell.ts';
+import { ColorScheme } from '../../colors.ts';
 
 export async function _gum_input(options?: {
 	placeholder?: string;

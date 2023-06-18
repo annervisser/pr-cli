@@ -1,11 +1,6 @@
-import { Command } from 'cliffy/command';
-import * as fs from 'https://deno.land/std@0.173.0/fs/ensure_dir.ts';
-import * as path from 'https://deno.land/std@0.173.0/path/mod.ts';
-import * as semver from 'https://deno.land/std@0.173.0/semver/mod.ts';
-import { colors } from 'cliffy/ansi';
-import { runAndCapture, runCommand } from 'lib/shell/shell.ts';
-import { getBinDir } from 'lib/pr-cli/pr-cli-utils.ts';
-import { log } from 'deps';
+import { colors, Command, ensureDir, log, path, semver } from '../../deps.ts';
+import { runAndCapture, runCommand } from '../../lib/shell/shell.ts';
+import { getBinDir } from '../../lib/pr-cli/pr-cli-utils.ts';
 
 interface GithubReleaseAsset {
 	name: string;
@@ -42,7 +37,7 @@ export const installDepsCommand = new Command()
 		const existingGumVersion = await getGumVersion(gumInstall);
 
 		log.info(colors.blue(`Creating ${binDir} if needed`));
-		await fs.ensureDir(binDir);
+		await ensureDir(binDir);
 
 		const osRelease = `${Deno.build.os}_${Deno.build.arch}`;
 		log.info(colors.green(`ℹ OS type: ${osRelease}`));

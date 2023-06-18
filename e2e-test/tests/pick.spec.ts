@@ -30,7 +30,8 @@ test('pr-cli pick', async ({ cli, _tmpdir }) => {
 	// Select commit 1
 	await expect(cli.lines.getByText(/^\s*>.*?commit 2/)).toBeVisible();
 	await cli.press('ArrowDown'); // move to commit 1
-	await cli.press('Enter'); // select commit 1
+	await cli.press('Space'); // select commit 1
+	await cli.press('Enter'); // Confirm selection
 
 	// Branch name
 	await expect(cli.lines.getByText(/^\s*Branch name:.*commit-1\s*$/)).toBeVisible();
