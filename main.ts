@@ -1,12 +1,9 @@
 import { pickCommand } from './commands/pick/pick-command.ts';
 import { verifyCommand } from './commands/verify/verify-command.ts';
-import { Command, CompletionsCommand, HelpCommand } from 'cliffy/command';
-import { colors } from 'cliffy/ansi';
-import { parseFlags } from 'cliffy/flags';
+import { colors, Command, CompletionsCommand, HelpCommand, log, parseFlags } from './deps.ts';
 import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
 import { getBinDir } from './lib/pr-cli/pr-cli-utils.ts';
-import { log } from 'deps';
 import { CommandExecutionException } from './lib/shell/shell.ts';
 
 if (import.meta.main) {
