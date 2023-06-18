@@ -42,6 +42,7 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 			tmpDir,
 			upstreamRef,
 		);
+		cleanupSteps.pop(); // Leave cleanup of directory to git now
 		cleanupSteps.push({
 			message: colors.green('▶️ Cleaning up temporary worktree'),
 			action: async () => await runCommand('git', 'worktree', 'remove', tmpDir),
