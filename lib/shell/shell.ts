@@ -26,6 +26,11 @@ export async function runCommand(command: string, ...args: string[]): Promise<vo
 }
 
 export async function runAndCapture(command: string, ...args: string[]): Promise<string> {
+	const output = await runAndCaptureRaw(command, ...args);
+	return output.trim();
+}
+
+export async function runAndCaptureRaw(command: string, ...args: string[]): Promise<string> {
 	const output = await run(command, {
 		args,
 		stdin: 'inherit',
@@ -35,7 +40,7 @@ export async function runAndCapture(command: string, ...args: string[]): Promise
 
 	throwErrorIfFailed(output);
 
-	return new TextDecoder().decode(output.stdout).trim();
+	return new TextDecoder().decode(output.stdout);
 }
 
 export async function runVoid(command: string, ...args: string[]): Promise<void> {

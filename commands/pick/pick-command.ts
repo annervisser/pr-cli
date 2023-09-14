@@ -43,6 +43,24 @@ export const pickCommand = new Command()
 			}
 		}
 
+		await confirmSettings({
+			push: true,
+			pr: true,
+			overwriteLocalBranch: true,
+			forcePush: true,
+			draftPR: true,
+
+			pullRemote: 'upstream',
+			pushRemote: 'origin',
+
+			branchName: 'chore/fix-the-thing',
+			upstreamBranch: 'develop',
+
+			commits: [],
+		}, { branchExists: false })
+
+		return;
+
 		options.pullRemote ??= await getPullRemote();
 		options.pushRemote ??= await getPushRemote();
 
