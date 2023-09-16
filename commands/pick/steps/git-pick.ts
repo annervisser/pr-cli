@@ -1,7 +1,7 @@
 import { colors, log } from '../../../deps.ts';
-import { Commit } from '../../../lib/git/git.ts';
 import { runAndCapture, runCommand } from '../../../lib/shell/shell.ts';
 import { GH } from '../../../lib/github/gh.ts';
+import { Commit } from '../../../lib/git/commit.ts';
 
 export interface GitPickSettings {
 	push: boolean;
@@ -17,6 +17,9 @@ export interface GitPickSettings {
 	upstreamBranch: string;
 
 	commits: Commit[];
+
+	title: string;
+	body: string;
 }
 
 export async function runCherryPick(settings: GitPickSettings): Promise<void> {
@@ -65,6 +68,8 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 			log.info(colors.green('▶️ Creating pull request'));
 			// Check if a pr is already open, using: `gh api "/repos/{owner}/{repo}/pulls?state=all&head={owner}:install-deps-command-for-gum" -q ".[] | {url}"`
 			await GH.createPullRequest({
+				title: settings.title,
+				body: settings.body,
 				baseBranch: settings.upstreamBranch,
 				draftPR: settings.draftPR,
 			});

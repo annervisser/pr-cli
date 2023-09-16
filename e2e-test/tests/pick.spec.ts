@@ -43,7 +43,8 @@ test('pr-cli pick', async ({ cli, _tmpdir }) => {
 		/commit 1/,
 		/Base branch: upstream\/trunk/,
 		/Branch name: origin\/commit-1-branch/,
-		/✔ push .* ✗ pull request/,
+		/✔ push/,
+		/✗ pull request/,
 		/Continue?/,
 	]);
 

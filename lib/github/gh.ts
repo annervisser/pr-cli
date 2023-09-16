@@ -5,19 +5,38 @@ export class GH {
 	public static doesBranchHavePullRequest = doesBranchHavePullRequest;
 }
 
-async function createPullRequest(options: {
+interface BasePROptions {
 	baseBranch?: string;
 	draftPR?: boolean;
-}) {
+}
+
+interface ManualTitleAndBody {
+	title: string;
+	body: string;
+}
+
+interface AutomaticTitleAndBody {
+	autofill: true;
+}
+
+type PullRequestOptions = BasePROptions & (ManualTitleAndBody | AutomaticTitleAndBody);
+
+async function createPullRequest(options: PullRequestOptions) {
 	const args: string[] = [];
 	options.baseBranch && args.push('--base', options.baseBranch);
 	options.draftPR && args.push('--draft');
+
+	if ('autofill' in options) {
+		args.push('--fill');
+	} else {
+		args.push('--title', options.title);
+		args.push('--body', options.body);
+	}
 
 	await runCommand(
 		'gh',
 		'pr',
 		'create',
-		'--fill',
 		'--assignee',
 		'@me',
 		...args,
