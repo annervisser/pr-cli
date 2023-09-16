@@ -63,7 +63,7 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 			settings.forcePush && args.push('--force');
 			await runCommand('git', 'push', ...args, settings.branchName);
 		}
-		// test 1
+		// test 2
 
 		if (settings.pr) {
 			log.info(colors.green('▶️ Creating pull request'));
