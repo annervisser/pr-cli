@@ -5,8 +5,12 @@ import { dependenciesMet } from '../verify/verify-command.ts';
 import { colors, Command, Confirm, log } from '../../deps.ts';
 import { Commit, Git } from '../../lib/git/git.ts';
 import { GH } from '../../lib/github/gh.ts';
-import { slugify } from '../../lib/slug/slug.ts';
+import { slugify, unslugify } from '../../lib/slug/slug.ts';
 import { Gum } from '../../lib/gum/gum.ts';
+
+/** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict intead */
+const optionsThatRequirePR = ['draft', 'title'];
+const optionsThatDisablePR = ['no-pr', 'no-push'];
 
 export const pickCommand = new Command()
 	.name('pick')
@@ -17,18 +21,23 @@ export const pickCommand = new Command()
 	.group('Toggles')
 	.option('--no-fetch', 'Don\'t run git fetch before creating the branch')
 	.option('--no-pr', 'Skip creating a pull request on Github', {
-		conflicts: ['draft'],
+		conflicts: optionsThatRequirePR,
 	})
 	.option('--no-push', 'Skip pushing to push remote (implies --no-pr)', {
 		action: (options) => options.pr = false,
+		conflicts: optionsThatRequirePR,
 	})
-	.option('--draft', 'Mark the created pull request as Draft')
 	.option('--force', 'Overwrite existing branch, and force push to it')
 	.group('Inputs')
 	.option('-b, --branch <branchName:string>', 'Name to use for the new branch')
 	.option('-c, --commits <commitSha...:string>', 'Commits to cherry-pick')
 	.option('--pull-remote <remote:string>', 'Remote to use for fetching')
 	.option('--push-remote <remote:string>', 'Remote to push to')
+	.group('Pull request')
+	.option('--draft', 'Mark the created pull request as Draft', { conflicts: optionsThatDisablePR })
+	.option('--title <title:string>', 'Title for the pull request', {
+		conflicts: optionsThatDisablePR,
+	})
 	.arguments('<upstreamBranch:string>') // TODO make optional with default value (or ENV?)
 	.action(async (options, upstreamBranch) => {
 		log.debug('Checking dependencies');
@@ -64,8 +73,12 @@ export const pickCommand = new Command()
 			throw new Error('No commits chosen');
 		}
 
-		const branchName = options.branch ?? await askForBranchName(pickedCommits);
-		validateBranchName(branchName);
+		let branchName = options.branch;
+		let branchNameSource: string | null = null;
+		if (!branchName) {
+			({ branchName, source: branchNameSource } = await askForBranchName(pickedCommits));
+		}
+		await validateBranchName(branchName);
 
 		const localBranchExists = await Git.doesBranchExist(branchName);
 		const remoteBranchExists = await Git.doesBranchExist(`${options.pushRemote}/${branchName}`);
@@ -89,7 +102,7 @@ export const pickCommand = new Command()
 			}
 		}
 
-		let forcePush = !!options.force;
+		let forcePush = options.force === true;
 		if (!forcePush && options.push && remoteBranchExists) {
 			forcePush = await Gum.confirm({
 				prompt: `Branch on ${options.pushRemote} already exists, do you want to force push?`,
@@ -97,6 +110,9 @@ export const pickCommand = new Command()
 			});
 			log.info(forcePush ? 'Force pushing!' : 'Not force pushing');
 		}
+
+		const body = await generatePullBody(pickedCommits);
+		log.debug(`Generated pull request body:\n${body}`);
 
 		const settings: GitPickSettings = {
 			push: options.push,
@@ -109,9 +125,11 @@ export const pickCommand = new Command()
 			branchName,
 			upstreamBranch,
 			commits: pickedCommits,
+			title: options.title ?? branchNameSource ?? generatePullTitle(branchName),
+			body: body,
 		};
 		if (!await confirmSettings(settings, { branchExists: localBranchExists })) {
-			log.info('Exitting');
+			log.info('Exiting');
 			return;
 		}
 
@@ -145,25 +163,74 @@ function suggestBranchNameForCommitMessage(message: string): string {
 	return slugify(message);
 }
 
-async function askForBranchName(selectedCommits: Commit[]): Promise<string> {
+async function askForBranchName(selectedCommits: Commit[]): Promise<{
+	branchName: string;
+	source: string | null;
+}> {
 	let suggestion = undefined;
+	let suggestionSource: string | null = null;
 	if (selectedCommits.length === 1) {
 		log.debug('Generating branch name based on commit message');
-		suggestion = suggestBranchNameForCommitMessage(selectedCommits[0]!.message);
+		suggestionSource = selectedCommits[0]!.message;
+		suggestion = suggestBranchNameForCommitMessage(suggestionSource);
 	}
 
 	log.debug('Prompting for branch name');
-	return await Gum.input({
+	const branch = await Gum.input({
 		defaultValue: suggestion,
 		prompt: suggestion ? `Branch name: ${colors.dim.white('(Ctrl+U to clear)')} ` : 'Branch name: ',
 		placeholder: 'What to call the new branch...',
 	});
+
+	const source = branch === suggestion ? suggestionSource : null;
+	log.debug(
+		source ? 'Suggestion for branch-name was used' : 'Suggestion for branch-name was NOT used',
+	);
+
+	return { branchName: branch, source: source };
 }
 
-function validateBranchName(branchName: string) {
-	const minLength = 3;
-	if (branchName.length < minLength) {
-		throw new Error(`Branch name should be at least ${minLength} characters long`);
+function generatePullTitle(branchName: string): string {
+	let title = unslugify(branchName);
+	title = title.charAt(0).toUpperCase() + title.slice(1);
+
+	log.debug(`Turned branch name "${branchName}" into title "${title}"`);
+
+	return title;
+}
+
+const mdDetailsBlock = (summary: string, details: string) =>
+	`<details>
+<summary>${summary}</summary>
+
+${details}
+</details>`;
+
+async function generatePullBody(commits: Commit[]): Promise<string> {
+	const commitsWithBody = await Promise.all(
+		commits.map(async (commit) => ({
+			...commit,
+			body: await Git.getCommitBody(commit.sha),
+		})),
+	);
+
+	if (commitsWithBody.length === 1) {
+		const commit = commitsWithBody[0]!;
+		return `${commit.message}\n\n${commit.body}`;
+	}
+
+	return commitsWithBody
+		.map((commit) =>
+			commit.body.trim().length < 1
+				? `▹ ${commit.message}`
+				: mdDetailsBlock(commit.message, commit.body)
+		)
+		.join('\n\n---\n');
+}
+
+async function validateBranchName(branchName: string) {
+	if (!await Git.isValidBranchName(branchName)) {
+		throw new Error(`Branch name "${branchName}" is invalid`);
 	}
 }
 
