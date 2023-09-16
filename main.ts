@@ -43,9 +43,17 @@ if (import.meta.main) {
 			log.info('Command Aborted');
 		} else {
 			log.error(colors.bgRed.brightWhite.bold(` ❗ ${err.message ?? err} `));
-			log.debug(err);
+			logError(err);
 		}
 		Deno.exit(1);
+	}
+}
+
+function logError(err: Error) {
+	log.debug(err);
+	if (err.cause instanceof Error) {
+		log.debug('Caused by: ');
+		logError(err.cause);
 	}
 }
 

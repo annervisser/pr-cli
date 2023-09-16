@@ -17,6 +17,9 @@ export interface GitPickSettings {
 	upstreamBranch: string;
 
 	commits: Commit[];
+
+	title: string;
+	body: string;
 }
 
 export async function runCherryPick(settings: GitPickSettings): Promise<void> {

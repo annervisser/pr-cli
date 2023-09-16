@@ -34,14 +34,15 @@ export async function confirmSettings(
 	const pushOptions = `${check(options.push)} ${forceString}push`;
 
 	const draftString = options.draftPR ? `${colors.underline.white('draft')} ` : '';
-	const prOptions = `${check(options.pr)} ${draftString}pull request`;
+	const prOptions = `${check(options.pr)} ${draftString}pull request: ${options.title}`;
 
 	const lines = [
 		`${i}About to cherry pick commits:`,
 		...commitLines,
 		`${i}Base branch: ${pullRemote}/${upstreamBranch}`,
 		`${i}Branch name: ${pushRemote}/${branchName}${branchExistsWarning}`,
-		`${i}${pushOptions}  |  ${prOptions}`,
+		`${i}${pushOptions}`,
+		`${i}${prOptions}`,
 	];
 
 	await Gum.style(lines, {

@@ -1,7 +1,7 @@
 import { slug } from '../../deps.ts';
 
-export function slugify(s: string): string {
-	return slug(s, {
+export function slugify(string: string): string {
+	return slug(string, {
 		locale: 'uk',
 		lower: true,
 		trim: true,
@@ -10,4 +10,8 @@ export function slugify(s: string): string {
 		remove: undefined,
 		replacement: '-',
 	});
+}
+
+export function unslugify(slug: string): string {
+	return slug.replaceAll('-', ' ');
 }

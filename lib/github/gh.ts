@@ -6,6 +6,9 @@ export class GH {
 }
 
 async function createPullRequest(options: {
+	title: string;
+	body: string;
+
 	baseBranch?: string;
 	draftPR?: boolean;
 }) {
@@ -17,7 +20,10 @@ async function createPullRequest(options: {
 		'gh',
 		'pr',
 		'create',
-		'--fill',
+		'--title',
+		options.title,
+		'--body',
+		options.body,
 		'--assignee',
 		'@me',
 		...args,
