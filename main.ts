@@ -3,7 +3,7 @@ import { verifyCommand } from './commands/verify/verify-command.ts';
 import { colors, Command, CompletionsCommand, HelpCommand, log, parseFlags } from './deps.ts';
 import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
-import { getBinDir } from './lib/pr-cli/pr-cli-utils.ts';
+import { getBinDir } from './lib/pr-cli/get-bin-dir.ts';
 import { CommandExecutionException } from './lib/shell/shell.ts';
 
 if (import.meta.main) {
@@ -43,9 +43,17 @@ if (import.meta.main) {
 			log.info('Command Aborted');
 		} else {
 			log.error(colors.bgRed.brightWhite.bold(` ❗ ${err.message ?? err} `));
-			log.debug(err);
+			logError(err);
 		}
 		Deno.exit(1);
+	}
+}
+
+function logError(err: Error) {
+	log.debug(err);
+	if (err.cause instanceof Error) {
+		log.debug('Caused by: ');
+		logError(err.cause);
 	}
 }
 

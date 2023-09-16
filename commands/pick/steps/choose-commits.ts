@@ -1,5 +1,5 @@
-import { Commit } from '../../../lib/git/git.ts';
 import { Gum } from '../../../lib/gum/gum.ts';
+import { Commit } from '../../../lib/git/commit.ts';
 
 const separator = `\t`;
 

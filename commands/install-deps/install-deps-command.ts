@@ -1,6 +1,6 @@
 import { colors, Command, ensureDir, log, path, semver } from '../../deps.ts';
 import { runAndCapture, runCommand } from '../../lib/shell/shell.ts';
-import { getBinDir } from '../../lib/pr-cli/pr-cli-utils.ts';
+import { getBinDir } from '../../lib/pr-cli/get-bin-dir.ts';
 
 interface GithubReleaseAsset {
 	name: string;
