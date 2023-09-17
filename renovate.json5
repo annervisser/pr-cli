@@ -1,0 +1,30 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": [
+		"config:base", // https://docs.renovatebot.com/presets-config/#configbase
+		":prConcurrentLimitNone", // https://docs.renovatebot.com/presets-default/#prconcurrentlimitnone
+		":prHourlyLimitNone", // https://docs.renovatebot.com/presets-default/#prhourlylimitnone
+		":prNotPending", // https://docs.renovatebot.com/presets-default/#prnotpending
+		"docker:enableMajor", // https://docs.renovatebot.com/presets-docker/#dockerenablemajor
+	],
+	"packageRules": [
+		{
+			"groupName": "Docker",
+			"matchDatasources": ["docker"],
+			 "pinDigests": true,
+		},
+		{
+			"groupName": "GitHub Actions",
+			"matchManagers": ["github-actions"],
+			"pinDigests": true,
+		},
+		{
+			"groupName": "Playwright",
+			"matchPackageNames": [
+				"playwright",
+				"@playwright/test",
+				"mcr.microsoft.com/playwright"
+			],
+		}
+	]
+}
