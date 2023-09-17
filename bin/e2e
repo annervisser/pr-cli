@@ -2,9 +2,7 @@
 
 set -eu
 
-cd "$(dirname "$0")/.."
-
-cd e2e-test
+cd "$(dirname "$0")/../e2e-test"
 
 npm ci
 npm run lint
@@ -12,7 +10,7 @@ npm run lint
 containers_to_start=("runtime")
 run_cmd="exec"
 
-if [[ -z ${CI:-} && -z ${RUN_ON_MACHINE:-} ]]; then
+if [[ -z ${RUN_ON_MACHINE:-} ]]; then
 	echo Running playwright in docker
 	echo If you want to run playwright directly on your machine, re-run this command with RUN_ON_MACHINE=1
 
@@ -22,4 +20,5 @@ fi
 
 docker compose up --build --quiet-pull --detach --wait "${containers_to_start[@]}"
 trap "docker compose down" EXIT
+$run_cmd ls -lah
 $run_cmd npx playwright test "$@"

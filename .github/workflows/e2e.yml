@@ -1,9 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ "trunk" ]
   pull_request:
-    branches: [ "trunk" ]
 
 permissions:
   contents: read
@@ -25,13 +23,11 @@ jobs:
           cache: 'npm'
           cache-dependency-path: e2e-test/package-lock.json
 
-      - name: Install playwright deps
-        run: |
-          npm ci
-          npx playwright install --with-deps
-
       - name: Run e2e tests
-        run: ../bin/e2e
+        run: |
+          # Make sure playwright can create its report
+          mkdir --mode=777 ./playwright-report ./test-results
+          ../bin/e2e
 
       - name: Upload HTML report
         if: always()
