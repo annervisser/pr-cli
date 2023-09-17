@@ -88,6 +88,11 @@ export const pickCommand = new Command()
 
 		const localBranchExists = await Git.doesBranchExist(branchName);
 		const remoteBranchExists = await Git.doesBranchExist(`${options.pushRemote}/${branchName}`);
+		let doesBranchHavePullRequest: Promise<boolean> | undefined;
+		if (options.pr && remoteBranchExists) {
+			// Start this check early to save some waiting time
+			doesBranchHavePullRequest = GH.doesBranchHavePullRequest(branchName);
+		}
 
 		let overwriteLocalBranch = !!options.force;
 		if (!overwriteLocalBranch && localBranchExists) {
@@ -98,14 +103,13 @@ export const pickCommand = new Command()
 			log.info(overwriteLocalBranch ? 'Overwriting local branch!' : 'Not overwriting local branch');
 		}
 
-		if (options.pr && remoteBranchExists) {
-			if (await GH.doesBranchHavePullRequest(branchName)) {
-				options.pr = !(await Gum.confirm({
-					prompt: 'A pull request for this branch already exists, skip recreating it?',
-					startOnAffirmative: true,
-				}));
-				log.info(options.pr ? 'Trying to create PR anyway!' : 'Skipping PR');
-			}
+		// This promise is only set if it should be checked, undefined otherwise (await undefined = undefined)
+		if (await doesBranchHavePullRequest) {
+			options.pr = !(await Gum.confirm({
+				prompt: 'A pull request for this branch already exists, skip recreating it?',
+				startOnAffirmative: true,
+			}));
+			log.info(options.pr ? 'Trying to create PR anyway!' : 'Skipping PR');
 		}
 
 		let forcePush = options.force === true;
