@@ -3,7 +3,7 @@ module.exports = {
 		es2021: true,
 		node: true,
 	},
-	ignorePatterns: 'playwright-report',
+	ignorePatterns: ['playwright-report', 'test-results'],
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
 		ecmaVersion: 'latest',
