@@ -3,7 +3,7 @@ import { runAndCapture, runCommand } from '../../../lib/shell/shell.ts';
 import { GH } from '../../../lib/github/gh.ts';
 import { Commit } from '../../../lib/git/commit.ts';
 
-export interface GitPickSettings {
+interface _GitPickSettings {
 	push: boolean;
 	pr: boolean;
 	overwriteLocalBranch: boolean;
@@ -21,6 +21,7 @@ export interface GitPickSettings {
 	title: string;
 	body: string;
 }
+export type GitPickSettings = Readonly<_GitPickSettings>;
 
 export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 	const cleanupSteps: Array<{ message: string; action: () => void | Promise<void> }> = [];
