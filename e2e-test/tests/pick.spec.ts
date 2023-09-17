@@ -45,7 +45,8 @@ test('pr-cli pick', async ({ cli, _tmpdir }) => {
 		/Branch name: origin\/commit-1-branch/,
 		/✔ push/,
 		/✗ pull request/,
-		/Continue?/,
+		/ force | pr | push | branch /,
+		/Press Enter to continue/,
 	]);
 
 	await cli.press('Enter'); // confirm continue

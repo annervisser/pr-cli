@@ -1,6 +1,9 @@
-import { runCommand } from '../../shell/shell.ts';
+import { runAndCaptureRaw, runCommand } from '../../shell/shell.ts';
 
-interface GumStyleOptions {
+/** all sides | [vertical, horizontal] | [top, right, bottom, left]*/
+type BlockSides = number | [number, number] | [number, number, number, number];
+
+export interface GumStyleOptions {
 	// Colors
 	background?: number | string;
 	foreground?: number | string;
@@ -14,8 +17,8 @@ interface GumStyleOptions {
 	align?: 'left' | 'center' | 'right' | 'bottom' | 'middle' | 'top';
 	height?: number;
 	width?: number;
-	margin?: number | [number, number];
-	padding?: number | [number, number];
+	margin?: BlockSides;
+	padding?: BlockSides;
 
 	// Format
 	bold?: true;
@@ -25,10 +28,9 @@ interface GumStyleOptions {
 	underline?: true;
 }
 
-/** @see https://github.com/charmbracelet/gum/blob/main/style/options.go */
-export async function _gum_style(lines: string[], options?: GumStyleOptions) {
+function convertOptions(options: GumStyleOptions) {
 	const args: string[] = [];
-	for (let [key, value] of Object.entries(options ?? {})) {
+	for (let [key, value] of Object.entries(options)) {
 		if (['margin', 'padding'].includes(key) && Array.isArray(value)) {
 			value = value.join(' ');
 		}
@@ -41,6 +43,19 @@ export async function _gum_style(lines: string[], options?: GumStyleOptions) {
 			throw new Error(`Invalid option value "${value}" for key "${key}"`);
 		}
 	}
+	return args;
+}
+
+/** @see https://github.com/charmbracelet/gum/blob/main/style/options.go */
+export async function _gum_style(lines: string[], options?: GumStyleOptions) {
+	const args = convertOptions(options ?? {});
 
 	await runCommand('gum', 'style', ...args, ...lines);
+}
+
+/** @see https://github.com/charmbracelet/gum/blob/main/style/options.go */
+export async function _gum_style_to_string(lines: string[], options?: GumStyleOptions) {
+	const args = convertOptions(options ?? {});
+
+	return await runAndCaptureRaw('gum', 'style', ...args, ...lines);
 }
