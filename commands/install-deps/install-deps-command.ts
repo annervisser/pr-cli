@@ -44,12 +44,12 @@ export const installDepsCommand = new Command()
 
 		const latestRelease = await getLatestGumRelease();
 
-		const latestVersion = latestRelease.tag_name;
-		log.info(colors.green(`Latest version is ${latestVersion}`));
+		const latestVersion = semver.parse(latestRelease.tag_name);
+		log.info(colors.green(`Latest version is ${semver.format(latestVersion)}`));
 
 		if (
 			!options.force &&
-			existingGumVersion instanceof semver.SemVer &&
+			semver.isSemVer(existingGumVersion) &&
 			semver.gte(existingGumVersion, latestVersion)
 		) {
 			log.info(colors.brightGreen('Installed version >= the latest version. Nothing to do!'));
@@ -115,7 +115,7 @@ async function getGumVersion(gumInstall: string): Promise<semver.SemVer | 'none'
 	if (versionOutput) {
 		const gumVersionOutputRegex = /gum version (?<version>v?[0-9.-]+)(?:$| )/;
 		const versionString = gumVersionOutputRegex.exec(versionOutput)?.groups?.version;
-		existingGumVersion = semver.parse(versionString ?? null) ?? 'unknown';
+		existingGumVersion = versionString !== undefined ? semver.parse(versionString) : 'unknown';
 		log.info(colors.green(`ℹ Existing gum installation is version ${existingGumVersion}`));
 	} else {
 		log.info(colors.green('ℹ No existing gum installation in target directory'));
