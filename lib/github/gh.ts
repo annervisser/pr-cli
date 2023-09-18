@@ -1,4 +1,4 @@
-import { runCommand, runVoid } from '../shell/shell.ts';
+import { runAndCapture, runCommand } from '../shell/shell.ts';
 
 export class GH {
 	public static createPullRequest = createPullRequest;
@@ -45,8 +45,9 @@ async function createPullRequest(options: PullRequestOptions) {
 
 async function doesBranchHavePullRequest(branch: string): Promise<boolean> {
 	try {
-		await runVoid('gh', 'pr', 'view', '--json', 'title', branch);
-		return true;
+		const json = await runAndCapture('gh', 'pr', 'view', '--json', 'closed,title', branch);
+		const pr = JSON.parse(json);
+		return pr.closed !== true;
 	} catch {
 		return false;
 	}
