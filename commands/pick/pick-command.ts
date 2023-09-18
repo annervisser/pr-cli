@@ -1,6 +1,6 @@
 import { chooseCommits } from './steps/choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
-import { GitPickSettings, runCherryPick } from './steps/git-pick.ts';
+import { runCherryPick } from './steps/git-pick.ts';
 import { dependenciesMet } from '../verify/verify-command.ts';
 import { colors, Command, Confirm, log } from '../../deps.ts';
 import { Git } from '../../lib/git/git.ts';
@@ -127,24 +127,23 @@ export const pickCommand = new Command()
 		const body = await generatePullRequestBody(pickedCommits);
 		log.debug(`Generated pull request body:\n${body}`);
 
-		const settings: GitPickSettings = {
-			push: options.push,
-			pr: options.pr,
-			draftPR: options.draft ?? false,
-			pullRemote: options.pullRemote,
-			pushRemote: options.pushRemote,
-			overwriteLocalBranch,
-			forcePush,
-			branchName,
-			upstreamBranch,
-			commits: pickedCommits,
-			title: title,
-			body: body,
-		};
-		if (!await confirmSettings(settings, { branchExists: localBranchExists })) {
-			log.info('Exiting');
-			return;
-		}
+		const settings = await confirmSettings(
+			{
+				push: options.push,
+				pr: options.pr,
+				draftPR: options.draft ?? false,
+				pullRemote: options.pullRemote,
+				pushRemote: options.pushRemote,
+				overwriteLocalBranch,
+				forcePush,
+				branchName,
+				upstreamBranch,
+				commits: pickedCommits,
+				title: title,
+				body: body,
+			},
+			{ branchExists: localBranchExists },
+		);
 
 		log.info('Go time!');
 		await runCherryPick(settings);
