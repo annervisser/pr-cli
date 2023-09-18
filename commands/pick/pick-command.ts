@@ -162,7 +162,7 @@ async function parseOrPromptForCommits(
 	}
 
 	log.debug('Ask user to pick from \'new\' commits (local not on remote)');
-	const newCommits = await Git.getCommits(`${upstreamRef}..`);
+	const newCommits = await Git.getCommitsToCherryPick(upstreamRef);
 	if (newCommits.length < 1) {
 		throw new Error('No commits to pick');
 	}

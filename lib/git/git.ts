@@ -4,6 +4,7 @@ import { Commit, CommitWithBody } from './commit.ts';
 export class Git {
 	public static verifyAndExpandCommitSHAs = verifyAndExpandCommitSHAs;
 	public static getCommits = getCommits;
+	public static getCommitsToCherryPick = getCommitsToCherryPick;
 	public static getCommitBody = getCommitBody;
 	public static fetch = gitFetch;
 	public static listRemotes = listRemotes;
@@ -49,6 +50,35 @@ async function getCommits(revisionRange: string): Promise<Commit[]> {
 			.map(lineToCommit);
 	} catch (e) {
 		throw new Error('Failed to retrieve recent commits', { cause: e });
+	}
+}
+
+/**
+ * @see https://git-scm.com/docs/git-cherry
+ */
+async function getCommitsToCherryPick(upstreamBranch: string) {
+	try {
+		const result = await runAndCapture(
+			'git',
+			'cherry',
+			'--abbrev', // get short commit SHAs
+			'--verbose', // include commit title in output
+			upstreamBranch,
+		);
+
+		if (!result) {
+			// When no commits found we get an empty string
+			return [];
+		}
+
+		return result
+			.split('\n')
+			.filter((line) => line.startsWith('+ ')) // Only takes commits that don't have an equivalent on upstream
+			.map((line) => line.slice(2)) // Remove '+ ' from line
+			.map(lineToCommit)
+			.reverse(); // git cherry returns old->new, return new->old
+	} catch (e) {
+		throw new Error('Failed to retrieve commits to cherry pick', { cause: e });
 	}
 }
 
