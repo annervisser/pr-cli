@@ -22,7 +22,7 @@ WORKDIR /home/docker
 
 COPY ./run.sh ./
 
-HEALTHCHECK --start-period=15s --interval=300ms \
+HEALTHCHECK --start-period=30s --interval=300ms \
     CMD ["curl", "--fail", "http://localhost:7681/"]
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
