@@ -24,6 +24,11 @@ export async function _gum_chooseMultiple<Option extends string>(
 		selectedOptions: settings.selectedOptions,
 	});
 	const selectedOptions = selectedOptionsString.split('\n');
+
+	if (selectedOptions.length === 1 && selectedOptions[0] === '') {
+		return [];
+	}
+
 	assertValidOptions(selectedOptions, options);
 
 	return selectedOptions;
