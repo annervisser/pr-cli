@@ -1,4 +1,4 @@
-FROM docker.io/debian:bookworm-slim@sha256:050f00e86cc4d928b21de66096126fac52c2ea47885c232932b2e4c00f0c116d
+FROM docker.io/debian:bookworm-slim@sha256:ea9b55be5a18a16aadf9ffaefecc455add32db5fa17773eeb0fc06d88a98fa17
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
