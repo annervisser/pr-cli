@@ -6,8 +6,12 @@
 		":prHourlyLimitNone", // https://docs.renovatebot.com/presets-default/#prhourlylimitnone
 		":prNotPending", // https://docs.renovatebot.com/presets-default/#prnotpending
 		"docker:enableMajor", // https://docs.renovatebot.com/presets-docker/#dockerenablemajor
+		"group:allNonMajor", // https://docs.renovatebot.com/presets-group/#groupallnonmajor
 	],
 	"automerge": true,
+	"schedule": [
+		"before 4am on Monday"
+	],
 	"packageRules": [
 		{
 			"groupName": "Docker",
