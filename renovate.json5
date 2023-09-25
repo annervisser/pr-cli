@@ -10,7 +10,7 @@
 	],
 	"automerge": true,
 	"schedule": [
-		"before 4am on Monday"
+		"before 4am on Saturday"
 	],
 	"packageRules": [
 		{
