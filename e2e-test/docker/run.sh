@@ -14,4 +14,4 @@ export PATH="/home/docker/.deno/bin:$PATH"
 
 cd
 exec env PS1='$ ' \
-	ttyd --client-option screenReaderMode=true bash --norc
+	ttyd --writable --client-option screenReaderMode=true bash --norc
