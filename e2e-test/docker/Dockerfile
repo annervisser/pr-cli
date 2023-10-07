@@ -13,7 +13,7 @@ COPY --from=docker.io/denoland/deno:bin-1.36.4@sha256:fa16fb8d2620aea62396929b7c
 COPY --from=docker.io/charmcli/gum:v0.11@sha256:47b05d17425e608f617495fda0edc7fcea1aea62fc91a6f0cc3efca2f3cb51b2 /usr/local/bin/gum /usr/bin/gum
 
 # ttyd
-COPY --from=docker.io/tsl0922/ttyd:1.7.3@sha256:569b087cfa3b4002c37e913643a46a6ccd1232267d4abef9fbe7a3710038a64f /usr/bin/ttyd /usr/bin/ttyd
+COPY --from=docker.io/tsl0922/ttyd:1.7.4@sha256:70cfe40bf8a2897a38a39f51c29ec4709d4f6dc40d9f0ce75e1857da4087cd84 /usr/bin/ttyd /usr/bin/ttyd
 
 RUN useradd --uid 1000 --user-group --create-home docker
 
