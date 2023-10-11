@@ -3,25 +3,25 @@ import { runAndCapture, runCommand } from '../../../lib/shell/shell.ts';
 import { GH } from '../../../lib/github/gh.ts';
 import { Commit } from '../../../lib/git/commit.ts';
 
-interface _GitPickSettings {
+export type GitPickSettings = Readonly<{
 	push: boolean;
-	pr: boolean;
-	overwriteLocalBranch: boolean;
 	forcePush: boolean;
-	draftPR: boolean;
+	overwriteLocalBranch: boolean;
 
 	pullRemote: string;
 	pushRemote: string;
 
+	// Cherry-pick settings
 	branchName: string;
 	upstreamBranch: string;
-
 	commits: Commit[];
 
+	// Pull request settings
+	createPR: boolean;
+	draftPR: boolean;
 	title: string;
 	body: string;
-}
-export type GitPickSettings = Readonly<_GitPickSettings>;
+}>;
 
 export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 	const cleanupSteps: Array<{ message: string; action: () => void | Promise<void> }> = [];
@@ -65,7 +65,7 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 			await runCommand('git', 'push', ...args, settings.branchName);
 		}
 
-		if (settings.pr) {
+		if (settings.createPR) {
 			log.info(colors.green('▶️ Creating pull request'));
 			// Check if a pr is already open, using: `gh api "/repos/{owner}/{repo}/pulls?state=all&head={owner}:install-deps-command-for-gum" -q ".[] | {url}"`
 			await GH.createPullRequest({

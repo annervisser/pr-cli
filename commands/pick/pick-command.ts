@@ -1,20 +1,21 @@
 import { chooseCommits } from './steps/choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
 import { runCherryPick } from './steps/git-pick.ts';
-import { dependenciesMet } from '../verify/verify-command.ts';
-import { colors, Command, Confirm, log } from '../../deps.ts';
+import { colors, Command, log } from '../../deps.ts';
 import { Git } from '../../lib/git/git.ts';
 import { GH } from '../../lib/github/gh.ts';
-import { slugify } from '../../lib/slug/slug.ts';
 import { Gum } from '../../lib/gum/gum.ts';
 import {
+	assertValidBranchName,
 	generatePullRequestBody,
 	generatePullRequestTitle,
+	suggestBranchNameForCommitMessage,
 } from '../../lib/pr-cli/pull-request.ts';
 import { Commit } from '../../lib/git/commit.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
+import { checkDependencies } from './steps/check-dependencies.ts';
 
-/** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict intead */
+/** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict instead */
 const optionsThatRequirePR = ['draft', 'title'];
 const optionsThatDisablePR = ['no-pr', 'no-push'];
 
@@ -46,17 +47,7 @@ export const pickCommand = new Command()
 	})
 	.arguments('<upstreamBranch:string>') // TODO make optional with default value (or ENV?)
 	.action(async (options, upstreamBranch) => {
-		log.debug('Checking dependencies');
-		if (!await dependenciesMet()) {
-			log.info(colors.red.bold('✗ Missing dependencies, run \'pr-cli verify\' for details'));
-			const exit = !await Confirm.prompt({
-				message: 'Continue with missing dependencies?',
-				default: false,
-			});
-			if (exit) {
-				Deno.exit(1);
-			}
-		}
+		await checkDependencies();
 
 		options.pullRemote ??= await getPullRemote();
 		options.pushRemote ??= await getPushRemote();
@@ -71,9 +62,10 @@ export const pickCommand = new Command()
 			log.info(colors.white('-️ Skipping fetch'));
 		}
 
-		const upstreamRef = `${options.pullRemote}/${upstreamBranch}`;
-
-		const pickedCommits = await parseOrPromptForCommits(upstreamRef, options.commits ?? null);
+		const pickedCommits = await parseOrPromptForCommits(
+			`${options.pullRemote}/${upstreamBranch}`,
+			options.commits ?? null,
+		);
 
 		if (pickedCommits.length < 1) {
 			throw new Error('No commits chosen');
@@ -84,9 +76,8 @@ export const pickCommand = new Command()
 		if (!branchName) {
 			({ branchName, source: branchNameSource } = await askForBranchName(pickedCommits));
 		}
-		await validateBranchName(branchName);
+		await assertValidBranchName(branchName);
 
-		const localBranchExists = await Git.doesBranchExist(branchName);
 		const remoteBranchExists = await Git.doesBranchExist(`${options.pushRemote}/${branchName}`);
 		let doesBranchHavePullRequest: Promise<boolean> | undefined;
 		if (options.pr && remoteBranchExists) {
@@ -95,6 +86,7 @@ export const pickCommand = new Command()
 		}
 
 		let overwriteLocalBranch = !!options.force;
+		const localBranchExists = await Git.doesBranchExist(branchName);
 		if (!overwriteLocalBranch && localBranchExists) {
 			overwriteLocalBranch = await Gum.confirm({
 				prompt: 'Local branch already exists, do you wish to overwrite it?',
@@ -130,7 +122,7 @@ export const pickCommand = new Command()
 		const settings = await confirmSettings(
 			{
 				push: options.push,
-				pr: options.pr,
+				createPR: options.pr,
 				draftPR: options.draft ?? false,
 				pullRemote: options.pullRemote,
 				pushRemote: options.pushRemote,
@@ -171,10 +163,6 @@ async function parseOrPromptForCommits(
 	return chosenCommits.reverse(); // return in old-new order
 }
 
-function suggestBranchNameForCommitMessage(message: string): string {
-	return slugify(message);
-}
-
 async function askForBranchName(selectedCommits: Commit[]): Promise<{
 	branchName: string;
 	source: string | null;
@@ -200,10 +188,4 @@ async function askForBranchName(selectedCommits: Commit[]): Promise<{
 	);
 
 	return { branchName: branch, source: source };
-}
-
-async function validateBranchName(branchName: string) {
-	if (!await Git.isValidBranchName(branchName)) {
-		throw new Error(`Branch name "${branchName}" is invalid`);
-	}
 }
