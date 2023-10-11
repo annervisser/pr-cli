@@ -1,4 +1,5 @@
-import { runAndCapture, runCommand, runVoid } from '../shell/shell.ts';
+import { log } from '../../deps.ts';
+import { runAndCapture, runCommand, runQuietly } from '../shell/shell.ts';
 import { Commit, CommitWithBody } from './commit.ts';
 
 export class Git {
@@ -10,6 +11,7 @@ export class Git {
 	public static listRemotes = listRemotes;
 	public static doesBranchExist = doesBranchExist;
 	public static isValidBranchName = isValidBranchName;
+	public static getHeadOfRemote = getHeadOfRemote;
 }
 
 async function verifyAndExpandCommitSHAs(
@@ -120,13 +122,13 @@ async function gitFetch(remote: string): Promise<void> {
 }
 
 async function listRemotes(): Promise<string[]> {
-	const output = await runAndCapture('git', 'remote');
+	const output = await runQuietly('git', 'remote');
 	return output.split('\n').map((line) => line.trim());
 }
 
 async function doesBranchExist(branch: string): Promise<boolean> {
 	try {
-		await runVoid('git', 'rev-parse', '--verify', branch);
+		await runQuietly('git', 'rev-parse', '--verify', branch);
 		return true;
 	} catch {
 		return false;
@@ -135,9 +137,23 @@ async function doesBranchExist(branch: string): Promise<boolean> {
 
 async function isValidBranchName(branchName: string): Promise<boolean> {
 	try {
-		await runVoid('git', 'check-ref-format', '--branch', branchName);
+		await runQuietly('git', 'check-ref-format', '--branch', branchName);
 		return true;
 	} catch {
 		return false;
+	}
+}
+
+async function getHeadOfRemote(remote: string): Promise<string | null> {
+	const pathToRemote = `refs/remotes/${remote}`;
+	try {
+		const head = await runQuietly('git', 'symbolic-ref', `${pathToRemote}/HEAD`);
+		if (!head.startsWith(pathToRemote)) {
+			throw new Error('Unexpected return value from git symbolic-ref');
+		}
+		return head.replace(`${pathToRemote}/`, '');
+	} catch (e) {
+		log.debug(`Unable to get head of remote '${remote}': ${e}`);
+		return null;
 	}
 }

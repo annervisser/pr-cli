@@ -1,5 +1,5 @@
 import { colors, Command, Table } from '../../deps.ts';
-import { runAndCapture, runVoid } from '../../lib/shell/shell.ts';
+import { runAndCapture, runQuietly } from '../../lib/shell/shell.ts';
 
 export const verifyCommand = new Command()
 	.name('verify')
@@ -42,7 +42,7 @@ async function printDependencyStatuses() {
 
 async function binaryExists(binary: string): Promise<boolean> {
 	try {
-		await runVoid('env', 'sh', '-c', `command -v ${binary}`);
+		await runQuietly('env', 'sh', '-c', `command -v ${binary}`);
 		return true;
 	} catch {
 		return false;

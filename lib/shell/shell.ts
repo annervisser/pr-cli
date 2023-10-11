@@ -43,15 +43,20 @@ export async function runAndCaptureRaw(command: string, ...args: string[]): Prom
 	return new TextDecoder().decode(output.stdout);
 }
 
-export async function runVoid(command: string, ...args: string[]): Promise<void> {
+/**
+ * Captures stdout and pipes stderr to /dev/null
+ */
+export async function runQuietly(command: string, ...args: string[]): Promise<string> {
 	const output = await run(command, {
 		args,
 		stdin: 'null',
-		stdout: 'null',
+		stdout: 'piped',
 		stderr: 'null',
 	});
 
 	throwErrorIfFailed(output);
+
+	return new TextDecoder().decode(output.stdout).trim();
 }
 
 async function run(command: string, options?: Deno.CommandOptions) {
