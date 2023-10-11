@@ -1,10 +1,18 @@
 import { runAndCapture } from '../../shell/shell.ts';
 import { ColorScheme } from '../../colors.ts';
 
-export async function _gum_chooseOne<Option extends string>(options: readonly Option[], settings: {
-	selectedOption?: Option;
-} = {}): Promise<Option> {
+interface ChooseSettings {
+	header?: string;
+}
+
+export async function _gum_chooseOne<Option extends string>(
+	options: readonly Option[],
+	settings: ChooseSettings & {
+		selectedOption?: Option;
+	} = {},
+): Promise<Option> {
 	const selectedOption = await choose(options, {
+		...settings,
 		multiselect: false,
 		selectedOptions: settings.selectedOption ? [settings.selectedOption] : undefined,
 	});
@@ -15,13 +23,13 @@ export async function _gum_chooseOne<Option extends string>(options: readonly Op
 
 export async function _gum_chooseMultiple<Option extends string>(
 	options: readonly Option[],
-	settings: {
+	settings: ChooseSettings & {
 		selectedOptions?: Option[];
 	} = {},
 ): Promise<Option[]> {
 	const selectedOptionsString = await choose(options, {
 		multiselect: true,
-		selectedOptions: settings.selectedOptions,
+		...settings,
 	});
 	const selectedOptions = selectedOptionsString.split('\n');
 
@@ -36,19 +44,23 @@ export async function _gum_chooseMultiple<Option extends string>(
 
 async function choose<Option extends string>(
 	options: readonly Option[],
-	settings: {
-		multiselect: true;
-		selectedOptions?: readonly Option[];
-	} | {
-		multiselect: false;
-		selectedOptions?: [Option];
-	},
+	settings:
+		& ChooseSettings
+		& ({
+			multiselect: true;
+			selectedOptions?: readonly Option[];
+		} | {
+			multiselect: false;
+			selectedOptions?: [Option];
+		}),
 ): Promise<string> {
 	return await runAndCapture(
 		'gum',
 		'choose',
+		`--header=${settings.header ?? ''}`,
 		settings.multiselect ? '--no-limit' : '--limit=1',
 		...(settings.selectedOptions ?? []).map((option) => `--selected=${option}`),
+		`--header.foreground=${ColorScheme.primary}`,
 		`--selected.foreground=${ColorScheme.primary}`,
 		`--cursor.foreground=${ColorScheme.primary}`,
 		`--selected.bold=true`,

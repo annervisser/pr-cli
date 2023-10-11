@@ -14,6 +14,7 @@ import {
 import { Commit } from '../../lib/git/commit.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
 import { checkDependencies } from './steps/check-dependencies.ts';
+import { getDefaultBranch } from '../../lib/pr-cli/default-branch.ts';
 
 /** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict instead */
 const optionsThatRequirePR = ['draft', 'title'];
@@ -45,12 +46,15 @@ export const pickCommand = new Command()
 	.option('--title <title:string>', 'Title for the pull request', {
 		conflicts: optionsThatDisablePR,
 	})
-	.arguments('<upstreamBranch:string>') // TODO make optional with default value (or ENV?)
+	.arguments('[upstreamBranch:string]')
+	.help({ hints: false })
 	.action(async (options, upstreamBranch) => {
 		await checkDependencies();
 
 		options.pullRemote ??= await getPullRemote();
 		options.pushRemote ??= await getPushRemote();
+
+		upstreamBranch ??= await getDefaultBranch(options.pullRemote, options.pushRemote);
 
 		log.debug(options);
 
