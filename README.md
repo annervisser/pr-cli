@@ -1,27 +1,31 @@
 # PR-CLI
 
-Pretty Rad Cool Lovely Interface\
-or\
 Pull Request - Command Line Interface
 
-### Installation
+## Installation
 
-- Install deno: https://deno.land/manual/getting_started/installation
-- Install Gum:
-  - Option 1: manually via https://github.com/charmbracelet/gum
-  - Option 2: run `pr-cli install-deps` after installation
-- Install GH CLI: https://github.com/cli/cli#installation
+- Install Deno: https://deno.land/manual/getting_started/installation
+- Install GitHub CLI: https://github.com/cli/cli#installation
 - Install pr-cli:
 
 ```shell
-deno install --name pr-cli \
-	--allow-run --allow-read --allow-env \
-	https://deno.land/x/prcli/main.ts
+deno install --name pr-cli --allow-run --allow-read --allow-env https://deno.land/x/prcli/main.ts
 ```
 
-### Links
+- Install Gum:
 
-- https://github.com/charmbracelet/gum
-- https://deno.land/x/leaf # To include files in Deno binary?
-- https://deno.land/manual/tools/compiler
-- https://cliffy.io/docs/command
+```shell
+pr-cli install-deps
+```
+
+Or manually: https://github.com/charmbracelet/gum#installation
+
+### Completions
+
+To get completions for pr-cli, add this to your `.bashrc`:
+
+```shell
+source <(pr-cli completions bash)
+```
+
+For other shells run `pr-cli completions --help` for instructions
