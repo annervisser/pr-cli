@@ -1,4 +1,4 @@
-import { unslugify } from '../slug/slug.ts';
+import { slugify, unslugify } from '../slug/slug.ts';
 import { Git } from '../git/git.ts';
 import { Commit } from '../git/commit.ts';
 
@@ -31,4 +31,14 @@ export async function generatePullRequestBody(commits: Commit[]): Promise<string
 				: mdDetailsBlock(commit.message, commit.body)
 		)
 		.join('\n\n---\n');
+}
+
+export function suggestBranchNameForCommitMessage(message: string): string {
+	return slugify(message);
+}
+
+export async function assertValidBranchName(branchName: string) {
+	if (!await Git.isValidBranchName(branchName)) {
+		throw new Error(`Branch name "${branchName}" is invalid`);
+	}
 }
