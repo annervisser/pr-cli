@@ -1,3 +1,4 @@
+import { log } from '../../deps.ts';
 import { runAndCapture, runCommand } from '../shell/shell.ts';
 
 export class GH {
@@ -45,9 +46,15 @@ async function createPullRequest(options: PullRequestOptions) {
 
 async function doesBranchHavePullRequest(branch: string): Promise<boolean> {
 	try {
-		const json = await runAndCapture('gh', 'pr', 'view', '--json', 'closed,title', branch);
+		// gh pr view doesn't work for multi-remote use cases, gh pr list does
+		// This will give a false positive for prs from a different repository with the same branch name
+		const json = await runAndCapture('gh', 'pr', 'list', '--head', branch, '--json', 'title');
 		const pr = JSON.parse(json);
-		return pr.closed !== true;
+		if (!Array.isArray(pr)) {
+			log.error('Invalid response from gh cli:', pr);
+			return false;
+		}
+		return pr.length > 0;
 	} catch {
 		return false;
 	}
