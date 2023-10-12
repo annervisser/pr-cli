@@ -2,7 +2,7 @@
 
 Pull Request - Command Line Interface
 
-## Installation
+## 📥 Installation
 
 - Install prerequisites:
   > ℹ️ Check if you already have these installed by running `deno --version` and `gh --version`
@@ -23,7 +23,15 @@ Pull Request - Command Line Interface
   > ℹ️ you can also install Gum manually if you prefer:
   > https://github.com/charmbracelet/gum#installation
 
-### Completions
+### ⬆️ Upgrading
+
+To upgrade your installation to the latest version:
+
+```shell
+deno install --reload --force --name pr-cli --allow-run --allow-read --allow-env https://deno.land/x/prcli/main.ts
+```
+
+### 🔲 Completions
 
 To get completions for pr-cli in bash, run this::
 
