@@ -11,10 +11,11 @@ tab_width = 4
 trim_trailing_whitespace = true
 
 [{*.mts,*.ts}]
-ij_typescript_force_quote_style = true
 ij_typescript_use_double_quotes = false
+ij_typescript_force_quote_style = true
 ij_typescript_force_semicolon_style = true
 ij_typescript_spaces_within_imports = true
+ij_typescript_spaces_within_object_literal_braces = true
 
 [{*.yml,*.yaml}]
 indent_size = 2
