@@ -1,4 +1,5 @@
 import { log } from '../../deps.ts';
+import { formatObjectForLog } from '../pr-cli/debug.ts';
 
 export class CommandExecutionException extends Error {
 	constructor(
@@ -80,9 +81,20 @@ export async function runQuietly(command: string, ...args: string[]): Promise<st
 }
 
 async function run(command: string, options?: Deno.CommandOptions) {
-	log.debug(`Running command: ${command} ${options?.args?.join(' ')}`);
-	log.debug(options);
+	log.debug(formatCommand(command, options));
 	return await new Deno.Command(command, options).output();
+}
+
+function formatCommand(command: string, options?: Deno.CommandOptions) {
+	let message = ' $: ';
+	message += [command, ...(options?.args?.map((arg) => `"${arg}"`) ?? [])].join(' ');
+
+	if (options) {
+		const { args: _, ...optionsExceptArgs } = options;
+		message += ` (${formatObjectForLog(optionsExceptArgs)})`;
+	}
+
+	return message;
 }
 
 function throwErrorIfFailed(commandOutput: Deno.CommandOutput) {

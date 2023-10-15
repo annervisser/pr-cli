@@ -11,3 +11,9 @@ export function isDebugModeEnabled(): boolean {
 
 	throw new Error('Invalid value for env.DEBUG: ' + value);
 }
+
+export function formatObjectForLog(object: object) {
+	return Object.entries(object)
+		.map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+		.join(', ');
+}
