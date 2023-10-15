@@ -1,5 +1,5 @@
 import { log } from '../../deps.ts';
-import { runAndCapture, runCommand, runQuietly } from '../shell/shell.ts';
+import { runAndCapture, runQuietly } from '../shell/shell.ts';
 import { Commit, CommitWithBody } from './commit.ts';
 
 export class Git {
@@ -118,7 +118,7 @@ function lineToCommit(line: string): Commit {
 async function gitFetch(remote: string): Promise<void> {
 	const args = [];
 	remote && args.push(remote);
-	await runCommand('git', 'fetch', ...args);
+	await runQuietly('git', 'fetch', ...args);
 }
 
 async function listRemotes(): Promise<string[]> {
