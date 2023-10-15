@@ -3,7 +3,8 @@ import { log } from '../../deps.ts';
 export class CommandExecutionException extends Error {
 	constructor(
 		public readonly code: number,
-		public readonly signal?: number | Deno.Signal | null,
+		public readonly signal: number | Deno.Signal | null = null,
+		public readonly stderr: string | null = null,
 	) {
 		let message = `Command execution failed with code ${code}`;
 		if (signal) {
@@ -11,6 +12,24 @@ export class CommandExecutionException extends Error {
 		}
 		super(message);
 		this.name = 'CommandExecutionException';
+	}
+
+	static fromCommandOutput(output: Deno.CommandOutput): CommandExecutionException {
+		if (output.success) {
+			throw new Error('Trying to create CommandExecutionException from successfull output');
+		}
+
+		let stderr: Uint8Array | null = null;
+		try {
+			stderr = output.stderr;
+		} catch {
+			// If stderr wasn't piped, we can't get it.
+		}
+		return new CommandExecutionException(
+			output.code,
+			output.signal,
+			stderr ? new TextDecoder().decode(stderr) : null,
+		);
 	}
 }
 
@@ -44,14 +63,15 @@ export async function runAndCaptureRaw(command: string, ...args: string[]): Prom
 }
 
 /**
- * Captures stdout and pipes stderr to /dev/null
+ * Captures and returns stdout.
+ * stderr is also captured and provided as part of the error in case of failure
  */
 export async function runQuietly(command: string, ...args: string[]): Promise<string> {
 	const output = await run(command, {
 		args,
 		stdin: 'null',
 		stdout: 'piped',
-		stderr: 'null',
+		stderr: 'piped', // Run piped so we can print on error
 	});
 
 	throwErrorIfFailed(output);
@@ -65,8 +85,8 @@ async function run(command: string, options?: Deno.CommandOptions) {
 	return await new Deno.Command(command, options).output();
 }
 
-function throwErrorIfFailed(status: Deno.CommandStatus) {
-	if (!status.success) {
-		throw new CommandExecutionException(status.code, status.signal);
+function throwErrorIfFailed(commandOutput: Deno.CommandOutput) {
+	if (!commandOutput.success) {
+		throw CommandExecutionException.fromCommandOutput(commandOutput);
 	}
 }

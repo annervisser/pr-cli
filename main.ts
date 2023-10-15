@@ -51,6 +51,9 @@ if (import.meta.main) {
 
 function logError(err: Error) {
 	log.debug(err);
+	if (err instanceof CommandExecutionException && err.stderr) {
+		log.error(err.stderr);
+	}
 	if (err.cause instanceof Error) {
 		log.debug('Caused by: ');
 		logError(err.cause);
