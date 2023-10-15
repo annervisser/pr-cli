@@ -1,7 +1,5 @@
 import { dependenciesMet } from '../../verify/verify-command.ts';
-import { colors } from 'https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts';
-import { Confirm } from 'https://deno.land/x/cliffy@v1.0.0-rc.3/prompt/confirm.ts';
-import { log } from '../../../deps.ts';
+import { colors, Confirm, log } from '../../../deps.ts';
 
 export async function checkDependencies() {
 	log.debug('Checking dependencies');
