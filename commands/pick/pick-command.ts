@@ -15,6 +15,7 @@ import { Commit } from '../../lib/git/commit.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
 import { checkDependencies } from './steps/check-dependencies.ts';
 import { getDefaultBranch } from '../../lib/pr-cli/default-branch.ts';
+import { ColorScheme } from '../../lib/colors.ts';
 
 /** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict instead */
 const optionsThatRequirePR = ['draft', 'title'];
@@ -38,6 +39,7 @@ export const pickCommand = new Command()
 	.option('--force', 'Overwrite existing branch, and force push to it')
 	.group('Inputs')
 	.option('-b, --branch <branchName:string>', 'Name to use for the new branch')
+	.option('-B, --base <baseBranch:string>', 'The branch into which you want your code merged')
 	.option('-c, --commits <commitSha...:string>', 'Commits to cherry-pick')
 	.option('--pull-remote <remote:string>', 'Remote to use for fetching')
 	.option('--push-remote <remote:string>', 'Remote to push to')
@@ -46,15 +48,37 @@ export const pickCommand = new Command()
 	.option('--title <title:string>', 'Title for the pull request', {
 		conflicts: optionsThatDisablePR,
 	})
-	.arguments('[upstreamBranch:string]')
+	.arguments('[baseBranch:string]')
 	.help({ hints: false })
-	.action(async (options, upstreamBranch) => {
+	.action(async (options, _baseBranch) => {
 		await checkDependencies();
 
 		options.pullRemote ??= await getPullRemote();
 		options.pushRemote ??= await getPushRemote();
 
-		upstreamBranch ??= await getDefaultBranch(options.pullRemote, options.pushRemote);
+		if (_baseBranch) {
+			await Gum.style([
+				await Gum.styleToString(['⚠ Providing a base branch as first argument is deprecated'], {
+					foreground: ColorScheme.primary,
+					bold: true,
+				}),
+				`The base branch is now automatically determined, it would be: ${
+					colors.brightWhite.bold(await getDefaultBranch(options.pullRemote, options.pushRemote))
+				}`,
+				`If you still want to specify a different base, use ${
+					colors.brightWhite.italic('--base')
+				} instead`,
+			], {
+				border: 'rounded',
+				margin: [0, 1],
+				padding: [0, 2],
+				'border-foreground': ColorScheme.primarySaturated,
+				align: 'center',
+			});
+			options.base ??= _baseBranch;
+		}
+
+		options.base ??= await getDefaultBranch(options.pullRemote, options.pushRemote);
 
 		log.debug(options);
 
@@ -67,7 +91,7 @@ export const pickCommand = new Command()
 		}
 
 		const pickedCommits = await parseOrPromptForCommits(
-			`${options.pullRemote}/${upstreamBranch}`,
+			`${options.pullRemote}/${options.base}`,
 			options.commits ?? null,
 		);
 
@@ -133,7 +157,7 @@ export const pickCommand = new Command()
 				overwriteLocalBranch,
 				forcePush,
 				branchName,
-				upstreamBranch,
+				upstreamBranch: options.base,
 				commits: pickedCommits,
 				title: title,
 				body: body,
