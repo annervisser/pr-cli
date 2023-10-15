@@ -1,6 +1,7 @@
 import { log } from '../../deps.ts';
-import { runAndCapture, runQuietly } from '../shell/shell.ts';
+import { runAndCapture, runCommand, runQuietly } from '../shell/shell.ts';
 import { Commit, CommitWithBody } from './commit.ts';
+import { isDebugModeEnabled } from '../pr-cli/debug.ts';
 
 export class Git {
 	public static verifyAndExpandCommitSHAs = verifyAndExpandCommitSHAs;
@@ -8,9 +9,11 @@ export class Git {
 	public static getCommitsToCherryPick = getCommitsToCherryPick;
 	public static getCommitBody = getCommitBody;
 	public static fetch = gitFetch;
+	public static push = gitPush;
 	public static listRemotes = listRemotes;
 	public static doesBranchExist = doesBranchExist;
 	public static isValidBranchName = isValidBranchName;
+	public static getCurrentBranch = getCurrentBranch;
 	public static getHeadOfRemote = getHeadOfRemote;
 }
 
@@ -121,6 +124,18 @@ async function gitFetch(remote: string): Promise<void> {
 	await runQuietly('git', 'fetch', ...args);
 }
 
+async function gitPush(options: {
+	remote: string;
+	branch: string;
+	force?: boolean;
+}) {
+	const args = ['-u', options.remote];
+	options.force && args.push('--force');
+	options.force && args.push('--force-with-lease');
+	isDebugModeEnabled() || args.push('--quiet');
+	await runCommand('git', 'push', ...args, options.branch);
+}
+
 async function listRemotes(): Promise<string[]> {
 	const output = await runQuietly('git', 'remote');
 	return output.split('\n').map((line) => line.trim());
@@ -142,6 +157,10 @@ async function isValidBranchName(branchName: string): Promise<boolean> {
 	} catch {
 		return false;
 	}
+}
+
+async function getCurrentBranch(): Promise<string> {
+	return await runAndCapture('git', 'rev-parse', '--abbrev-ref', 'HEAD');
 }
 
 async function getHeadOfRemote(remote: string): Promise<string | null> {
