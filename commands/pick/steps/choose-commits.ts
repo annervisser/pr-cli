@@ -1,6 +1,6 @@
 import { Gum } from '../../../lib/gum/gum.ts';
 import { Commit } from '../../../lib/git/commit.ts';
-import { colors } from 'https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts';
+import { colors } from '../../../deps.ts';
 
 const separator = `\t`;
 
