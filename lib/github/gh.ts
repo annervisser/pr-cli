@@ -9,6 +9,7 @@ export class GH {
 interface BasePROptions {
 	baseBranch?: string;
 	draftPR?: boolean;
+	web?: boolean;
 }
 
 interface ManualTitleAndBody {
@@ -26,6 +27,7 @@ async function createPullRequest(options: PullRequestOptions) {
 	const args: string[] = [];
 	options.baseBranch && args.push('--base', options.baseBranch);
 	options.draftPR && args.push('--draft');
+	options.web && args.push('--web');
 
 	if ('autofill' in options) {
 		args.push('--fill');

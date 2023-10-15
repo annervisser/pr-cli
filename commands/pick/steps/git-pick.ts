@@ -2,7 +2,7 @@ import { colors, log } from '../../../deps.ts';
 import { runAndCapture, runCommand } from '../../../lib/shell/shell.ts';
 import { GH } from '../../../lib/github/gh.ts';
 import { Commit } from '../../../lib/git/commit.ts';
-import { isDebugModeEnabled } from '../../../lib/pr-cli/debug.ts';
+import { Git } from '../../../lib/git/git.ts';
 
 export type GitPickSettings = Readonly<{
 	push: boolean;
@@ -61,10 +61,11 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 
 		if (settings.push) {
 			log.info(colors.green(`▶️ Pushing to ${settings.pushRemote}/${settings.branchName}`));
-			const args = ['-u', settings.pushRemote];
-			settings.forcePush && args.push('--force');
-			isDebugModeEnabled() || args.push('--quiet');
-			await runCommand('git', 'push', ...args, settings.branchName);
+			await Git.push({
+				remote: settings.pushRemote,
+				branch: settings.branchName,
+				force: settings.forcePush,
+			});
 		}
 
 		if (settings.createPR) {
