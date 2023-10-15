@@ -5,6 +5,7 @@ import { pullRequestCommand } from './commands/pull-request/pull-request-command
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
 import { getBinDir } from './lib/pr-cli/get-bin-dir.ts';
 import { CommandExecutionException } from './lib/shell/shell.ts';
+import { isDebugModeEnabled } from './lib/pr-cli/debug.ts';
 
 if (import.meta.main) {
 	const main = new Command()
@@ -33,8 +34,10 @@ if (import.meta.main) {
 	// Prepend our own bin dir to path
 	Deno.env.set('PATH', [getBinDir(), Deno.env.get('PATH')].join(':'));
 
-	const debugMode = parseFlags(Deno.args).flags.debug !== undefined;
-	setupLogger(debugMode);
+	if (parseFlags(Deno.args).flags.debug !== undefined) {
+		Deno.env.set('DEBUG', '1');
+	}
+	setupLogger();
 
 	try {
 		await main.parse(Deno.args);
@@ -60,8 +63,8 @@ function logError(err: Error) {
 	}
 }
 
-function setupLogger(debugMode: boolean) {
-	const logLevel = debugMode ? 'DEBUG' : 'INFO';
+function setupLogger() {
+	const logLevel = isDebugModeEnabled() ? 'DEBUG' : 'INFO';
 
 	log.setup({
 		handlers: {
