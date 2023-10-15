@@ -16,6 +16,7 @@ import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
 import { checkDependencies } from './steps/check-dependencies.ts';
 import { getDefaultBranch } from '../../lib/pr-cli/default-branch.ts';
 import { ColorScheme } from '../../lib/colors.ts';
+import { formatObjectForLog } from '../../lib/pr-cli/debug.ts';
 
 /** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict instead */
 const optionsThatRequirePR = ['draft', 'title'];
@@ -80,7 +81,7 @@ export const pickCommand = new Command()
 
 		options.base ??= await getDefaultBranch(options.pullRemote, options.pushRemote);
 
-		log.debug(options);
+		log.debug('Options: ' + formatObjectForLog(options));
 
 		if (options.fetch) {
 			log.debug('Running git fetch');
