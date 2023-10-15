@@ -188,6 +188,10 @@ async function parseOrPromptForCommits(
 		throw new Error('No commits to pick');
 	}
 
+	if (newCommits.length === 1) {
+		return newCommits;
+	}
+
 	const chosenCommits = await chooseCommits(newCommits); // select in new-old order
 	return chosenCommits.reverse(); // return in old-new order
 }
