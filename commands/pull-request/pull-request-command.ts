@@ -40,7 +40,8 @@ export const pullRequestCommand = new Command()
 			log.info(colors.white('-️ Skipping fetch'));
 		}
 
-		const newCommits = await Git.getCommits(`${options.pullRemote}/${options.base}..`);
+		const newCommits = (await Git.getCommits(`${options.pullRemote}/${options.base}..`))
+			.reverse(); // return in old-new order
 
 		if (newCommits.length < 1) {
 			throw new Error('No new commit on this branch');
