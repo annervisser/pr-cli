@@ -61,7 +61,7 @@ async function getCommits(revisionRange: string): Promise<Commit[]> {
 /**
  * @see https://git-scm.com/docs/git-cherry
  */
-async function getCommitsToCherryPick(upstreamBranch: string) {
+async function getCommitsToCherryPick(upstreamBranch: string): Promise<Commit[]> {
 	try {
 		const result = await runAndCapture(
 			'git',

@@ -1,11 +1,16 @@
 import { runAndCapture } from '../../shell/shell.ts';
 import { ColorScheme } from '../../colors.ts';
+import { colors } from '../../../deps.ts';
 
 export async function _gum_input(options?: {
 	placeholder?: string;
 	prompt?: string;
 	defaultValue?: string;
-}) {
+}): Promise<string> {
+	if (options?.prompt && options?.defaultValue) {
+		options.prompt += colors.dim.white('(Ctrl+U to clear) ');
+	}
+
 	const args = [];
 	options?.placeholder && args.push(`--placeholder=${options.placeholder}`);
 	options?.prompt && args.push(`--prompt=${options.prompt}`);
