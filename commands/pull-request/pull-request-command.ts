@@ -10,6 +10,7 @@ import {
 import { Gum } from '../../lib/gum/gum.ts';
 import { Commit } from '../../lib/git/commit.ts';
 import { chooseOneFormatted } from '../../lib/pr-cli/choose.ts';
+import { checkDependencies } from '../pick/steps/check-dependencies.ts';
 
 export const pullRequestCommand = new Command()
 	.name('pull-request')
@@ -29,6 +30,8 @@ export const pullRequestCommand = new Command()
 	.option('--draft', 'Mark the created pull request as Draft')
 	.option('--title <title:string>', 'Title for the pull request')
 	.action(async (options) => {
+		await checkDependencies();
+
 		options.pullRemote ??= await getPullRemote();
 		options.pushRemote ??= await getPushRemote();
 		options.base ??= await getDefaultBranch(options.pullRemote, options.pushRemote);
