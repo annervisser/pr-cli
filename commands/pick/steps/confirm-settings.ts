@@ -6,6 +6,7 @@ import { getKeySequence } from '../../../lib/keypress.ts';
 import { CommandExecutionException } from '../../../lib/shell/shell.ts';
 import { Git } from '../../../lib/git/git.ts';
 import { GumStyleOptions } from '../../../lib/gum/style/style.ts';
+import { chooseOne } from '../../../lib/pr-cli/choose.ts';
 
 interface ConfirmationContext {
 	branchExists: boolean;
@@ -198,7 +199,7 @@ async function listenForKeySequence(
 				foreground: 0,
 				padding: [0, 1],
 			});
-			const pushRemote = await Gum.chooseOne([dontPush, ...remotes], {
+			const pushRemote = await chooseOne([dontPush, ...remotes], {
 				selectedOption: settings.push ? settings.pushRemote : dontPush,
 			});
 			if (pushRemote === dontPush) {

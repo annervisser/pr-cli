@@ -1,4 +1,3 @@
-import { chooseCommits } from './steps/choose-commits.ts';
 import { confirmSettings } from './steps/confirm-settings.ts';
 import { runCherryPick } from './steps/git-pick.ts';
 import { colors, Command, log } from '../../deps.ts';
@@ -17,6 +16,7 @@ import { checkDependencies } from './steps/check-dependencies.ts';
 import { getDefaultBranch } from '../../lib/pr-cli/default-branch.ts';
 import { ColorScheme } from '../../lib/colors.ts';
 import { formatObjectForLog } from '../../lib/pr-cli/debug.ts';
+import { chooseMultipleFormatted } from '../../lib/pr-cli/choose.ts';
 
 /** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict instead */
 const optionsThatRequirePR = ['draft', 'title'];
@@ -192,7 +192,11 @@ async function parseOrPromptForCommits(
 		return newCommits;
 	}
 
-	const chosenCommits = await chooseCommits(newCommits); // select in new-old order
+	const chosenCommits = await chooseMultipleFormatted(
+		newCommits,
+		(commit) => `${commit.sha}\t${commit.message}`,
+		{ header: `Which commits should be cherry-picked? ${colors.dim.white(`(a to select all)`)}` },
+	); // select in new-old order
 	return chosenCommits.reverse(); // return in old-new order
 }
 
@@ -211,7 +215,7 @@ async function askForBranchName(selectedCommits: Commit[]): Promise<{
 	log.debug('Prompting for branch name');
 	const branch = await Gum.input({
 		defaultValue: suggestion,
-		prompt: suggestion ? `Branch name: ${colors.dim.white('(Ctrl+U to clear)')} ` : 'Branch name: ',
+		prompt: 'Branch name: ',
 		placeholder: 'What to call the new branch...',
 	});
 
