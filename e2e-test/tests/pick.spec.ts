@@ -20,7 +20,7 @@ test('pr-cli pick', async ({ cli, _tmpdir }) => {
 	await createCommit('commit 2');
 	await cli.clear();
 
-	await cli.command('pr-cli pick trunk --no-pr');
+	await cli.command('pr-cli pick --no-pr');
 
 	// confirm we want to run with missing dependencies (gh cli)
 	await expect(cli.lines.getByText('Continue with missing dependencies?')).toBeVisible();
@@ -33,10 +33,33 @@ test('pr-cli pick', async ({ cli, _tmpdir }) => {
 	await cli.press('Space'); // select commit 1
 	await cli.press('Enter'); // Confirm selection
 
-	// Branch name
-	await expect(cli.lines.getByText(/^\s*Branch name:.*commit-1\s*$/)).toBeVisible();
-	await cli.type('-branch'); // add some text to branch name
-	await cli.press('Enter'); // submit branch name
+	await expect(cli.lines).not.toContainText([
+		'Providing a base branch as first argument is deprecated',
+	]);
+
+	// Title
+	await expect(cli.lines).toContainText([
+		'How do you want to set the pull request title?',
+		/> 🔤 {2}Use commit message: commit 1/, // this one should be selected
+		/ {2}🖮 {2}Write it yourself/,
+	]);
+	await cli.press('Enter'); // Confirm selection
+
+	await expect(cli.lines).toContainText([
+		/About to cherry pick commits:/,
+		/commit 1/,
+		/Base branch: upstream\/trunk/,
+		/Branch name: origin\/commit-1/,
+		/✔ push/,
+		/✗ pull request/,
+		/ force | pr | push | branch /,
+		/Press Enter to continue/,
+	]);
+
+	await cli.press('b'); // edit branch
+	await expect(cli.lines).toContainText([/Branch name: \(Ctrl\+U to clear\) commit-1/]);
+	await cli.type('-branch');
+	await cli.press('Enter');
 
 	await expect(cli.lines).toContainText([
 		/About to cherry pick commits:/,
