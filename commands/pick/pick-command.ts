@@ -6,9 +6,9 @@ import { GH } from '../../lib/github/gh.ts';
 import { Gum } from '../../lib/gum/gum.ts';
 import {
 	assertValidBranchName,
+	assertValidTitle,
+	convertToValidBranchName,
 	generatePullRequestBody,
-	generatePullRequestTitle,
-	suggestBranchNameForCommitMessage,
 } from '../../lib/pr-cli/pull-request.ts';
 import { Commit } from '../../lib/git/commit.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
@@ -17,6 +17,7 @@ import { getDefaultBranch } from '../../lib/pr-cli/default-branch.ts';
 import { ColorScheme } from '../../lib/colors.ts';
 import { formatObjectForLog } from '../../lib/pr-cli/debug.ts';
 import { chooseMultipleFormatted } from '../../lib/pr-cli/choose.ts';
+import { writeTitle } from '../../lib/pr-cli/pr-title.ts';
 
 /** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict instead */
 const optionsThatRequirePR = ['draft', 'title'];
@@ -100,11 +101,14 @@ export const pickCommand = new Command()
 			throw new Error('No commits chosen');
 		}
 
-		let branchName = options.branch;
-		let branchNameSource: string | null = null;
-		if (!branchName) {
-			({ branchName, source: branchNameSource } = await askForBranchName(pickedCommits));
-		}
+		const title = options.title ?? await writeTitle({
+			branchName: options.branch, // This option is only shown if branch was pre-provided
+			commits: pickedCommits,
+		});
+		assertValidTitle(title);
+		log.debug(`Using pull request title: ${title}`);
+
+		const branchName = options.branch ?? convertToValidBranchName(title);
 		await assertValidBranchName(branchName);
 
 		const remoteBranchExists = await Git.doesBranchExist(`${options.pushRemote}/${branchName}`);
@@ -141,9 +145,6 @@ export const pickCommand = new Command()
 			});
 			log.info(forcePush ? 'Force pushing!' : 'Not force pushing');
 		}
-
-		const title = options.title ?? branchNameSource ?? generatePullRequestTitle(branchName);
-		log.debug(`Using pull request title: ${title}`);
 
 		const body = await generatePullRequestBody(pickedCommits);
 		log.debug(`Generated pull request body:\n${body}`);
@@ -198,31 +199,4 @@ async function parseOrPromptForCommits(
 		{ header: `Which commits should be cherry-picked? ${colors.dim.white(`(a to select all)`)}` },
 	); // select in new-old order
 	return chosenCommits.reverse(); // return in old-new order
-}
-
-async function askForBranchName(selectedCommits: Commit[]): Promise<{
-	branchName: string;
-	source: string | null;
-}> {
-	let suggestion = undefined;
-	let suggestionSource: string | null = null;
-	if (selectedCommits.length === 1) {
-		log.debug('Generating branch name based on commit message');
-		suggestionSource = selectedCommits[0]!.message;
-		suggestion = suggestBranchNameForCommitMessage(suggestionSource);
-	}
-
-	log.debug('Prompting for branch name');
-	const branch = await Gum.input({
-		defaultValue: suggestion,
-		prompt: 'Branch name: ',
-		placeholder: 'What to call the new branch...',
-	});
-
-	const source = branch === suggestion ? suggestionSource : null;
-	log.debug(
-		source ? 'Suggestion for branch-name was used' : 'Suggestion for branch-name was NOT used',
-	);
-
-	return { branchName: branch, source: source };
 }

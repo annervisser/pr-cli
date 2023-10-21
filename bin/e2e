@@ -7,10 +7,13 @@ cd "$(dirname "$0")/.."
 cd e2e-test
 
 npm ci
+
+if [[ -z ${CI:-} ]]; then
+	npm run fix
+fi
 npm run lint
 
 containers_to_start=("runtime")
-run_cmd="exec"
 
 if [[ -z ${CI:-} && -z ${RUN_ON_MACHINE:-} ]]; then
 	echo Running playwright in docker
@@ -18,6 +21,9 @@ if [[ -z ${CI:-} && -z ${RUN_ON_MACHINE:-} ]]; then
 
 	containers_to_start+=("playwright")
 	run_cmd="docker compose exec playwright"
+else
+	npx playwright install
+	run_cmd="exec"
 fi
 
 docker compose up --build --quiet-pull --detach --wait "${containers_to_start[@]}"

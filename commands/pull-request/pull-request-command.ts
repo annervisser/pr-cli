@@ -3,14 +3,9 @@ import { GH } from '../../lib/github/gh.ts';
 import { Git } from '../../lib/git/git.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
 import { getDefaultBranch } from '../../lib/pr-cli/default-branch.ts';
-import {
-	generatePullRequestBody,
-	generatePullRequestTitle,
-} from '../../lib/pr-cli/pull-request.ts';
-import { Gum } from '../../lib/gum/gum.ts';
-import { Commit } from '../../lib/git/commit.ts';
-import { chooseOneFormatted } from '../../lib/pr-cli/choose.ts';
+import { generatePullRequestBody } from '../../lib/pr-cli/pull-request.ts';
 import { checkDependencies } from '../pick/steps/check-dependencies.ts';
+import { writeTitle } from '../../lib/pr-cli/pr-title.ts';
 
 export const pullRequestCommand = new Command()
 	.name('pull-request')
@@ -52,9 +47,6 @@ export const pullRequestCommand = new Command()
 		if (newCommits.length < 1) {
 			throw new Error('No new commit on this branch');
 		}
-		if (newCommits.length === 1) {
-			options.title ??= newCommits[0]!.message;
-		}
 
 		options.title ??= await writeTitle({ commits: newCommits, branchName });
 		if (!options.title) {
@@ -81,41 +73,3 @@ export const pullRequestCommand = new Command()
 
 		log.info(colors.bgGreen.brightWhite('✔ Done!'));
 	});
-
-type TitleContext = {
-	branchName: string;
-	commits: Commit[];
-};
-
-async function writeTitle(context: TitleContext): Promise<string> {
-	const titleFromBranchName = generatePullRequestTitle(context.branchName);
-	const options = [
-		{ strategy: 'pick', option: '🗹  Pick a commit' },
-		{
-			strategy: 'branch',
-			option: `🗠  Use the branch name: ${colors.dim.white(titleFromBranchName)}`,
-		},
-		{ strategy: 'write', option: '🖮  Write it yourself' },
-	] as const;
-
-	const chosenOption = await chooseOneFormatted(
-		options,
-		(option) => option.option,
-		{ header: 'How do you want to set the pull request title?' },
-	);
-
-	switch (chosenOption.strategy) {
-		case 'branch':
-			return titleFromBranchName;
-		case 'pick': {
-			const commit = await chooseOneFormatted(
-				context.commits,
-				(commit) => commit.message,
-				{ header: 'What commit message do you want to use as title?' },
-			);
-			return commit.message;
-		}
-		case 'write':
-			return await Gum.input({ prompt: 'Pull request title: ' });
-	}
-}

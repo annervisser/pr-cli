@@ -7,6 +7,7 @@ import { CommandExecutionException } from '../../../lib/shell/shell.ts';
 import { Git } from '../../../lib/git/git.ts';
 import { GumStyleOptions } from '../../../lib/gum/style/style.ts';
 import { chooseOne } from '../../../lib/pr-cli/choose.ts';
+import { writeTitle } from '../../../lib/pr-cli/pr-title.ts';
 
 interface ConfirmationContext {
 	branchExists: boolean;
@@ -234,7 +235,11 @@ async function listenForKeySequence(
 			// Title
 			't': async (settings: GitPickSettings) => ({
 				...settings,
-				title: await Gum.input({ defaultValue: settings.title, prompt: 'Pull request title: ' }),
+				title: await writeTitle({
+					commits: settings.commits,
+					branchName: settings.branchName,
+					currentTitle: settings.title,
+				}),
 			}),
 			// Edit body
 			'e': async (settings: GitPickSettings) => ({

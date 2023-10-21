@@ -33,12 +33,18 @@ export async function generatePullRequestBody(commits: Commit[]): Promise<string
 		.join('\n\n---\n');
 }
 
-export function suggestBranchNameForCommitMessage(message: string): string {
+export function convertToValidBranchName(message: string): string {
 	return slugify(message);
 }
 
 export async function assertValidBranchName(branchName: string) {
 	if (!await Git.isValidBranchName(branchName)) {
 		throw new Error(`Branch name "${branchName}" is invalid`);
+	}
+}
+
+export function assertValidTitle(title: string) {
+	if (!title) {
+		throw new Error(`Title "${title}" is invalid`);
 	}
 }
