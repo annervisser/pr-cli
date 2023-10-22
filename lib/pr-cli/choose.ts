@@ -5,7 +5,7 @@ import { colors } from '../../deps.ts';
 type Formatter<Option> = (option: Option) => string;
 const noopFormatter: Formatter<string> = (s) => s;
 
-type GenericChooseSettings = Omit<ChooseSettings, 'selectedOptions'>;
+type GenericChooseSettings = Omit<ChooseSettings, 'selectedOptions' | 'multiselect'>;
 type ChooseOneSettings<Option> = GenericChooseSettings & { selectedOption?: Option };
 type ChooseMultipleSettings<Option> = GenericChooseSettings & {
 	selectedOptions?: readonly Option[];
@@ -23,9 +23,10 @@ export async function chooseOneFormatted<Option>(
 	format: Formatter<Option>,
 	{ selectedOption, ...chooseSettings }: ChooseOneSettings<Option> = {},
 ): Promise<Option> {
-	const selected = await chooseMultipleFormatted(options, format, {
+	const selected = await _choose(options, format, {
 		...chooseSettings,
 		selectedOptions: selectedOption ? [selectedOption] : undefined,
+		multiselect: false,
 	});
 	if (selected.length !== 1) {
 		throw new Error(
@@ -47,24 +48,22 @@ export async function chooseMultipleFormatted<Option>(
 	format: Formatter<Option>,
 	chooseSettings?: ChooseMultipleSettings<Option>,
 ): Promise<Option[]> {
+	return await _choose(options, format, { ...chooseSettings, multiselect: true });
+}
+
+async function _choose<Option>(
+	options: readonly Option[],
+	format: Formatter<Option>,
+	chooseSettings?: ChooseMultipleSettings<Option> & { multiselect: boolean },
+): Promise<Option[]> {
 	const { optionsMap, optionStrings } = createOptionMap(options, format);
 
 	const selection = await Gum.choose(
 		optionStrings,
-		makeSettingsCompatible(format, chooseSettings),
+		{ ...chooseSettings, selectedOptions: chooseSettings?.selectedOptions?.map(format) },
 	);
 
 	return selection.map((selected) => getOptionFromMap(selected, optionsMap));
-}
-
-function makeSettingsCompatible<Option>(
-	format: Formatter<Option>,
-	chooseSettings?: ChooseMultipleSettings<Option>,
-): ChooseSettings | undefined {
-	if (!chooseSettings) {
-		return chooseSettings;
-	}
-	return { ...chooseSettings, selectedOptions: chooseSettings?.selectedOptions?.map(format) };
 }
 
 function createOptionMap<Option>(
