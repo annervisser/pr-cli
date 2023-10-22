@@ -2,10 +2,10 @@ import { colors, Command, log } from '../../deps.ts';
 import { GH } from '../../lib/github/gh.ts';
 import { Git } from '../../lib/git/git.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
-import { getDefaultBranch } from '../../lib/pr-cli/default-branch.ts';
-import { generatePullRequestBody } from '../../lib/pr-cli/pull-request.ts';
 import { checkDependencies } from '../pick/steps/check-dependencies.ts';
 import { writeTitle } from '../../lib/pr-cli/pr-title.ts';
+import { generatePullRequestBody } from '../../lib/pr-cli/pr-body.ts';
+import { getDefaultBranch } from '../../lib/pr-cli/branch.ts';
 
 export const pullRequestCommand = new Command()
 	.name('pull-request')

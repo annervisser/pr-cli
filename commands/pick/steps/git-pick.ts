@@ -70,7 +70,6 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 
 		if (settings.createPR) {
 			log.info(colors.green('▶️ Creating pull request'));
-			// Check if a pr is already open, using: `gh api "/repos/{owner}/{repo}/pulls?state=all&head={owner}:install-deps-command-for-gum" -q ".[] | {url}"`
 			await GH.createPullRequest({
 				title: settings.title,
 				body: settings.body,

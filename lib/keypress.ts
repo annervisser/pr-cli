@@ -1,5 +1,5 @@
 import { keypress } from '../deps.ts';
-import { CommandExecutionException } from './shell/shell.ts';
+import { CommandExecutionError } from './shell/command-execution-error.ts';
 
 const signalSequences: Record<string, Deno.Signal> = {
 	'ctrl+c': 'SIGINT',
@@ -21,7 +21,7 @@ export async function getKeySequence(): Promise<string> {
 
 	if (sequence === 'ctrl+c') {
 		// Special case for ctrl+c, allowing us to catch and print 'Aborted'
-		throw new CommandExecutionException(130);
+		throw new CommandExecutionError(130);
 	}
 	if (sequence in signalSequences) {
 		Deno.kill(Deno.pid, signalSequences[sequence]);

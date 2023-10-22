@@ -4,8 +4,8 @@ import { colors, Command, CompletionsCommand, HelpCommand, log, parseFlags } fro
 import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
 import { getBinDir } from './lib/pr-cli/get-bin-dir.ts';
-import { CommandExecutionException } from './lib/shell/shell.ts';
 import { isDebugModeEnabled } from './lib/pr-cli/debug.ts';
+import { CommandExecutionError } from './lib/shell/command-execution-error.ts';
 
 if (import.meta.main) {
 	const main = new Command()
@@ -31,7 +31,7 @@ if (import.meta.main) {
 	main.command(verifyCommand.getName(), verifyCommand);
 	main.command(installDepsCommand.getName(), installDepsCommand);
 
-	// Prepend our own bin dir to path
+	// Prepend our own bin dir to PATH
 	Deno.env.set('PATH', [getBinDir(), Deno.env.get('PATH')].join(':'));
 
 	if (parseFlags(Deno.args).flags.debug !== undefined) {
@@ -42,7 +42,7 @@ if (import.meta.main) {
 	try {
 		await main.parse(Deno.args);
 	} catch (err) {
-		if (err instanceof CommandExecutionException && err.code === 130) {
+		if (err instanceof CommandExecutionError && err.code === 130) {
 			log.info('Command Aborted');
 		} else {
 			log.error(colors.bgRed.brightWhite.bold(` ❗ ${err.message ?? err} `));
@@ -54,7 +54,7 @@ if (import.meta.main) {
 
 function logError(err: Error) {
 	log.debug(err);
-	if (err instanceof CommandExecutionException && err.stderr) {
+	if (err instanceof CommandExecutionError && err.stderr) {
 		log.error(err.stderr);
 	}
 	if (err.cause instanceof Error) {

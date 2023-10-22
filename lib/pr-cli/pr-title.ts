@@ -1,5 +1,5 @@
 import { Commit } from '../git/commit.ts';
-import { generatePullRequestTitle } from './pull-request.ts';
+import { convertBranchNameToTitle } from './branch.ts';
 import { colors } from 'https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts';
 import { chooseOneFormatted } from './choose.ts';
 import { Gum } from '../gum/gum.ts';
@@ -58,7 +58,7 @@ function getCommitStrategy(commits: Commit[]): TitleStrategy {
 }
 
 function getBranchStrategy(branchName: string): TitleStrategy {
-	const titleFromBranchName = generatePullRequestTitle(branchName);
+	const titleFromBranchName = convertBranchNameToTitle(branchName);
 	return {
 		label: `🗠  Use the branch name: ${colors.dim.white(titleFromBranchName)}`,
 		execute: () => titleFromBranchName,
@@ -76,4 +76,10 @@ function getManualStrategy(currentTitle?: string) {
 				defaultValue: currentTitle,
 			}),
 	};
+}
+
+export function assertValidTitle(title: string) {
+	if (!title) {
+		throw new Error(`Title "${title}" is invalid`);
+	}
 }
