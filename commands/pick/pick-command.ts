@@ -6,18 +6,17 @@ import { GH } from '../../lib/github/gh.ts';
 import { Gum } from '../../lib/gum/gum.ts';
 import {
 	assertValidBranchName,
-	assertValidTitle,
 	convertToValidBranchName,
-	generatePullRequestBody,
-} from '../../lib/pr-cli/pull-request.ts';
+	getDefaultBranch,
+} from '../../lib/pr-cli/branch.ts';
 import { Commit } from '../../lib/git/commit.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
 import { checkDependencies } from './steps/check-dependencies.ts';
-import { getDefaultBranch } from '../../lib/pr-cli/default-branch.ts';
 import { ColorScheme } from '../../lib/colors.ts';
 import { formatObjectForLog } from '../../lib/pr-cli/debug.ts';
 import { chooseMultipleFormatted } from '../../lib/pr-cli/choose.ts';
-import { writeTitle } from '../../lib/pr-cli/pr-title.ts';
+import { assertValidTitle, writeTitle } from '../../lib/pr-cli/pr-title.ts';
+import { generatePullRequestBody } from '../../lib/pr-cli/pr-body.ts';
 
 /** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict instead */
 const optionsThatRequirePR = ['draft', 'title'];

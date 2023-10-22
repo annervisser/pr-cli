@@ -1,13 +1,14 @@
 import { GitPickSettings } from './git-pick.ts';
 import { Gum } from '../../../lib/gum/gum.ts';
-import { ColorScheme, colorTo24Bit } from '../../../lib/colors.ts';
+import { ColorScheme } from '../../../lib/colors.ts';
 import { colors, tty } from '../../../deps.ts';
 import { getKeySequence } from '../../../lib/keypress.ts';
-import { CommandExecutionException } from '../../../lib/shell/shell.ts';
 import { Git } from '../../../lib/git/git.ts';
 import { GumStyleOptions } from '../../../lib/gum/style/style.ts';
 import { chooseOne } from '../../../lib/pr-cli/choose.ts';
 import { writeTitle } from '../../../lib/pr-cli/pr-title.ts';
+import { writePullRequestBody } from '../../../lib/pr-cli/pr-body.ts';
+import { CommandExecutionError } from '../../../lib/shell/command-execution-error.ts';
 
 interface ConfirmationContext {
 	branchExists: boolean;
@@ -24,7 +25,7 @@ export async function confirmSettings(
 		try {
 			result = await listenForKeySequence(settings, lastSummaryLineCount);
 		} catch (e) {
-			// If an error occurs (i.e. ctrl+c is pressed), make sure the output is on a new line
+			// If an error occurs (e.g. ctrl+c is pressed), make sure the output is on a new line
 			tty.text('\n');
 			throw e;
 		}
@@ -44,7 +45,7 @@ export async function confirmSettings(
 		try {
 			settings = await result(settings);
 		} catch (err) {
-			if (!(err instanceof CommandExecutionException && err.code === 130)) {
+			if (!(err instanceof CommandExecutionError && err.code === 130)) {
 				// Treat ctrl+c or esc as aborting the edit, not the whole command
 				throw err;
 			}
@@ -212,7 +213,10 @@ async function listenForKeySequence(
 		// Branch
 		'b': async (settings: GitPickSettings) => ({
 			...settings,
-			branchName: await Gum.input({ defaultValue: settings.branchName, prompt: 'Branch name: ' }),
+			branchName: await Gum.input({
+				defaultValue: settings.branchName,
+				prompt: 'Branch name: ',
+			}),
 		}),
 		'return': KeySequenceResult.Confirmed,
 	};
@@ -244,40 +248,11 @@ async function listenForKeySequence(
 			// Edit body
 			'e': async (settings: GitPickSettings) => ({
 				...settings,
-				body: await promptForPullRequestBody(settings.body, maxHeight),
+				body: await writePullRequestBody(settings.body, maxHeight),
 			}),
 		};
 	}
 
 	const keyPress = await getKeySequence();
 	return actionMap[keyPress] ?? KeySequenceResult.Unhandled;
-}
-
-async function promptForPullRequestBody(currentBody: string, height: number) {
-	const inputWidth = 100;
-	const recommendedWidth = 72;
-	const lineNumberOverhead = 4; // space + line number (` 1`-`99`) + space
-
-	const overHeadText = ' 📄 '; // ! length needs to match lineNumberOverhead (📄 emoji = 2)
-	const headerText = ' Pull request body';
-	const saveText = ' (Ctrl+d to save)';
-	const overflowText = ` ! >${recommendedWidth}`;
-
-	// Do this before adding any ANSI color characters
-	const headerPadding = ' '.repeat(recommendedWidth - headerText.length - saveText.length);
-
-	const bg = (color: string) => (text: string) => colors.bgRgb24(text, colorTo24Bit(color));
-
-	return await Gum.write({
-		width: inputWidth + lineNumberOverhead,
-		height: height - 1, // subtract the header line
-		header: bg(ColorScheme.primarySaturated)(colors.brightWhite(overHeadText)) +
-			bg(ColorScheme.primary)(
-				colors.bold.black(headerText) + colors.brightBlack(saveText) + headerPadding,
-			) +
-			bg(ColorScheme.primaryDarker)(overflowText.padEnd(inputWidth - recommendedWidth)),
-		showLineNumbers: true,
-		showCursorLine: true,
-		value: currentBody,
-	});
 }

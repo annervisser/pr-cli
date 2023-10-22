@@ -13,12 +13,15 @@ interface BasePROptions {
 }
 
 interface ManualTitleAndBody {
+	autofill?: false;
 	title: string;
 	body: string;
 }
 
 interface AutomaticTitleAndBody {
 	autofill: true;
+	title?: undefined;
+	body?: undefined;
 }
 
 type PullRequestOptions = BasePROptions & (ManualTitleAndBody | AutomaticTitleAndBody);

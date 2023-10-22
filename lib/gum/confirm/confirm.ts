@@ -1,4 +1,5 @@
-import { CommandExecutionException, runCommand } from '../../shell/shell.ts';
+import { runCommand } from '../../shell/shell.ts';
+import { CommandExecutionError } from '../../shell/command-execution-error.ts';
 
 export async function _gum_confirm(options?: {
 	prompt?: string;
@@ -21,7 +22,7 @@ export async function _gum_confirm(options?: {
 		await runCommand('gum', 'confirm', ...args);
 		return true;
 	} catch (e) {
-		if (e instanceof CommandExecutionException && e.code === 1) {
+		if (e instanceof CommandExecutionError && e.code === 1) {
 			return false;
 		}
 		throw e;

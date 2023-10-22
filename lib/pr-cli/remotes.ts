@@ -24,7 +24,9 @@ export async function getPushRemote(): Promise<string> {
 
 function chooseRemote(remotes: string[], orderedOptions: string[]): string | undefined {
 	if (remotes.length === 1) {
+		// If there is only one remote, return it
 		return remotes[0]!;
 	}
+	// If there are multiple remotes, only use when present in orderedOptions
 	return orderedOptions.find((remote) => remotes.includes(remote));
 }
