@@ -2,6 +2,9 @@
 
 Pull Request - Command Line Interface
 
+[pr-cli-cropped.webm](https://github.com/annervisser/pr-cli/assets/5613416/59192746-36fd-43a5-85e7-f2a15fb7e449)
+
+
 ## 📥 Installation
 
 - Install prerequisites:
