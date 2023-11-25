@@ -2,8 +2,45 @@
 
 Pull Request - Command Line Interface
 
-[pr-cli-cropped.webm](https://github.com/annervisser/pr-cli/assets/5613416/59192746-36fd-43a5-85e7-f2a15fb7e449)
+## ✨ Functionality
 
+### Picking commits (`pr-cli pick`)
+
+Quickly cherry-pick one or more commits from your current branch onto a new one and create a pull
+request for these commits.
+
+Very useful when doing a quick bugfix/cleanup/change unrelated to your branch. Or when creating
+frequent, small commits.
+
+- No need to leave your current branch!
+- Uncommitted changes are not a problem, no need to stash
+
+> pr-cli achieves this by creating a new worktree in a temporary directory, so that your main
+> worktree is completely unaffected
+
+- Interactive settings / confirmation screen
+
+It also has all the PR title/body features of `pr-cli pr`:
+
+#### Usage
+
+1. Run `pr-cli pick` (or `pr-cli p`) in a git repository
+2. Choose the commits you want to pick (If there is more than one)
+3. Choose how to set the pull request title (will also be used as branch name)
+4. Confirm/Change settings
+5. Press Enter to create Pull Request
+
+### Creating a pull request (`pr-cli pr`)
+
+Create a GitHub pull request based on your current branch, like `gh pr create` but better.
+
+- Quick options for setting the PR title
+  - Use one of the commit's titles
+  - Use the branch name
+  - Type a custom one
+- Automatically generate PR body based on all commits
+
+[pr-cli-cropped.webm](https://github.com/annervisser/pr-cli/assets/5613416/59192746-36fd-43a5-85e7-f2a15fb7e449)
 
 ## 📥 Installation
 
