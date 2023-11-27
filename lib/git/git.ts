@@ -1,5 +1,5 @@
 import { log } from '../../deps.ts';
-import { runAndCapture, runCommand, runQuietly } from '../shell/shell.ts';
+import { runAndCapture, runQuietly } from '../shell/shell.ts';
 import { Commit, CommitWithBody } from './commit.ts';
 import { isDebugModeEnabled } from '../pr-cli/debug.ts';
 
@@ -133,7 +133,7 @@ async function gitPush(options: {
 	options.force && args.push('--force');
 	options.force && args.push('--force-with-lease');
 	isDebugModeEnabled() || args.push('--quiet');
-	await runCommand('git', 'push', ...args, options.branch);
+	await runQuietly('git', 'push', ...args, options.branch);
 }
 
 async function listRemotes(): Promise<string[]> {
