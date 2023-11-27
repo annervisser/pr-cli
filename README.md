@@ -40,6 +40,8 @@ Create a GitHub pull request based on your current branch, like `gh pr create` b
   - Type a custom one
 - Automatically generate PR body based on all commits
 
+### Demo
+
 [pr-cli-cropped.webm](https://github.com/annervisser/pr-cli/assets/5613416/59192746-36fd-43a5-85e7-f2a15fb7e449)
 
 ## 📥 Installation
