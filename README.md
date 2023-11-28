@@ -20,7 +20,7 @@ frequent, small commits.
 
 - Interactive settings / confirmation screen
 
-It also has all the PR title/body features of `pr-cli pr`:
+It also has all the PR title/body features of [`pr-cli pr`](#creating-a-pull-request-pr-cli-pr)
 
 #### Usage
 
