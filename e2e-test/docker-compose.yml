@@ -13,7 +13,7 @@ services:
     depends_on:
       runtime:
         condition: service_healthy
-    image: mcr.microsoft.com/playwright:v1.39.0-jammy@sha256:dccb9c6518090a100aaa820ff0b1d0c7ec12154f80696e7799b5cd9232daa0b0
+    image: mcr.microsoft.com/playwright:v1.40.1-jammy@sha256:1aba528f5db4f4c130653ed1de737ddc1d276197cc4503d3bb7903a93b7fb32e
     user: pwuser
     security_opt:
       - 'seccomp=./docker/playwright_seccomp_profile.json'
