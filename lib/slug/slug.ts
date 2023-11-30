@@ -1,6 +1,9 @@
 import { slug } from '../../deps.ts';
 
 export function slugify(string: string): string {
+	// Convert dashes to spaces so slug() retains them
+	string = string.replaceAll('-', ' ');
+
 	return slug(string, {
 		locale: 'uk',
 		lower: true,
