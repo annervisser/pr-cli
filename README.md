@@ -75,12 +75,22 @@ deno install --reload --force --name pr-cli --allow-run --allow-read --allow-env
 
 ### 🔲 Completions
 
-To get completions for pr-cli in bash, run this::
+Enable auto-completion of pr-cli commands by running the command for your shell:
+
+#### Bash
 
 ```shell
 echo 'source <(pr-cli completions bash)' >> ~/.bashrc
 ```
 
-> ℹ️ This will add `source <(pr-cli completions bash)` at the end of your .bashrc file
+#### ZSH
 
-For other shells run `pr-cli completions --help` for instructions
+```shell
+echo 'source <(pr-cli completions zsh)' >> ~/.zshrc
+```
+
+#### Fish
+
+```shell
+echo 'source (pr-cli completions fish | psub)' >> ~/.config/fish/config.fish:
+```
