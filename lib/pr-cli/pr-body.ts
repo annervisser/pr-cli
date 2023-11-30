@@ -1,31 +1,22 @@
 import { colors } from 'https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts';
 import { ColorScheme, colorTo24Bit } from '../colors.ts';
 import { Gum } from '../gum/gum.ts';
-import { Commit } from '../git/commit.ts';
+import { Commit, CommitWithBody } from '../git/commit.ts';
 import { Git } from '../git/git.ts';
-
-const mdDetailsBlock = (summary: string, details: string) =>
-	`<details>
-<summary>${summary}</summary>
-
-${details}
-</details>`;
 
 export async function generatePullRequestBody(commits: Commit[]): Promise<string> {
 	const commitsWithBody = await Promise.all(commits.map(Git.getCommitBody));
+	return formatCommits(commitsWithBody);
+}
 
-	if (commitsWithBody.length === 1) {
-		const commit = commitsWithBody[0]!;
-		return `${commit.message}\n\n${commit.body}`;
-	}
-
+export function formatCommits(commitsWithBody: CommitWithBody[]): string {
 	return commitsWithBody
-		.map((commit) =>
-			commit.body.trim().length < 1
-				? `▹ ${commit.message}`
-				: mdDetailsBlock(commit.message, commit.body)
-		)
-		.join('\n\n---\n');
+		.map((commit) => {
+			const message = `#### ▹ ${commit.message}`;
+			const body = commit.body.trim().length < 1 ? '' : `\n\n${commit.body}`;
+			return message + body;
+		})
+		.join('\n\n---\n\n');
 }
 
 export async function writePullRequestBody(currentBody: string, height: number) {
