@@ -81,6 +81,6 @@ To get completions for pr-cli in bash, run this::
 echo 'source <(pr-cli completions bash)' >> ~/.bashrc
 ```
 
-> ℹ This will add `source <(pr-cli completions bash)` at the end of your .bashrc file
+> ℹ️ This will add `source <(pr-cli completions bash)` at the end of your .bashrc file
 
 For other shells run `pr-cli completions --help` for instructions
