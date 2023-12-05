@@ -128,12 +128,9 @@ export const pickCommand = new Command()
 		}
 
 		// This promise is only set if it should be checked, undefined otherwise (await undefined = undefined)
-		if (await doesBranchHavePullRequest) {
-			options.pr = !(await Gum.confirm({
-				prompt: 'A pull request for this branch already exists, skip recreating it?',
-				startOnAffirmative: true,
-			}));
-			log.info(options.pr ? 'Trying to create PR anyway!' : 'Skipping PR');
+		const updatePR = await doesBranchHavePullRequest ?? false;
+		if (updatePR) {
+			log.info('PR exists, updating it!');
 		}
 
 		let forcePush = options.force === true;
@@ -151,7 +148,8 @@ export const pickCommand = new Command()
 		const settings = await confirmSettings(
 			{
 				push: options.push,
-				createPR: options.pr,
+				pr: options.pr,
+				updatePR,
 				draftPR: options.draft ?? false,
 				pullRemote: options.pullRemote,
 				pushRemote: options.pushRemote,

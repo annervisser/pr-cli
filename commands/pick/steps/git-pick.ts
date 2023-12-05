@@ -18,8 +18,9 @@ export type GitPickSettings = Readonly<{
 	commits: Commit[];
 
 	// Pull request settings
-	createPR: boolean;
+	pr: boolean;
 	draftPR: boolean;
+	updatePR: boolean;
 	title: string;
 	body: string;
 }>;
@@ -68,14 +69,20 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 			});
 		}
 
-		if (settings.createPR) {
-			log.info(colors.green('▶️ Creating pull request'));
-			await GH.createPullRequest({
+		if (settings.pr) {
+			const prSettings = {
 				title: settings.title,
 				body: settings.body,
 				baseBranch: settings.upstreamBranch,
 				draftPR: settings.draftPR,
-			});
+			};
+			if (settings.updatePR) {
+				log.info(colors.green('▶️ Updating pull request'));
+				await GH.editPullRequest(prSettings);
+			} else {
+				log.info(colors.green('▶️ Creating pull request'));
+				await GH.createPullRequest(prSettings);
+			}
 		}
 	} finally {
 		for (const { message, action } of cleanupSteps.reverse()) {
