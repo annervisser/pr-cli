@@ -3,12 +3,16 @@ import { runAndCapture, runCommand } from '../shell/shell.ts';
 
 export class GH {
 	public static createPullRequest = createPullRequest;
+	public static editPullRequest = editPullRequest;
 	public static doesBranchHavePullRequest = doesBranchHavePullRequest;
 }
 
 interface BasePROptions {
 	baseBranch?: string;
 	draftPR?: boolean;
+}
+
+interface CreatePROptions {
 	web?: boolean;
 }
 
@@ -24,7 +28,11 @@ interface AutomaticTitleAndBody {
 	body?: undefined;
 }
 
-type PullRequestOptions = BasePROptions & (ManualTitleAndBody | AutomaticTitleAndBody);
+type PullRequestOptions =
+	& BasePROptions
+	& CreatePROptions
+	& (ManualTitleAndBody | AutomaticTitleAndBody);
+type EditPullRequestOptions = BasePROptions & ManualTitleAndBody;
 
 async function createPullRequest(options: PullRequestOptions) {
 	const args: string[] = [];
@@ -32,7 +40,7 @@ async function createPullRequest(options: PullRequestOptions) {
 	options.draftPR && args.push('--draft');
 	options.web && args.push('--web');
 
-	if ('autofill' in options) {
+	if (options.autofill) {
 		args.push('--fill');
 	} else {
 		args.push('--title', options.title);
@@ -45,6 +53,25 @@ async function createPullRequest(options: PullRequestOptions) {
 		'create',
 		'--assignee',
 		'@me',
+		...args,
+	);
+}
+
+async function editPullRequest(options: EditPullRequestOptions) {
+	const args: string[] = [];
+	options.baseBranch && args.push('--base', options.baseBranch);
+	options.draftPR && args.push('--draft');
+
+	await runCommand(
+		'gh',
+		'pr',
+		'edit',
+		'--add-assignee',
+		'@me',
+		'--title',
+		options.title,
+		'--body',
+		options.body,
 		...args,
 	);
 }

@@ -100,9 +100,13 @@ async function getSummaryForSettings(
 	const forceString = settings.forcePush ? `${colors.red('force')} ` : '';
 	const pushOptions = `${check(settings.push)} ${forceString}push`;
 
-	const isDraftPR = settings.createPR && settings.draftPR;
+	const isDraftPR = settings.pr && settings.draftPR;
 	const draftString = isDraftPR ? `${colors.brightBlack('draft')} ` : '';
-	const prOptions = `${check(settings.createPR)} ${draftString}pull request: ${settings.title}`;
+	const updatePR = settings.pr && settings.updatePR;
+	const prUpdateString = updatePR ? `${colors.blue('update')} ` : '';
+	const prIcon = updatePR ? colors.blue('⟳') : check(settings.pr);
+	const prActionText = `${prIcon} ${prUpdateString}${draftString}pull request`;
+	const prOptions = prActionText + (settings.pr ? `: ${settings.title}` : '');
 
 	const summaryLines = [
 		`${i}About to cherry pick commits:`,
@@ -122,7 +126,7 @@ async function getSummaryForSettings(
 			`${key('p')}r`,
 		);
 	}
-	if (settings.createPR) {
+	if (settings.pr) {
 		keys.push(
 			`${key('d')}raft`,
 			`${key('t')}itle`,
@@ -205,7 +209,7 @@ async function listenForKeySequence(
 				selectedOption: settings.push ? settings.pushRemote : dontPush,
 			});
 			if (pushRemote === dontPush) {
-				return ({ ...settings, push: false, createPR: false });
+				return ({ ...settings, push: false, pr: false });
 			} else {
 				return ({ ...settings, push: true, pushRemote: pushRemote });
 			}
@@ -225,13 +229,13 @@ async function listenForKeySequence(
 		actionMap = {
 			...actionMap,
 			// Pr
-			'p': (settings: GitPickSettings) => ({ ...settings, createPR: !settings.createPR }),
+			'p': (settings: GitPickSettings) => ({ ...settings, pr: !settings.pr }),
 			// Force
 			'f': (settings: GitPickSettings) => ({ ...settings, forcePush: !settings.forcePush }),
 		};
 	}
 
-	if (settings.createPR) {
+	if (settings.pr) {
 		actionMap = {
 			...actionMap,
 			// Draft
