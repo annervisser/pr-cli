@@ -4,7 +4,6 @@
 		"config:best-practices", // https://docs.renovatebot.com/presets-config/#configbest-practices
 		":prConcurrentLimitNone", // https://docs.renovatebot.com/presets-default/#prconcurrentlimitnone
 		":prHourlyLimitNone", // https://docs.renovatebot.com/presets-default/#prhourlylimitnone
-		":prNotPending", // https://docs.renovatebot.com/presets-default/#prnotpending
 		"docker:enableMajor", // https://docs.renovatebot.com/presets-docker/#dockerenablemajor
 		"group:allNonMajor", // https://docs.renovatebot.com/presets-group/#groupallnonmajor
 		"regexManagers:githubActionsVersions" // https://docs.renovatebot.com/presets-regexManagers/#regexmanagersgithubactionsversions

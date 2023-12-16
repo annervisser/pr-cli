@@ -1,8 +1,7 @@
 name: E2E Tests
 on:
   push:
-    # Check renovate/** to allow checks to run before it creates a PR
-    branches: [ "trunk", "renovate/**" ]
+    branches: [ "trunk" ]
   pull_request:
 
 permissions:
