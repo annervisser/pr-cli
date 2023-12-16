@@ -10,7 +10,7 @@ RUN apt-get update \
 COPY --from=docker.io/denoland/deno:bin-1.36.4@sha256:fa16fb8d2620aea62396929b7cdb2bd7abb2d1d38335567f95789d077f2c4523 /deno /usr/bin/deno
 
 # Gum
-COPY --from=docker.io/charmcli/gum:v0.12@sha256:ba2c0835867067ccadf06c75b0c5ef2bae4d2ffee71664825d5c4aba1baec704 /usr/local/bin/gum /usr/bin/gum
+COPY --from=docker.io/charmcli/gum:v0.13@sha256:54dd18742e0bc16b603c0dd87088d0fb3fd49d82a5c97c258f3753f7b257939a /usr/local/bin/gum /usr/bin/gum
 
 # ttyd
 COPY --from=docker.io/tsl0922/ttyd:1.7.4@sha256:70cfe40bf8a2897a38a39f51c29ec4709d4f6dc40d9f0ce75e1857da4087cd84 /usr/bin/ttyd /usr/bin/ttyd
