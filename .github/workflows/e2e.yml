@@ -12,6 +12,9 @@ jobs:
   e2e:
     name: Run E2E test
     runs-on: ubuntu-latest
+    env:
+      # renovate: datasource=node-version depName=node
+      NODE_VERSION: 16
     defaults:
       run:
         working-directory: e2e-test
@@ -21,7 +24,7 @@ jobs:
 
       - uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4
         with:
-          node-version: 16
+          node-version: "${{env.NODE_VERSION}}"
           cache: 'npm'
           cache-dependency-path: e2e-test/package-lock.json
 
