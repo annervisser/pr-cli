@@ -8,7 +8,7 @@ export async function checkDependencies() {
 		return;
 	}
 
-	log.info(colors.red.bold('✗ Missing dependencies, run \'pr-cli verify\' for details'));
+	log.info(colors.red.bold("✗ Missing dependencies, run 'pr-cli verify' for details"));
 	const exit = !await Confirm.prompt({
 		message: 'Continue with missing dependencies?',
 		default: false,

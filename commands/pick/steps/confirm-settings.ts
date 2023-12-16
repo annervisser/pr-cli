@@ -198,7 +198,7 @@ async function listenForKeySequence(
 	let actionMap: Record<string, SettingModificationAction | KeySequenceResult> = {
 		// pUsh settings
 		'u': async (settings: GitPickSettings) => {
-			const dontPush = 'Don\'t push';
+			const dontPush = "Don't push";
 			const remotes = await Git.listRemotes();
 			await Gum.style(['Where should your branch be pushed to?'], {
 				background: ColorScheme.primary,
