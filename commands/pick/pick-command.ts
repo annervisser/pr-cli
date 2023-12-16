@@ -29,7 +29,7 @@ export const pickCommand = new Command()
 		'cherry-pick specific commits onto a new branch and create a PR for it',
 	)
 	.group('Toggles')
-	.option('--no-fetch', 'Don\'t run git fetch before creating the branch')
+	.option('--no-fetch', "Don't run git fetch before creating the branch")
 	.option('--no-pr', 'Skip creating a pull request on Github', {
 		conflicts: optionsThatRequirePR,
 	})
@@ -180,7 +180,7 @@ async function parseOrPromptForCommits(
 		return await Git.getCommits(commitShas.join(' '));
 	}
 
-	log.debug('Ask user to pick from \'new\' commits (local not on remote)');
+	log.debug("Ask user to pick from 'new' commits (local not on remote)");
 	const newCommits = await Git.getCommitsToCherryPick(upstreamRef);
 	if (newCommits.length < 1) {
 		throw new Error('No commits to pick');
