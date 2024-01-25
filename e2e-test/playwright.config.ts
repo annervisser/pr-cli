@@ -1,10 +1,11 @@
-import type { PlaywrightTestConfig } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 
 /** See https://playwright.dev/docs/test-configuration. */
-const config: PlaywrightTestConfig = {
+export default defineConfig({
 	use: {
 		baseURL: process.env.BASE_URL ?? 'http://localhost:7681/',
 		trace: 'retain-on-failure',
+		browserName: 'chromium',
 	},
 	testDir: './tests',
 	fullyParallel: true,
@@ -13,5 +14,4 @@ const config: PlaywrightTestConfig = {
 		['html', process.env.DOCKER ? { host: '0.0.0.0' } : {}],
 		process.env.CI ? ['github'] : ['list'],
 	],
-};
-export default config;
+});

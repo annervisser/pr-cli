@@ -5,7 +5,7 @@
 		"moduleResolution": "node",
 		"baseUrl": ".",
 		"paths": {
-			"@helpers/*": ["./helpers/*"]
+			"@helpers/*": ["./helpers/*"],
 		},
 		"strict": true,
 		"strictPropertyInitialization": true,
@@ -15,6 +15,6 @@
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
 		"noImplicitOverride": true,
-		"noUncheckedIndexedAccess": true
-	}
+		"noUncheckedIndexedAccess": true,
+	},
 }
