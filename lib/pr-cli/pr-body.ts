@@ -12,11 +12,11 @@ export async function generatePullRequestBody(commits: Commit[]): Promise<string
 export function formatCommits(commitsWithBody: CommitWithBody[]): string {
 	return commitsWithBody
 		.map((commit) => {
-			const message = `#### ▹ ${commit.message}`;
+			const message = `#### ${commit.message}`;
 			const body = commit.body.trim().length < 1 ? '' : `\n\n${commit.body}`;
 			return message + body;
 		})
-		.join('\n\n---\n\n');
+		.join('\n\n<br>\n\n');
 }
 
 export async function writePullRequestBody(currentBody: string, height: number) {
