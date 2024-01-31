@@ -16,7 +16,7 @@ Deno.test('One commit', () => {
 			body: 'Body\nOf\nCommit',
 			sha: 'sha',
 		}],
-		'#### ▹ Message\n\nBody\nOf\nCommit',
+		'#### Message\n\nBody\nOf\nCommit',
 	);
 });
 
@@ -27,7 +27,7 @@ Deno.test('Indent', () => {
 			body: 'Body\n - Of\n - Commit',
 			sha: 'sha',
 		}],
-		'#### ▹ Message\n\nBody\n - Of\n - Commit',
+		'#### Message\n\nBody\n - Of\n - Commit',
 	);
 });
 
@@ -42,7 +42,7 @@ Deno.test('Multiple commits', () => {
 			body: 'Commit2\nBody',
 			sha: 'sha2',
 		}],
-		'#### ▹ Message1\n\nCommit1\nBody\n\n---\n\n#### ▹ Message2\n\nCommit2\nBody',
+		'#### Message1\n\nCommit1\nBody\n\n<br>\n\n#### Message2\n\nCommit2\nBody',
 	);
 });
 
