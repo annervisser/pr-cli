@@ -10,7 +10,7 @@ import { CommandExecutionError } from './lib/shell/command-execution-error.ts';
 if (import.meta.main) {
 	const main = new Command()
 		.name('pr-cli')
-		.version('1.4.0')
+		.version('1.5.0')
 		.option('--debug', 'enable verbose error logging', { global: true })
 		.description(
 			'Command line utility for quickly creating pull requests on Github',
