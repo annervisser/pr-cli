@@ -12,12 +12,12 @@
 	},
 	"devDependencies": {
 		"@playwright/test": "1.42.1",
-		"@types/node": "20.11.24",
-		"@typescript-eslint/eslint-plugin": "7.1.0",
-		"@typescript-eslint/parser": "7.1.0",
+		"@types/node": "20.11.25",
+		"@typescript-eslint/eslint-plugin": "7.1.1",
+		"@typescript-eslint/parser": "7.1.1",
 		"eslint": "8.57.0",
 		"eslint-config-prettier": "9.1.0",
-		"eslint-plugin-playwright": "1.5.1",
+		"eslint-plugin-playwright": "1.5.2",
 		"npm-run-all2": "6.1.2",
 		"prettier": "3.2.5"
 	}
