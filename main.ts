@@ -1,6 +1,16 @@
 import { pickCommand } from './commands/pick/pick-command.ts';
 import { verifyCommand } from './commands/verify/verify-command.ts';
-import { colors, Command, CompletionsCommand, HelpCommand, log, parseFlags } from './deps.ts';
+import {
+	colors,
+	Command,
+	CompletionsCommand,
+	DenoLandProvider,
+	GithubProvider,
+	HelpCommand,
+	log,
+	parseFlags,
+	UpgradeCommand,
+} from './deps.ts';
 import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
 import { getBinDir } from './lib/pr-cli/get-bin-dir.ts';
@@ -23,7 +33,17 @@ if (import.meta.main) {
 	// cliffy built-ins
 	main.command('help', new HelpCommand());
 	main.command('completions', new CompletionsCommand());
-	// TODO support upgrade command: https://cliffy.io/docs@v0.25.4/command/build-in-commands#upgrade-command
+	main.command(
+		'upgrade',
+		new UpgradeCommand({
+			provider: [
+				new DenoLandProvider({ name: 'prcli' }),
+				new GithubProvider({ repository: 'annervisser/pr-cli' }),
+			],
+			main: 'main.ts',
+			args: ['--allow-run', '--allow-read', '--allow-env'],
+		}),
+	);
 
 	// our commands
 	main.command(pickCommand.getName(), pickCommand);
