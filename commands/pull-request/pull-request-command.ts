@@ -63,13 +63,25 @@ export const pullRequestCommand = new Command()
 			force: options.force ?? false,
 		});
 
-		await GH.createPullRequest({
+		const remoteBranchExists = await Git.doesBranchExist(`${options.pushRemote}/${branchName}`);
+		let doesBranchHavePullRequest = false;
+		if (remoteBranchExists) {
+			// Start this check early to save some waiting time
+			doesBranchHavePullRequest = await GH.doesBranchHavePullRequest(branchName);
+		}
+
+		const prOptions = {
 			title: options.title,
 			body: body,
 			baseBranch: options.base,
 			draftPR: options.draft ?? false,
 			web: options.web ?? false,
-		});
+		};
+		if (doesBranchHavePullRequest) {
+			await GH.editPullRequest(prOptions);
+		} else {
+			await GH.createPullRequest(prOptions);
+		}
 
 		log.info(colors.bgGreen.brightWhite('✔ Done!'));
 	});
