@@ -1,11 +1,12 @@
 import { log } from '../../deps.ts';
 import { runAndCapture, runCommand } from '../shell/shell.ts';
 
-export class GH {
-	public static createPullRequest = createPullRequest;
-	public static editPullRequest = editPullRequest;
-	public static doesBranchHavePullRequest = doesBranchHavePullRequest;
-}
+export const GH = {
+	createPullRequest,
+	editPullRequest,
+	doesBranchHavePullRequest,
+	listPullRequests,
+};
 
 interface BasePROptions {
 	baseBranch?: string;
@@ -90,4 +91,28 @@ async function doesBranchHavePullRequest(branch: string): Promise<boolean> {
 	} catch {
 		return false;
 	}
+}
+
+async function listPullRequests() {
+	const json = await runAndCapture(
+		'gh',
+		'pr',
+		'list',
+		'--author',
+		'@me',
+		'--json',
+		'title,number,commits,headRefName,baseRefName',
+	);
+	const prs: Array<{
+		title: string;
+		number: number;
+		baseRefName: string;
+		headRefName: string;
+		commits: Array<{
+			messageHeadLine: string;
+			messageBody: string;
+			oid: string; // 464fc5a0d27f6053647cdb5939a936b91aaa91fc
+		}>;
+	}> = JSON.parse(json);
+	return prs;
 }

@@ -6,6 +6,9 @@ import { installDepsCommand } from './commands/install-deps/install-deps-command
 import { getBinDir } from './lib/pr-cli/get-bin-dir.ts';
 import { isDebugModeEnabled } from './lib/pr-cli/debug.ts';
 import { CommandExecutionError } from './lib/shell/command-execution-error.ts';
+import {
+	updatePullRequestCommand,
+} from './commands/update-pull-request/update-pull-request-command.ts';
 
 if (import.meta.main) {
 	const main = new Command()
@@ -28,6 +31,7 @@ if (import.meta.main) {
 	// our commands
 	main.command(pickCommand.getName(), pickCommand);
 	main.command(pullRequestCommand.getName(), pullRequestCommand);
+	main.command(updatePullRequestCommand.getName(), updatePullRequestCommand);
 	main.command(verifyCommand.getName(), verifyCommand);
 	main.command(installDepsCommand.getName(), installDepsCommand);
 
