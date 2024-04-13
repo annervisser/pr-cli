@@ -11,7 +11,7 @@
 		"fix:prettier": "prettier --write ."
 	},
 	"devDependencies": {
-		"@playwright/test": "1.43.0",
+		"@playwright/test": "1.43.1",
 		"@types/node": "20.12.7",
 		"@typescript-eslint/eslint-plugin": "7.6.0",
 		"@typescript-eslint/parser": "7.6.0",
