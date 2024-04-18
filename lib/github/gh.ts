@@ -6,6 +6,7 @@ export const GH = {
 	editPullRequest,
 	doesBranchHavePullRequest,
 	listPullRequests,
+	getPullRequestInfoForCurrentBranch,
 };
 
 interface BasePROptions {
@@ -34,6 +35,21 @@ type PullRequestOptions =
 	& CreatePROptions
 	& (ManualTitleAndBody | AutomaticTitleAndBody);
 type EditPullRequestOptions = BasePROptions & ManualTitleAndBody;
+
+async function getPullRequestInfoForCurrentBranch() {
+	const json = await runAndCapture(
+		'gh',
+		'pr',
+		'view',
+		'--json',
+		'headRefOid,number',
+	);
+	const pr = JSON.parse(json);
+	return {
+		headRefOid: pr.headRefOid as string,
+		number: pr.number as number,
+	};
+}
 
 async function createPullRequest(options: PullRequestOptions) {
 	const args: string[] = [];
