@@ -1,7 +1,7 @@
 import { log } from '../../deps.ts';
+import { isDebugModeEnabled } from '../pr-cli/debug.ts';
 import { runAndCapture, runQuietly } from '../shell/shell.ts';
 import { Commit, CommitWithBody } from './commit.ts';
-import { isDebugModeEnabled } from '../pr-cli/debug.ts';
 
 export class Git {
 	public static verifyAndExpandCommitSHAs = verifyAndExpandCommitSHAs;
@@ -15,6 +15,7 @@ export class Git {
 	public static isValidBranchName = isValidBranchName;
 	public static getCurrentBranch = getCurrentBranch;
 	public static getHeadOfRemote = getHeadOfRemote;
+	public static getHEADCommitSha = getHEADCommitSha;
 }
 
 async function verifyAndExpandCommitSHAs(
@@ -143,11 +144,21 @@ async function listRemotes(): Promise<string[]> {
 
 async function doesBranchExist(branch: string): Promise<boolean> {
 	try {
-		await runQuietly('git', 'rev-parse', '--verify', branch);
+		await revParse(branch, { verify: true });
 		return true;
 	} catch {
 		return false;
 	}
+}
+
+async function getHEADCommitSha() {
+	return await revParse('HEAD');
+}
+
+async function revParse(revision: string, options?: { verify?: boolean }) {
+	const args: string[] = [];
+	options?.verify && args.push('--verify');
+	return await runQuietly('git', 'rev-parse', ...args, revision);
 }
 
 async function isValidBranchName(branchName: string): Promise<boolean> {

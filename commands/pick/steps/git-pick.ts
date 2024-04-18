@@ -1,8 +1,9 @@
 import { colors, log } from '../../../deps.ts';
-import { runQuietly } from '../../../lib/shell/shell.ts';
-import { GH } from '../../../lib/github/gh.ts';
 import { Commit } from '../../../lib/git/commit.ts';
 import { Git } from '../../../lib/git/git.ts';
+import { GH } from '../../../lib/github/gh.ts';
+import { runQuietly } from '../../../lib/shell/shell.ts';
+import { sleep } from '../../../lib/sleep.ts';
 
 export type GitPickSettings = Readonly<{
 	push: boolean;
@@ -77,6 +78,8 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 				draftPR: settings.draftPR,
 			};
 			if (settings.updatePR) {
+				await waitForGitHubPRToMatchCommitSHA();
+
 				log.info(colors.green('▶️ Updating pull request'));
 				await GH.editPullRequest(prSettings);
 			} else {
@@ -94,4 +97,32 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 			}
 		}
 	}
+}
+
+async function waitForGitHubPRToMatchCommitSHA() {
+	const attempts = 5;
+
+	log.info('Verifying pull request was updated...');
+	for (let i = 0; i < attempts; i++) {
+		const prInfo = await GH.getPullRequestInfoForCurrentBranch();
+		log.debug(`headRefOid of PR ${prInfo.number} is: ${prInfo.headRefOid}`);
+
+		const headSHA = await Git.getHEADCommitSha();
+		log.debug(`commit SHA of HEAD is: ${headSHA}`);
+
+		if (!prInfo.headRefOid.startsWith(headSHA)) {
+			log.debug(
+				`✗ local HEAD (${headSHA}}) does not match with the current PR head (${prInfo.headRefOid})`,
+			);
+			await sleep(1000);
+		} else {
+			log.debug(
+				`✔ local HEAD (${headSHA}}) matches with the current PR head (${prInfo.headRefOid})`,
+			);
+			log.info('✔ Changes pushed to PR');
+			return;
+		}
+	}
+
+	log.error(`PR HEAD on GitHub did not match local HEAD after ${attempts} attempts`);
 }
