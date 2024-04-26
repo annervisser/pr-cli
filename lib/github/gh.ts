@@ -7,6 +7,7 @@ export const GH = {
 	doesBranchHavePullRequest,
 	listPullRequests,
 	getPullRequestInfoForCurrentBranch,
+	getPullRequestInfoForBranch,
 };
 
 interface BasePROptions {
@@ -42,12 +43,13 @@ async function getPullRequestInfoForCurrentBranch() {
 		'pr',
 		'view',
 		'--json',
-		'headRefOid,number',
+		'headRefOid,number,body',
 	);
 	const pr = JSON.parse(json);
 	return {
 		headRefOid: pr.headRefOid as string,
 		number: pr.number as number,
+		body: pr.body as string,
 	};
 }
 
@@ -97,30 +99,47 @@ async function doesBranchHavePullRequest(branch: string): Promise<boolean> {
 	try {
 		// gh pr view doesn't work for multi-remote use cases, gh pr list does
 		// This will give a false positive for prs from a different repository with the same branch name
-		const json = await runAndCapture('gh', 'pr', 'list', '--head', branch, '--json', 'title');
-		const pr = JSON.parse(json);
-		if (!Array.isArray(pr)) {
-			log.error('Invalid response from gh cli:', pr);
-			return false;
-		}
-		return pr.length > 0;
+		const prs = await listPullRequests({ head: branch });
+		return prs.length > 0;
 	} catch {
 		return false;
 	}
 }
 
-async function listPullRequests() {
+async function getPullRequestInfoForBranch(branch: string) {
+	// gh pr view doesn't work for multi-remote use cases, gh pr list does
+	const prs = await listPullRequests({ head: branch });
+	if (prs.length < 1) {
+		return null;
+	}
+
+	if (prs.length > 1) {
+		log.warning('More than 1 matching PR found:', prs.map((pr) => pr.number));
+	}
+
+	return prs[0]!;
+}
+
+async function listPullRequests(options: {
+	head?: string;
+	author?: '@me' | string;
+}) {
+	const args: string[] = [];
+
+	options.head && args.push('--head', options.head);
+	options.author && args.push('--author', options.author);
+
 	const json = await runAndCapture(
 		'gh',
 		'pr',
 		'list',
-		'--author',
-		'@me',
+		...args,
 		'--json',
-		'title,number,commits,headRefName,baseRefName',
+		'title,body,number,commits,headRefName,baseRefName',
 	);
 	const prs: Array<{
 		title: string;
+		body: string;
 		number: number;
 		baseRefName: string;
 		headRefName: string;
@@ -130,5 +149,11 @@ async function listPullRequests() {
 			oid: string; // 464fc5a0d27f6053647cdb5939a936b91aaa91fc
 		}>;
 	}> = JSON.parse(json);
-	return prs;
+
+	if (!Array.isArray(prs)) {
+		log.error('Invalid response from gh cli:', prs);
+		return [];
+	}
+	// Replace CRLF with LF, GUM editor doesnt like CRLF (and neither do I)
+	return prs.map((pr) => ({ ...pr, body: pr.body.replaceAll('\r\n', '\n') }));
 }
