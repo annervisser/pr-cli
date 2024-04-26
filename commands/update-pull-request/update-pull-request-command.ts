@@ -11,7 +11,7 @@ export const updatePullRequestCommand = new Command()
 	.action(async () => {
 		await checkDependencies();
 
-		const prs = await GH.listPullRequests();
+		const prs = await GH.listPullRequests({ author: '@me' });
 		if (prs.length < 1) {
 			throw new Error('No pull requests to update');
 		}

@@ -16,7 +16,7 @@ import { ColorScheme } from '../../lib/colors.ts';
 import { formatObjectForLog } from '../../lib/pr-cli/debug.ts';
 import { chooseMultipleFormatted } from '../../lib/pr-cli/choose.ts';
 import { assertValidTitle, writeTitle } from '../../lib/pr-cli/pr-title.ts';
-import { generatePullRequestBody } from '../../lib/pr-cli/pr-body.ts';
+import { generatePullRequestBody, replacePRCLIPartOfBody } from '../../lib/pr-cli/pr-body.ts';
 
 /** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict instead */
 const optionsThatRequirePR = ['draft', 'title'];
@@ -136,13 +136,19 @@ export const pickCommand = new Command()
 			log.info(forcePush ? 'Force pushing!' : 'Not force pushing');
 		}
 
-		const body = await generatePullRequestBody(pickedCommits);
+		let body = await generatePullRequestBody(pickedCommits);
 		log.debug(`Generated pull request body:\n${body}`);
 
 		// This promise is only set if it should be checked, undefined otherwise (await undefined = undefined)
 		const updatePR = await doesBranchHavePullRequest ?? false;
 		if (updatePR) {
 			log.info('PR exists, updating it!');
+			const currentPR = await GH.getPullRequestInfoForBranch(branchName);
+			if (!currentPR) {
+				log.warning('Unable to retrieve info for existing PR');
+			} else {
+				body = replacePRCLIPartOfBody(currentPR.body, body);
+			}
 		}
 
 		const settings = await confirmSettings(
