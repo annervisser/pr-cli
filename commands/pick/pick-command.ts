@@ -127,12 +127,6 @@ export const pickCommand = new Command()
 			log.info(overwriteLocalBranch ? 'Overwriting local branch!' : 'Not overwriting local branch');
 		}
 
-		// This promise is only set if it should be checked, undefined otherwise (await undefined = undefined)
-		const updatePR = await doesBranchHavePullRequest ?? false;
-		if (updatePR) {
-			log.info('PR exists, updating it!');
-		}
-
 		let forcePush = options.force === true;
 		if (!forcePush && options.push && remoteBranchExists) {
 			forcePush = await Gum.confirm({
@@ -144,6 +138,12 @@ export const pickCommand = new Command()
 
 		const body = await generatePullRequestBody(pickedCommits);
 		log.debug(`Generated pull request body:\n${body}`);
+
+		// This promise is only set if it should be checked, undefined otherwise (await undefined = undefined)
+		const updatePR = await doesBranchHavePullRequest ?? false;
+		if (updatePR) {
+			log.info('PR exists, updating it!');
+		}
 
 		const settings = await confirmSettings(
 			{
