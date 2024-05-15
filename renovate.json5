@@ -1,35 +1,39 @@
 {
-	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": [
-		"config:best-practices", // https://docs.renovatebot.com/presets-config/#configbest-practices
-		":prConcurrentLimitNone", // https://docs.renovatebot.com/presets-default/#prconcurrentlimitnone
-		":prHourlyLimitNone", // https://docs.renovatebot.com/presets-default/#prhourlylimitnone
-		"docker:enableMajor", // https://docs.renovatebot.com/presets-docker/#dockerenablemajor
-		"group:allNonMajor", // https://docs.renovatebot.com/presets-group/#groupallnonmajor
-		"regexManagers:githubActionsVersions" // https://docs.renovatebot.com/presets-regexManagers/#regexmanagersgithubactionsversions
+	$schema: 'https://docs.renovatebot.com/renovate-schema.json',
+	extends: [
+		'config:best-practices',
+		':prConcurrentLimitNone',
+		':prHourlyLimitNone',
+		'docker:enableMajor',
+		'group:allNonMajor',
+		'customManagers:githubActionsVersions',
 	],
-	"automerge": true,
-	"schedule": [
-		"before 4am on Saturday"
+	automerge: true,
+	schedule: [
+		'before 4am on Saturday',
 	],
-	"packageRules": [
+	packageRules: [
 		{
-			"groupName": "Docker",
-			"matchDatasources": ["docker"],
-			"pinDigests": true,
-		},
-		{
-			"groupName": "GitHub Actions",
-			"matchManagers": ["github-actions"],
-			"pinDigests": true,
-		},
-		{
-			"groupName": "Playwright",
-			"matchPackageNames": [
-				"playwright",
-				"@playwright/test",
-				"mcr.microsoft.com/playwright"
+			groupName: 'Docker',
+			matchDatasources: [
+				'docker',
 			],
-		}
-	]
+			pinDigests: true,
+		},
+		{
+			groupName: 'GitHub Actions',
+			matchManagers: [
+				'github-actions',
+			],
+			pinDigests: true,
+		},
+		{
+			groupName: 'Playwright',
+			matchPackageNames: [
+				'playwright',
+				'@playwright/test',
+				'mcr.microsoft.com/playwright',
+			],
+		},
+	],
 }
