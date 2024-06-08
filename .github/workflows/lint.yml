@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # renovate: datasource=github-releases depName=denoland/deno
-      DENO_VERSION: v1.44.0
+      DENO_VERSION: v1.44.1
     steps:
       - name: Setup repo
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
