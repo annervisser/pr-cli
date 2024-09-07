@@ -1,4 +1,4 @@
-FROM docker.io/debian:bookworm-slim@sha256:2ccc7e39b0a6f504d252f807da1fc4b5bcd838e83e4dec3e2f57b2a4a64e7214
+FROM docker.io/debian:bookworm-slim@sha256:a629e796d77a7b2ff82186ed15d01a493801c020eed5ce6adaa2704356f15a1c
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -10,7 +10,7 @@ RUN apt-get update \
 COPY --from=docker.io/denoland/deno:bin-1.36.4@sha256:fa16fb8d2620aea62396929b7cdb2bd7abb2d1d38335567f95789d077f2c4523 /deno /usr/bin/deno
 
 # Gum
-COPY --from=docker.io/charmcli/gum:v0.14@sha256:6e510941ee0182606f93b1bff048d10bfcb6f3170c74fe84e531426e8f608cf3 /usr/local/bin/gum /usr/bin/gum
+COPY --from=docker.io/charmcli/gum:v0.14@sha256:e9dce17af022adaea2d8f2ee43ced9bec88a9c23790cc9a641dc8ff82679cc2d /usr/local/bin/gum /usr/bin/gum
 
 # ttyd
 COPY --from=docker.io/tsl0922/ttyd:1.7.7@sha256:9a058c087bca6df456cb728514eafe778ea384369a622b3604c8b5256b67237d /usr/bin/ttyd /usr/bin/ttyd
