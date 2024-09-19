@@ -1,7 +1,7 @@
 import { expect, test as base } from '@playwright/test';
 import { CLI } from '@helpers/CLI';
 
-export const test = base.extend<{ cli: CLI; _tmpdir: void }>({
+export const test = base.extend<{ cli: CLI; _tmpdir: undefined }>({
 	cli: async ({ page }, use) => {
 		await page.goto('/');
 		await expect(page).toHaveTitle(/bash/);

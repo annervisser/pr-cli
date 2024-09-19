@@ -18,8 +18,6 @@ export class CLI {
 		await this.page.keyboard.press(key);
 	}
 
-	async command(command: string): Promise<void>;
-	async command(commands: string[]): Promise<void>;
 	async command(commands: string | string[]): Promise<void> {
 		commands = typeof commands === 'string' ? [commands] : commands;
 		for (const command of commands) {
@@ -34,6 +32,6 @@ export class CLI {
 
 	async assertExitCode(code: number) {
 		await this.command('echo $?'); // get exit code
-		await expect(this.lineN(-2)).toHaveText(`${code}`);
+		await expect(this.lineN(-2)).toHaveText(code.toString());
 	}
 }
