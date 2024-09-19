@@ -18,14 +18,6 @@ module.exports = {
 	],
 	overrides: [],
 	rules: {
-		'@typescript-eslint/quotes': [
-			'error',
-			'single',
-			{
-				avoidEscape: true,
-				allowTemplateLiterals: false,
-			},
-		],
 		'@typescript-eslint/no-unused-vars': [
 			'error',
 			{
