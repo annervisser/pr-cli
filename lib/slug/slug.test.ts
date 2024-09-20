@@ -1,4 +1,4 @@
-import { assertEquals } from 'https://deno.land/std@0.207.0/assert/assert_equals.ts';
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/assert_equals.ts';
 import { slugify } from './slug.ts';
 
 const zwSpace = '\u200b';

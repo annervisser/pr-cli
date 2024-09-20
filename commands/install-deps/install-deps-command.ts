@@ -50,7 +50,7 @@ export const installDepsCommand = new Command()
 		if (
 			!options.force &&
 			semver.isSemVer(existingGumVersion) &&
-			semver.gte(existingGumVersion, latestVersion)
+			semver.greaterOrEqual(existingGumVersion, latestVersion)
 		) {
 			log.info(colors.brightGreen('Installed version >= the latest version. Nothing to do!'));
 			Deno.exit(0);
