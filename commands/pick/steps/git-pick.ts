@@ -1,9 +1,10 @@
-import { colors, log } from '../../../deps.ts';
-import { Commit } from '../../../lib/git/commit.ts';
+import { colors } from '@cliffy/ansi/colors';
+import type { Commit } from '../../../lib/git/commit.ts';
 import { Git } from '../../../lib/git/git.ts';
 import { GH } from '../../../lib/github/gh.ts';
 import { runQuietly } from '../../../lib/shell/shell.ts';
 import { sleep } from '../../../lib/sleep.ts';
+import * as log from '@std/log';
 
 export type GitPickSettings = Readonly<{
 	push: boolean;

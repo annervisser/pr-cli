@@ -7,6 +7,8 @@ services:
       - './scripts:/home/docker/scripts'
     ports:
       - 7681:7681
+    environment:
+      DEBUG: '1'
     command: ['./run.sh']
 
   playwright:

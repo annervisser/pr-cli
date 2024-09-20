@@ -1,6 +1,6 @@
 import { confirmSettings } from './steps/confirm-settings.ts';
 import { runCherryPick } from './steps/git-pick.ts';
-import { colors, Command, log } from '../../deps.ts';
+import * as log from '@std/log';
 import { Git } from '../../lib/git/git.ts';
 import { GH } from '../../lib/github/gh.ts';
 import { Gum } from '../../lib/gum/gum.ts';
@@ -9,7 +9,7 @@ import {
 	convertToValidBranchName,
 	getDefaultBranch,
 } from '../../lib/pr-cli/branch.ts';
-import { Commit } from '../../lib/git/commit.ts';
+import type { Commit } from '../../lib/git/commit.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
 import { checkDependencies } from './steps/check-dependencies.ts';
 import { ColorScheme } from '../../lib/colors.ts';
@@ -17,6 +17,8 @@ import { formatObjectForLog } from '../../lib/pr-cli/debug.ts';
 import { chooseMultipleFormatted } from '../../lib/pr-cli/choose.ts';
 import { assertValidTitle, writeTitle } from '../../lib/pr-cli/pr-title.ts';
 import { generatePullRequestBody, replacePRCLIPartOfBody } from '../../lib/pr-cli/pr-body.ts';
+import { Command } from '@cliffy/command';
+import { colors } from '@cliffy/ansi/colors';
 
 /** Cliffy's 'depends' construct doesn't work with negatable options, so we have to make the negates conflict instead */
 const optionsThatRequirePR = ['draft', 'title'];

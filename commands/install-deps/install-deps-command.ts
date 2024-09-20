@@ -1,6 +1,11 @@
-import { colors, Command, ensureDir, log, path, semver } from '../../deps.ts';
 import { runAndCapture, runCommand } from '../../lib/shell/shell.ts';
 import { getBinDir } from '../../lib/pr-cli/get-bin-dir.ts';
+import { Command } from '@cliffy/command';
+import { colors } from '@cliffy/ansi/colors';
+import * as log from '@std/log';
+import * as semver from '@std/semver';
+import * as path from '@std/path';
+import { ensureDir } from '@std/fs/ensure-dir';
 
 interface GithubReleaseAsset {
 	name: string;

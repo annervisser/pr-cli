@@ -1,7 +1,7 @@
-import { colors } from 'https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts';
+import { colors } from '@cliffy/ansi/colors';
 import { ColorScheme, colorTo24Bit } from '../colors.ts';
 import { Gum } from '../gum/gum.ts';
-import { Commit, CommitWithBody } from '../git/commit.ts';
+import type { Commit, CommitWithBody } from '../git/commit.ts';
 import { Git } from '../git/git.ts';
 
 export const startMarker = '<!-- pr-cli body start -->';

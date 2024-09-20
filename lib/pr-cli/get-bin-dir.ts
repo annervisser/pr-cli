@@ -1,4 +1,4 @@
-import { path } from '../../deps.ts';
+import * as path from '@std/path';
 
 const HOME = Deno.env.get('HOME');
 

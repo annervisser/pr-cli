@@ -1,8 +1,8 @@
-import { Command } from '../../deps.ts';
 import { GH } from '../../lib/github/gh.ts';
 import { checkDependencies } from '../pick/steps/check-dependencies.ts';
 import { chooseOneFormatted } from '../../lib/pr-cli/choose.ts';
 import { pickCommand } from '../pick/pick-command.ts';
+import { Command } from '@cliffy/command';
 
 export const updatePullRequestCommand = new Command()
 	.name('update-pull-request')

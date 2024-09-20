@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ "trunk" ]
+    branches: ['trunk']
   pull_request:
 
 permissions:
@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4
         with:
-          node-version: "${{env.NODE_VERSION}}"
+          node-version: '${{env.NODE_VERSION}}'
           cache: 'npm'
           cache-dependency-path: e2e-test/package-lock.json
 
