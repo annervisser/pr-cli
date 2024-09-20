@@ -1,4 +1,4 @@
-import { log } from '../../deps.ts';
+import * as log from '@std/log';
 import { runAndCapture, runCommand } from '../shell/shell.ts';
 
 export const GH = {

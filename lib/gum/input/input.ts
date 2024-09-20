@@ -1,6 +1,6 @@
 import { runAndCapture } from '../../shell/shell.ts';
 import { ColorScheme } from '../../colors.ts';
-import { colors } from '../../../deps.ts';
+import { colors } from '@cliffy/ansi/colors';
 
 export async function _gum_input(options?: {
 	placeholder?: string;

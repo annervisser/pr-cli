@@ -1,14 +1,16 @@
-import { GitPickSettings } from './git-pick.ts';
+import type { GitPickSettings } from './git-pick.ts';
 import { Gum } from '../../../lib/gum/gum.ts';
 import { ColorScheme } from '../../../lib/colors.ts';
-import { colors, tty } from '../../../deps.ts';
 import { getKeySequence } from '../../../lib/keypress.ts';
 import { Git } from '../../../lib/git/git.ts';
-import { GumStyleOptions } from '../../../lib/gum/style/style.ts';
+import type { GumStyleOptions } from '../../../lib/gum/style/style.ts';
 import { chooseOne } from '../../../lib/pr-cli/choose.ts';
 import { writeTitle } from '../../../lib/pr-cli/pr-title.ts';
 import { writePullRequestBody } from '../../../lib/pr-cli/pr-body.ts';
 import { CommandExecutionError } from '../../../lib/shell/command-execution-error.ts';
+import { colors } from '@cliffy/ansi/colors';
+import { tty } from '@cliffy/ansi/tty';
+import { stripAnsiCode } from '@std/fmt/colors';
 
 interface ConfirmationContext {
 	branchExists: boolean;
@@ -177,7 +179,7 @@ async function getSummaryForSettings(
 }
 
 function getMaxLineLength(lines: string[]): number {
-	return lines.map((line) => colors.stripColor(line).length)
+	return lines.map((line) => stripAnsiCode(line).length)
 		.sort((a, b) => a - b)
 		.at(-1)!;
 }

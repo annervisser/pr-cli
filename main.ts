@@ -1,3 +1,9 @@
+import { colors } from '@cliffy/ansi/colors';
+import { Command } from '@cliffy/command';
+import { CompletionsCommand } from '@cliffy/command/completions';
+import { HelpCommand } from '@cliffy/command/help';
+import { parseFlags } from '@cliffy/flags';
+import * as log from '@std/log';
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
 import { pickCommand } from './commands/pick/pick-command.ts';
 import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
@@ -5,7 +11,6 @@ import {
 	updatePullRequestCommand,
 } from './commands/update-pull-request/update-pull-request-command.ts';
 import { verifyCommand } from './commands/verify/verify-command.ts';
-import { colors, Command, CompletionsCommand, HelpCommand, log, parseFlags } from './deps.ts';
 import { isDebugModeEnabled } from './lib/pr-cli/debug.ts';
 import { getBinDir } from './lib/pr-cli/get-bin-dir.ts';
 import { CommandExecutionError } from './lib/shell/command-execution-error.ts';
