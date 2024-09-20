@@ -1,6 +1,6 @@
-import { Commit } from '../git/commit.ts';
+import type { Commit } from '../git/commit.ts';
 import { convertBranchNameToTitle } from './branch.ts';
-import { colors } from 'https://deno.land/x/cliffy@v1.0.0-rc.3/ansi/colors.ts';
+import { colors } from '@cliffy/ansi/colors';
 import { chooseOneFormatted } from './choose.ts';
 import { Gum } from '../gum/gum.ts';
 

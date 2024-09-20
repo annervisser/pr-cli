@@ -5,8 +5,8 @@ import {
 	replacePRCLIPartOfBody,
 	startMarker,
 } from './pr-body.ts';
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
-import { CommitWithBody } from '../git/commit.ts';
+import { assertEquals } from '@std/assert';
+import type { CommitWithBody } from '../git/commit.ts';
 
 Deno.test('No commits', () => {
 	assertFormattedEquals(

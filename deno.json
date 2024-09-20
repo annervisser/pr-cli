@@ -1,25 +1,16 @@
 {
+	"name": "@annervisser/pr-cli",
+	"version": "1.8.0",
+	"exports": "./main.ts",
 	"tasks": {
 		"lint": "./bin/lint",
 		"e2e": "./bin/e2e"
 	},
+	"exclude": ["e2e-test", ".idea"],
 	"fmt": {
 		"useTabs": true,
 		"singleQuote": true,
-		"lineWidth": 100,
-		"exclude": [
-			"e2e-test"
-		]
-	},
-	"lint": {
-		"exclude": [
-			"e2e-test"
-		]
-	},
-	"test": {
-		"exclude": [
-			"e2e-test"
-		]
+		"lineWidth": 100
 	},
 	"compilerOptions": {
 		"strict": true,
@@ -28,9 +19,27 @@
 		"strictFunctionTypes": true,
 		"strictNullChecks": true,
 		"noImplicitAny": true,
-		"allowJs": false,
 		"noImplicitReturns": true,
 		"noImplicitOverride": true,
-		"noUncheckedIndexedAccess": true
+		"noUncheckedIndexedAccess": true,
+		"useUnknownInCatchVariables": false
+	},
+	"imports": {
+		"@cliffy/ansi": "jsr:@cliffy/ansi@^1.0.0-rc.7",
+		"@cliffy/ansi/colors": "jsr:@cliffy/ansi@^1.0.0-rc.7/colors",
+		"@cliffy/ansi/tty": "jsr:@cliffy/ansi@^1.0.0-rc.7/tty",
+		"@cliffy/command": "jsr:@cliffy/command@^1.0.0-rc.7",
+		"@cliffy/command/completions": "jsr:@cliffy/command@^1.0.0-rc.7/completions",
+		"@cliffy/command/help": "jsr:@cliffy/command@^1.0.0-rc.7/help",
+		"@cliffy/flags": "jsr:@cliffy/flags@^1.0.0-rc.7",
+		"@cliffy/keypress": "jsr:@cliffy/keypress@^1.0.0-rc.7",
+		"@cliffy/prompt": "jsr:@cliffy/prompt@^1.0.0-rc.7",
+		"@cliffy/table": "jsr:@cliffy/table@^1.0.0-rc.7",
+		"@std/assert": "jsr:@std/assert@^1.0.6",
+		"@std/fmt": "jsr:@std/fmt@^1.0.2",
+		"@std/fs": "jsr:@std/fs@^1.0.4",
+		"@std/log": "jsr:@std/log@^0.224.9",
+		"@std/path": "jsr:@std/path@^1.0.6",
+		"@std/semver": "jsr:@std/semver@^1.0.3"
 	}
 }

@@ -1,4 +1,4 @@
-import { log } from '../../deps.ts';
+import * as log from '@std/log';
 import { formatObjectForLog } from '../pr-cli/debug.ts';
 import { CommandExecutionError } from './command-execution-error.ts';
 

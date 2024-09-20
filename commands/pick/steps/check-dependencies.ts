@@ -1,5 +1,7 @@
+import { colors } from '@cliffy/ansi/colors';
+import { Confirm } from '@cliffy/prompt';
+import * as log from '@std/log';
 import { dependenciesMet } from '../../verify/verify-command.ts';
-import { colors, Confirm, log } from '../../../deps.ts';
 
 export async function checkDependencies() {
 	log.debug('Checking dependencies');

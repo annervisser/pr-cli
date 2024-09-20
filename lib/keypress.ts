@@ -1,4 +1,4 @@
-import { keypress } from '../deps.ts';
+import { keypress } from '@cliffy/keypress';
 import { CommandExecutionError } from './shell/command-execution-error.ts';
 
 const signalSequences: Record<string, Deno.Signal> = {
@@ -8,7 +8,7 @@ const signalSequences: Record<string, Deno.Signal> = {
 };
 
 export async function getKeySequence(): Promise<string> {
-	const event = await keypress.keypress();
+	const event = await keypress();
 
 	const parts = [
 		event.metaKey ? 'super+' : '',

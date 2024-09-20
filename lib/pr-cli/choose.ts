@@ -1,6 +1,6 @@
-import { ChooseSettings } from '../gum/choose/choose.ts';
+import { stripAnsiCode } from '@std/fmt/colors';
+import type { ChooseSettings } from '../gum/choose/choose.ts';
 import { Gum } from '../gum/gum.ts';
-import { colors } from '../../deps.ts';
 
 type Formatter<Option> = (option: Option) => string;
 const noopFormatter: Formatter<string> = (s) => s;
@@ -97,5 +97,5 @@ function getOptionFromMap<Option>(selected: string, options: Map<string, Option>
 }
 
 function normalizeOptionString(optionString: string): string {
-	return colors.stripColor(optionString);
+	return stripAnsiCode(optionString);
 }

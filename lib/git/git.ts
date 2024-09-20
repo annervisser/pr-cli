@@ -1,7 +1,7 @@
-import { log } from '../../deps.ts';
+import * as log from '@std/log';
 import { isDebugModeEnabled } from '../pr-cli/debug.ts';
 import { runAndCapture, runQuietly } from '../shell/shell.ts';
-import { Commit, CommitWithBody } from './commit.ts';
+import type { Commit, CommitWithBody } from './commit.ts';
 
 export class Git {
 	public static verifyAndExpandCommitSHAs = verifyAndExpandCommitSHAs;

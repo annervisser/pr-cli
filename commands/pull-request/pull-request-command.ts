@@ -1,11 +1,13 @@
-import { colors, Command, log } from '../../deps.ts';
 import { GH } from '../../lib/github/gh.ts';
+import * as log from '@std/log';
 import { Git } from '../../lib/git/git.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
 import { checkDependencies } from '../pick/steps/check-dependencies.ts';
 import { writeTitle } from '../../lib/pr-cli/pr-title.ts';
 import { generatePullRequestBody } from '../../lib/pr-cli/pr-body.ts';
 import { getDefaultBranch } from '../../lib/pr-cli/branch.ts';
+import { Command } from '@cliffy/command';
+import { colors } from '@cliffy/ansi/colors';
 
 export const pullRequestCommand = new Command()
 	.name('pull-request')
