@@ -5,7 +5,7 @@ import {
 	replacePRCLIPartOfBody,
 	startMarker,
 } from './pr-body.ts';
-import { assertEquals } from 'https://deno.land/std@0.207.0/assert/mod.ts';
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
 import { CommitWithBody } from '../git/commit.ts';
 
 Deno.test('No commits', () => {

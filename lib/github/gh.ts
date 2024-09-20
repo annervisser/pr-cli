@@ -114,7 +114,7 @@ async function getPullRequestInfoForBranch(branch: string) {
 	}
 
 	if (prs.length > 1) {
-		log.warning('More than 1 matching PR found:', prs.map((pr) => pr.number));
+		log.warn('More than 1 matching PR found:', prs.map((pr) => pr.number));
 	}
 
 	return prs[0]!;

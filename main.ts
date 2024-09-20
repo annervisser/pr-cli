@@ -1,14 +1,14 @@
-import { pickCommand } from './commands/pick/pick-command.ts';
-import { verifyCommand } from './commands/verify/verify-command.ts';
-import { colors, Command, CompletionsCommand, HelpCommand, log, parseFlags } from './deps.ts';
-import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
 import { installDepsCommand } from './commands/install-deps/install-deps-command.ts';
-import { getBinDir } from './lib/pr-cli/get-bin-dir.ts';
-import { isDebugModeEnabled } from './lib/pr-cli/debug.ts';
-import { CommandExecutionError } from './lib/shell/command-execution-error.ts';
+import { pickCommand } from './commands/pick/pick-command.ts';
+import { pullRequestCommand } from './commands/pull-request/pull-request-command.ts';
 import {
 	updatePullRequestCommand,
 } from './commands/update-pull-request/update-pull-request-command.ts';
+import { verifyCommand } from './commands/verify/verify-command.ts';
+import { colors, Command, CompletionsCommand, HelpCommand, log, parseFlags } from './deps.ts';
+import { isDebugModeEnabled } from './lib/pr-cli/debug.ts';
+import { getBinDir } from './lib/pr-cli/get-bin-dir.ts';
+import { CommandExecutionError } from './lib/shell/command-execution-error.ts';
 
 if (import.meta.main) {
 	const main = new Command()
@@ -72,7 +72,9 @@ function setupLogger() {
 
 	log.setup({
 		handlers: {
-			default: new log.handlers.ConsoleHandler('NOTSET', { formatter: '{msg}' }), // let handler log everything, decide level on loggers instead
+			default: new log.ConsoleHandler('NOTSET', {
+				formatter: ({ msg }) => `${msg}`,
+			}), // let handler log everything, decide level on loggers instead
 		},
 		loggers: {
 			default: {

@@ -145,7 +145,7 @@ export const pickCommand = new Command()
 			log.info('PR exists, updating it!');
 			const currentPR = await GH.getPullRequestInfoForBranch(branchName);
 			if (!currentPR) {
-				log.warning('Unable to retrieve info for existing PR');
+				log.warn('Unable to retrieve info for existing PR');
 			} else {
 				body = replacePRCLIPartOfBody(currentPR.body, body);
 			}
