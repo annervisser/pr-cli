@@ -7,7 +7,7 @@ RUN apt-get update \
     curl
 
 # Deno
-COPY --from=docker.io/denoland/deno:bin-1.46.3 /deno /usr/bin/deno
+COPY --from=docker.io/denoland/deno:bin-1.46.3@sha256:d8dc561047fea7ab181557a69cd90012409ee137a626d8bc08efa642387d3a2e /deno /usr/bin/deno
 
 # Gum
 COPY --from=docker.io/charmcli/gum:v0.14@sha256:e9dce17af022adaea2d8f2ee43ced9bec88a9c23790cc9a641dc8ff82679cc2d /usr/local/bin/gum /usr/bin/gum
