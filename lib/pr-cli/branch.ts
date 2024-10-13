@@ -1,5 +1,6 @@
 import { slugify, unslugify } from '../slug/slug.ts';
 import { Git } from '../git/git.ts';
+import { Config } from './config.ts';
 
 export function convertBranchNameToTitle(branchName: string): string {
 	let title = unslugify(branchName);
@@ -9,12 +10,17 @@ export function convertBranchNameToTitle(branchName: string): string {
 }
 
 export function convertToValidBranchName(message: string): string {
-	return slugify(message);
+	return slugify(message).slice(0, Config.maxBranchNameLength);
 }
 
 export async function assertValidBranchName(branchName: string) {
 	if (!await Git.isValidBranchName(branchName)) {
-		throw new Error(`Branch name "${branchName}" is invalid`);
+		throw new InvalidBranchNameError(`Branch name "${branchName}" is invalid`);
+	}
+	if (branchName.length > Config.maxBranchNameLength) {
+		throw new InvalidBranchNameError(
+			`Branch name "${branchName}" exceeds maximum length of ${Config.maxBranchNameLength}`,
+		);
 	}
 }
 
@@ -28,3 +34,5 @@ export async function getDefaultBranch(...remotesToTry: string[]): Promise<strin
 
 	throw new Error('Unable to determine default branch, please specify it yourself');
 }
+
+class InvalidBranchNameError extends Error {}

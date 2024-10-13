@@ -11,6 +11,8 @@ import { CommandExecutionError } from '../../../lib/shell/command-execution-erro
 import { colors } from '@cliffy/ansi/colors';
 import { tty } from '@cliffy/ansi/tty';
 import { stripAnsiCode } from '@std/fmt/colors';
+import { Config } from '../../../lib/pr-cli/config.ts';
+import { assertValidBranchName } from '../../../lib/pr-cli/branch.ts';
 
 interface ConfirmationContext {
 	branchExists: boolean;
@@ -217,13 +219,29 @@ async function listenForKeySequence(
 			}
 		},
 		// Branch
-		'b': async (settings: GitPickSettings) => ({
-			...settings,
-			branchName: await Gum.input({
+		'b': async (settings: GitPickSettings) => {
+			const branchName = (await Gum.input({
 				defaultValue: settings.branchName,
+				characterLimit: Config.maxBranchNameLength,
 				prompt: 'Branch name: ',
-			}),
-		}),
+			})).trim();
+
+			try {
+				await assertValidBranchName(branchName);
+			} catch (e) {
+				await Gum.confirm({
+					prompt: `⚠ ${e.message}\nReverting to previous value`,
+					negativeLabel: '', // Hide negative button
+					affirmativeLabel: 'Continue',
+				});
+				return settings;
+			}
+
+			return {
+				...settings,
+				branchName: branchName,
+			};
+		},
 		'return': KeySequenceResult.Confirmed,
 	};
 
