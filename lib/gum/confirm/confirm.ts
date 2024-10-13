@@ -9,10 +9,10 @@ export async function _gum_confirm(options?: {
 	timeout?: number;
 }): Promise<boolean> {
 	const args = [];
-	options?.prompt && args.push(options.prompt);
-	options?.affirmativeLabel && args.push(`--affirmative=${options.affirmativeLabel}`);
-	options?.negativeLabel && args.push(`--negative=${options.negativeLabel}`);
-	options?.timeout && args.push(`--timeout=${options.timeout}`);
+	options?.prompt !== undefined && args.push(options.prompt);
+	options?.affirmativeLabel !== undefined && args.push(`--affirmative=${options.affirmativeLabel}`);
+	options?.negativeLabel !== undefined && args.push(`--negative=${options.negativeLabel}`);
+	options?.timeout !== undefined && args.push(`--timeout=${options.timeout}`);
 
 	if (options?.startOnAffirmative) {
 		args.push(`--default=${options?.startOnAffirmative}`);
