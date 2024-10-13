@@ -53,8 +53,18 @@ Create a GitHub pull request based on your current branch, like `gh pr create` b
 - Install pr-cli:
 
   ```shell
-  deno install --name pr-cli --allow-run --allow-read --allow-env https://deno.land/x/prcli/main.ts
+  deno install --global --name pr-cli --allow-run --allow-read --allow-env https://deno.land/x/prcli/main.ts
   ```
+<details>
+	<summary>Installing from a local checkout</summary>
+
+ 	Installing from a local checkout of this repository requires specifying `--config=deno.json` during installation. (see https://github.com/denoland/deno/issues/26212)
+
+
+	  ```shell
+	  deno install --global --name pr-cli --allow-run --allow-read --allow-env --config=deno.json ./main.ts
+	  ```
+</details>
 
 - Install Gum:
 
@@ -70,7 +80,7 @@ Create a GitHub pull request based on your current branch, like `gh pr create` b
 To upgrade your installation to the latest version:
 
 ```shell
-deno install --reload --force --name pr-cli --allow-run --allow-read --allow-env https://deno.land/x/prcli/main.ts
+deno install --reload --force --global --name pr-cli --allow-run --allow-read --allow-env https://deno.land/x/prcli/main.ts
 ```
 
 ### 🔲 Completions
