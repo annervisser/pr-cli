@@ -1,6 +1,6 @@
 {
 	"name": "@annervisser/pr-cli",
-	"version": "1.11.0-rc.3",
+	"version": "1.11.0",
 	"exports": "./main.ts",
 	"tasks": {
 		"lint": "./bin/lint",
