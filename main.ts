@@ -14,11 +14,12 @@ import { verifyCommand } from './commands/verify/verify-command.ts';
 import { isDebugModeEnabled } from './lib/pr-cli/debug.ts';
 import { getBinDir } from './lib/pr-cli/get-bin-dir.ts';
 import { CommandExecutionError } from './lib/shell/command-execution-error.ts';
+import denoConfig from './deno.json' with { type: 'json' };
 
 if (import.meta.main) {
 	const main = new Command()
 		.name('pr-cli')
-		.version('1.10.0')
+		.version(denoConfig.version ?? 'unknown version')
 		.option('--debug', 'enable verbose error logging', { global: true })
 		.description(
 			'Command line utility for quickly creating pull requests on Github',
