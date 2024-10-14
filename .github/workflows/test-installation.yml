@@ -1,0 +1,31 @@
+name: Test installation
+on:
+  push:
+    branches: ['trunk']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    name: Install pr-cli
+    runs-on: ubuntu-latest
+    env:
+      # renovate: datasource=github-releases depName=denoland/deno
+      DENO_VERSION: v2.0.0
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: '${{env.DENO_VERSION}}'
+
+      - name: Install pr-cli
+        # Make sure to keep this in sync with installation instruction in README.md
+        run: deno install --global --name pr-cli --allow-run --allow-read --allow-env jsr:@annervisser/pr-cli
+
+      - name: Verify command runs successfully
+        run: pr-cli --version
