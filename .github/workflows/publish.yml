@@ -1,0 +1,26 @@
+name: Publish
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      # renovate: datasource=github-releases depName=denoland/deno
+      DENO_VERSION: v2.0.0
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: '${{env.DENO_VERSION}}'
+
+      - name: Publish
+        run: deno publish
