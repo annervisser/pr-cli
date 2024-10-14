@@ -1,4 +1,4 @@
-import { slug } from 'https://deno.land/x/slug@v1.1.0/mod.ts';
+import { slug } from '@annervisser/slug';
 
 export function slugify(string: string): string {
 	// Convert dashes to spaces so slug() retains them
