@@ -52,6 +52,7 @@ Create a GitHub pull request based on your current branch, like `gh pr create` b
   - GitHub CLI: https://github.com/cli/cli#installation
 - Install pr-cli:
 
+  <!-- Make sure to keep this in sync with installation test in .github/workflows/test-installation.yml -->
   ```shell
   deno install --global --name pr-cli --allow-run --allow-read --allow-env jsr:@annervisser/pr-cli
   ```
@@ -80,6 +81,8 @@ Create a GitHub pull request based on your current branch, like `gh pr create` b
 ### ⬆️ Upgrading
 
 To upgrade your installation to the latest version:
+
+<!-- Make sure to keep this in sync with installation test in .github/workflows/test-installation.yml -->
 
 ```shell
 deno install --reload --force --global --name pr-cli --allow-run --allow-read --allow-env jsr:@annervisser/pr-cli
