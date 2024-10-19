@@ -15,7 +15,7 @@ import { checkDependencies } from './steps/check-dependencies.ts';
 import { ColorScheme } from '../../lib/colors.ts';
 import { formatObjectForLog } from '../../lib/pr-cli/debug.ts';
 import { chooseMultipleFormatted } from '../../lib/pr-cli/choose.ts';
-import { assertValidTitle, writeTitle } from '../../lib/pr-cli/pr-title.ts';
+import { assertValidTitle, selectTitle } from '../../lib/pr-cli/pr-title.ts';
 import { generatePullRequestBody, replacePRCLIPartOfBody } from '../../lib/pr-cli/pr-body.ts';
 import { Command } from '@cliffy/command';
 import { colors } from '@cliffy/ansi/colors';
@@ -102,7 +102,7 @@ export const pickCommand = new Command()
 			throw new Error('No commits chosen');
 		}
 
-		const title = options.title ?? await writeTitle({
+		const title = options.title ?? await selectTitle({
 			branchName: options.branch, // This option is only shown if branch was pre-provided
 			commits: pickedCommits,
 		});

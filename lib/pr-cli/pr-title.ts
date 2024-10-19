@@ -15,7 +15,7 @@ type TitleStrategy = {
 	execute: () => Promise<string> | string;
 };
 
-export async function writeTitle(context: TitleContext): Promise<string> {
+export async function selectTitle(context: TitleContext): Promise<string> {
 	const manualStrategy = getManualStrategy(context.currentTitle);
 	const options: readonly TitleStrategy[] = [
 		context.commits ? getCommitStrategy(context.commits) : null,
@@ -32,7 +32,11 @@ export async function writeTitle(context: TitleContext): Promise<string> {
 		},
 	);
 
-	return chosenOption.execute();
+	return await chosenOption.execute();
+}
+
+export async function editTitle(currentTitle: string): Promise<string> {
+	return await getManualStrategy(currentTitle).execute();
 }
 
 function getCommitStrategy(commits: Commit[]): TitleStrategy {
