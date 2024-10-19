@@ -2,7 +2,7 @@ import { confirmSettings } from './steps/confirm-settings.ts';
 import { runCherryPick } from './steps/git-pick.ts';
 import * as log from '@std/log';
 import { Git } from '../../lib/git/git.ts';
-import { GH } from '../../lib/github/gh.ts';
+import { GH, type PullRequest } from '../../lib/github/gh.ts';
 import { Gum } from '../../lib/gum/gum.ts';
 import {
 	assertValidBranchName,
@@ -113,10 +113,10 @@ export const pickCommand = new Command()
 		await assertValidBranchName(branchName);
 
 		const remoteBranchExists = await Git.doesBranchExist(`${options.pushRemote}/${branchName}`);
-		let doesBranchHavePullRequest: Promise<boolean> | undefined;
+		let existingPullRequestPromise: Promise<PullRequest | null> | null = null;
 		if (options.pr && remoteBranchExists) {
 			// Start this check early to save some waiting time
-			doesBranchHavePullRequest = GH.doesBranchHavePullRequest(branchName);
+			existingPullRequestPromise = GH.getPullRequestInfoForBranch(branchName);
 		}
 
 		let overwriteLocalBranch = !!options.force;
@@ -142,23 +142,18 @@ export const pickCommand = new Command()
 		log.debug(`Generated pull request body:\n${body}`);
 
 		// This promise is only set if it should be checked, undefined otherwise (await undefined = undefined)
-		const updatePR = await doesBranchHavePullRequest ?? false;
-		if (updatePR) {
+		const existingPR = await existingPullRequestPromise;
+		if (existingPR) {
 			log.info('PR exists, updating it!');
-			const currentPR = await GH.getPullRequestInfoForBranch(branchName);
-			if (!currentPR) {
-				log.warn('Unable to retrieve info for existing PR');
-			} else {
-				body = replacePRCLIPartOfBody(currentPR.body, body);
-			}
+			body = replacePRCLIPartOfBody(existingPR.body, body);
 		}
 
 		const settings = await confirmSettings(
 			{
 				push: options.push,
 				pr: options.pr,
-				updatePR,
-				draftPR: options.draft ?? false,
+				updatePR: !!existingPR,
+				draftPR: options.draft ?? existingPR?.isDraft ?? false,
 				pullRemote: options.pullRemote,
 				pushRemote: options.pushRemote,
 				overwriteLocalBranch,
@@ -173,7 +168,7 @@ export const pickCommand = new Command()
 		);
 
 		log.info('Go time!');
-		await runCherryPick(settings);
+		await runCherryPick(settings, { existingPR });
 
 		log.info(colors.bgGreen.brightWhite('✔ Done!'));
 	});

@@ -4,7 +4,7 @@ import { runAndCapture, runCommand } from '../shell/shell.ts';
 export const GH = {
 	createPullRequest,
 	editPullRequest,
-	doesBranchHavePullRequest,
+	setPullRequestDraftStatus,
 	listPullRequests,
 	getPullRequestInfoForCurrentBranch,
 	getPullRequestInfoForBranch,
@@ -12,11 +12,11 @@ export const GH = {
 
 interface BasePROptions {
 	baseBranch?: string;
-	draftPR?: boolean;
 }
 
 interface CreatePROptions {
 	web?: boolean;
+	draftPR?: boolean;
 }
 
 interface ManualTitleAndBody {
@@ -36,6 +36,20 @@ type PullRequestOptions =
 	& CreatePROptions
 	& (ManualTitleAndBody | AutomaticTitleAndBody);
 type EditPullRequestOptions = BasePROptions & ManualTitleAndBody;
+
+export interface PullRequest {
+	title: string;
+	body: string;
+	number: number;
+	isDraft: boolean;
+	baseRefName: string;
+	headRefName: string;
+	commits: Array<{
+		messageHeadLine: string;
+		messageBody: string;
+		oid: string; // 464fc5a0d27f6053647cdb5939a936b91aaa91fc
+	}>;
+}
 
 async function getPullRequestInfoForCurrentBranch() {
 	const json = await runAndCapture(
@@ -79,7 +93,6 @@ async function createPullRequest(options: PullRequestOptions) {
 async function editPullRequest(options: EditPullRequestOptions) {
 	const args: string[] = [];
 	options.baseBranch && args.push('--base', options.baseBranch);
-	options.draftPR && args.push('--draft');
 
 	await runCommand(
 		'gh',
@@ -95,19 +108,14 @@ async function editPullRequest(options: EditPullRequestOptions) {
 	);
 }
 
-async function doesBranchHavePullRequest(branch: string): Promise<boolean> {
-	try {
-		// gh pr view doesn't work for multi-remote use cases, gh pr list does
-		// This will give a false positive for prs from a different repository with the same branch name
-		const prs = await listPullRequests({ head: branch });
-		return prs.length > 0;
-	} catch {
-		return false;
-	}
+async function setPullRequestDraftStatus(draft: boolean) {
+	const args = draft ? ['--undo'] : [];
+	await runCommand('gh', 'pr', 'ready', ...args);
 }
 
 async function getPullRequestInfoForBranch(branch: string) {
 	// gh pr view doesn't work for multi-remote use cases, gh pr list does
+	// This will give a false positive for prs from a different repository with the same branch name
 	const prs = await listPullRequests({ head: branch });
 	if (prs.length < 1) {
 		return null;
@@ -135,20 +143,9 @@ async function listPullRequests(options: {
 		'list',
 		...args,
 		'--json',
-		'title,body,number,commits,headRefName,baseRefName',
+		'title,body,number,isDraft,commits,headRefName,baseRefName',
 	);
-	const prs: Array<{
-		title: string;
-		body: string;
-		number: number;
-		baseRefName: string;
-		headRefName: string;
-		commits: Array<{
-			messageHeadLine: string;
-			messageBody: string;
-			oid: string; // 464fc5a0d27f6053647cdb5939a936b91aaa91fc
-		}>;
-	}> = JSON.parse(json);
+	const prs: Array<PullRequest> = JSON.parse(json);
 
 	if (!Array.isArray(prs)) {
 		log.error('Invalid response from gh cli:', prs);
