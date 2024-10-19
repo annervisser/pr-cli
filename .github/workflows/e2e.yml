@@ -10,7 +10,7 @@ permissions:
 jobs:
   e2e:
     name: Run E2E test
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-playwright
     env:
       # renovate: datasource=node-version depName=node
       NODE_VERSION: 20
@@ -19,14 +19,24 @@ jobs:
       run:
         working-directory: e2e-test
     steps:
-      - name: Setup repo
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
+      - name: Checkout
+        uses: namespacelabs/nscloud-checkout-action@v5
+
+      - name: Setup cache
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/ms-playwright
+            ./node_modules
+            /var/cache/apt
+
+      - name: Stop apt cleaning cache
+        run: sudo rm /etc/apt/apt.conf.d/docker-clean
 
       - uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4
         with:
           node-version: '${{env.NODE_VERSION}}'
-          cache: 'npm'
-          cache-dependency-path: e2e-test/package-lock.json
 
       - name: Install playwright deps
         run: |
@@ -35,11 +45,13 @@ jobs:
 
       - name: Run e2e tests
         id: run-e2e-tests
+        env:
+          PW_WORKERS: '100%'
         run: ../bin/e2e
 
       - name: Output docker compose logs
         if: ${{ !cancelled() }}
-        run: docker compose logs | tee playwright-report/docker.log
+        run: docker compose --ansi=never logs --timestamps | tee playwright-report/docker.log
 
       - name: Upload HTML report to S3
         if: ${{ !cancelled() }}
@@ -103,7 +115,7 @@ jobs:
 
       - name: Store HTML report as GitHub Artifact
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        uses: namespace-actions/upload-artifact@v0
         with:
           name: playwright-html-report
           path: e2e-test/playwright-report
