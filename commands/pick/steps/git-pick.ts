@@ -1,7 +1,7 @@
 import { colors } from '@cliffy/ansi/colors';
 import type { Commit } from '../../../lib/git/commit.ts';
 import { Git } from '../../../lib/git/git.ts';
-import { GH } from '../../../lib/github/gh.ts';
+import { GH, type PullRequest } from '../../../lib/github/gh.ts';
 import { runQuietly } from '../../../lib/shell/shell.ts';
 import { sleep } from '../../../lib/sleep.ts';
 import * as log from '@std/log';
@@ -27,7 +27,10 @@ export type GitPickSettings = Readonly<{
 	body: string;
 }>;
 
-export async function runCherryPick(settings: GitPickSettings): Promise<void> {
+export async function runCherryPick(
+	settings: GitPickSettings,
+	context: { existingPR: PullRequest | null },
+): Promise<void> {
 	const cleanupSteps: Array<{ message: string; action: () => unknown | Promise<unknown> }> = [];
 
 	try {
@@ -83,6 +86,10 @@ export async function runCherryPick(settings: GitPickSettings): Promise<void> {
 
 				log.info(colors.green('▶️ Updating pull request'));
 				await GH.editPullRequest(prSettings);
+				if (!context.existingPR || context.existingPR.isDraft !== prSettings.draftPR) {
+					log.info(colors.green(`▶️ Marking PR as ${prSettings.draftPR ? 'draft' : 'ready'}`));
+					await GH.setPullRequestDraftStatus(prSettings.draftPR);
+				}
 			} else {
 				log.info(colors.green('▶️ Creating pull request'));
 				await GH.createPullRequest(prSettings);
