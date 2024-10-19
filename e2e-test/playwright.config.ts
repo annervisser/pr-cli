@@ -8,6 +8,7 @@ export default defineConfig({
 		video: 'retain-on-failure',
 		browserName: 'chromium',
 	},
+	workers: process.env.PW_WORKERS ?? undefined,
 	testDir: './tests',
 	fullyParallel: true,
 	forbidOnly: !!process.env.CI,
