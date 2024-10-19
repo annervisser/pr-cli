@@ -52,8 +52,8 @@ jobs:
           BUCKET_NAME: 'pr-cli-playwright-reports'
           BUCKET_PUBLIC_ENDPOINT: 'https://pr-cli-playwright-reports.fly.storage.tigris.dev'
         run: |
-          PR_NUMBER="${{ github.event.pull_request.number || github.event.issue.number }}"
-          S3_FOLDER="$(date +%Y%m%d)-$PR_NUMBER-$(uuidgen | cut -c1-8)"
+          CONTEXT="${{ github.event.pull_request.number || github.event.issue.number || github.sha }}"
+          S3_FOLDER="$(date +%Y%m%d)-$CONTEXT-$(uuidgen | cut -c1-8)"
           echo "::debug::Folder: $S3_FOLDER"
           LOCAL_FOLDER="playwright-report"
 
@@ -63,7 +63,7 @@ jobs:
           echo "REPORT_URL=$REPORT_URL" >> "$GITHUB_OUTPUT"
 
           # Add PR number to title in index.html
-          sed -i -r "s%<title>(.*)</title>%<title>pr $PR_NUMBER - \1</title>%" "$LOCAL_FOLDER/index.html"
+          sed -i -r "s%<title>(.*)</title>%<title>$CONTEXT - \1</title>%" "$LOCAL_FOLDER/index.html"
 
           aws s3 cp --endpoint-url "$TIGRIS_ENDPOINT" \
             "$LOCAL_FOLDER" "s3://$BUCKET_NAME/$S3_FOLDER" \
@@ -74,7 +74,7 @@ jobs:
       # This allows commenting on PRs from forks
       # and adds a profile picture and name to the comments
       - name: Generate a token
-        if: ${{ !cancelled() }}
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         id: generate-comment-app-token
         uses: actions/create-github-app-token@v1
         with:
