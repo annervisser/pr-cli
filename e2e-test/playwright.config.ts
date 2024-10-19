@@ -5,6 +5,7 @@ export default defineConfig({
 	use: {
 		baseURL: process.env.BASE_URL ?? 'http://localhost:7681/',
 		trace: 'retain-on-failure',
+		video: 'retain-on-failure',
 		browserName: 'chromium',
 	},
 	testDir: './tests',
