@@ -1,4 +1,4 @@
-FROM docker.io/debian:bookworm-slim@sha256:ad86386827b083b3d71139050b47ffb32bbd9559ea9b1345a739b14fec2d9ecf
+FROM docker.io/debian:bookworm-slim@sha256:36e591f228bb9b99348f584e83f16e012c33ba5cad44ef5981a1d7c0a93eca22
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -7,7 +7,7 @@ RUN apt-get update \
     curl
 
 # Deno
-COPY --from=docker.io/denoland/deno:bin-2.0.0 /deno /usr/bin/deno
+COPY --from=docker.io/denoland/deno:bin-2.0.0@sha256:6ca6e1911c8b1c6f06305b903ec8993bab47ac34234bb3329c708e00609901ce /deno /usr/bin/deno
 
 # Gum
 COPY --from=docker.io/charmcli/gum:v0.14@sha256:e9dce17af022adaea2d8f2ee43ced9bec88a9c23790cc9a641dc8ff82679cc2d /usr/local/bin/gum /usr/bin/gum
