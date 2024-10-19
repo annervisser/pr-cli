@@ -21,7 +21,7 @@
 		"@typescript-eslint/parser": "8.10.0",
 		"eslint": "9.13.0",
 		"eslint-config-prettier": "9.1.0",
-		"eslint-plugin-playwright": "1.7.0",
+		"eslint-plugin-playwright": "1.8.0",
 		"globals": "15.11.0",
 		"npm-run-all2": "6.2.4",
 		"prettier": "3.3.3",
