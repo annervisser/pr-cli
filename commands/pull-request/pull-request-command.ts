@@ -3,7 +3,7 @@ import * as log from '@std/log';
 import { Git } from '../../lib/git/git.ts';
 import { getPullRemote, getPushRemote } from '../../lib/pr-cli/remotes.ts';
 import { checkDependencies } from '../pick/steps/check-dependencies.ts';
-import { writeTitle } from '../../lib/pr-cli/pr-title.ts';
+import { selectTitle } from '../../lib/pr-cli/pr-title.ts';
 import { generatePullRequestBody } from '../../lib/pr-cli/pr-body.ts';
 import { getDefaultBranch } from '../../lib/pr-cli/branch.ts';
 import { Command } from '@cliffy/command';
@@ -50,7 +50,7 @@ export const pullRequestCommand = new Command()
 			throw new Error('No new commit on this branch');
 		}
 
-		options.title ??= await writeTitle({ commits: newCommits, branchName });
+		options.title ??= await selectTitle({ commits: newCommits, branchName });
 		if (!options.title) {
 			throw new Error('Pull request title is empty');
 		}

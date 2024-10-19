@@ -5,7 +5,7 @@ import { getKeySequence } from '../../../lib/keypress.ts';
 import { Git } from '../../../lib/git/git.ts';
 import type { GumStyleOptions } from '../../../lib/gum/style/style.ts';
 import { chooseOne } from '../../../lib/pr-cli/choose.ts';
-import { writeTitle } from '../../../lib/pr-cli/pr-title.ts';
+import { editTitle, selectTitle } from '../../../lib/pr-cli/pr-title.ts';
 import { writePullRequestBody } from '../../../lib/pr-cli/pr-body.ts';
 import { CommandExecutionError } from '../../../lib/shell/command-execution-error.ts';
 import { colors } from '@cliffy/ansi/colors';
@@ -263,7 +263,12 @@ async function listenForKeySequence(
 			// Title
 			't': async (settings: GitPickSettings) => ({
 				...settings,
-				title: await writeTitle({
+				title: await editTitle(settings.title),
+			}),
+			// Title
+			'ctrl+t': async (settings: GitPickSettings) => ({
+				...settings,
+				title: await selectTitle({
 					commits: settings.commits,
 					branchName: settings.branchName,
 					currentTitle: settings.title,
