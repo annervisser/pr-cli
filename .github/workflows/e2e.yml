@@ -58,8 +58,7 @@ jobs:
           LOCAL_FOLDER="playwright-report"
 
           REPORT_URL="$BUCKET_PUBLIC_ENDPOINT/$S3_FOLDER"
-          echo "URL: $REPORT_URL"
-          echo "::notice::Playwright report: $REPORT_URL"
+          echo "::notice::Playwright report: $REPORT_URL/index.html"
           echo "REPORT_URL=$REPORT_URL" >> "$GITHUB_OUTPUT"
 
           # Add PR number to title in index.html
