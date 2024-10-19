@@ -14,6 +14,7 @@ jobs:
     env:
       # renovate: datasource=node-version depName=node
       NODE_VERSION: 20
+      COMMENT_TAG: 'playwright-report-link'
     defaults:
       run:
         working-directory: e2e-test
@@ -33,14 +34,76 @@ jobs:
           npx playwright install --with-deps
 
       - name: Run e2e tests
+        id: run-e2e-tests
         run: ../bin/e2e
 
       - name: Output docker compose logs
-        if: failure()
-        run: docker compose logs
+        if: ${{ !cancelled() }}
+        run: docker compose logs | tee playwright-report/docker.log
 
-      - name: Upload HTML report
-        if: always()
+      - name: Upload HTML report to S3
+        if: ${{ !cancelled() }}
+        id: upload-html-report-to-s3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.PW_REPORTS_BUCKET_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.PW_REPORTS_BUCKET_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'auto'
+          TIGRIS_ENDPOINT: 'https://fly.storage.tigris.dev'
+          BUCKET_NAME: 'pr-cli-playwright-reports'
+          BUCKET_PUBLIC_ENDPOINT: 'https://pr-cli-playwright-reports.fly.storage.tigris.dev'
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number || github.event.issue.number }}"
+          S3_FOLDER="$(date +%Y%m%d)-$PR_NUMBER-$(uuidgen | cut -c1-8)"
+          echo "::debug::Folder: $S3_FOLDER"
+          LOCAL_FOLDER="playwright-report"
+
+          REPORT_URL="$BUCKET_PUBLIC_ENDPOINT/$S3_FOLDER"
+          echo "URL: $REPORT_URL"
+          echo "::notice::Playwright report: $REPORT_URL"
+          echo "REPORT_URL=$REPORT_URL" >> "$GITHUB_OUTPUT"
+
+          # Add PR number to title in index.html
+          sed -i -r "s%<title>(.*)</title>%<title>pr $PR_NUMBER - \1</title>%" "$LOCAL_FOLDER/index.html"
+
+          aws s3 cp --endpoint-url "$TIGRIS_ENDPOINT" \
+            "$LOCAL_FOLDER" "s3://$BUCKET_NAME/$S3_FOLDER" \
+            --recursive \
+            --no-progress
+
+      # Generate a GH_TOKEN for the PW Comment App
+      # This allows commenting on PRs from forks
+      # and adds a profile picture and name to the comments
+      - name: Generate a token
+        if: ${{ !cancelled() }}
+        id: generate-comment-app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.PW_REPORTS_COMMENT_APP_ID }}
+          private-key: ${{ secrets.PW_REPORTS_COMMENT_APP_PRIVATE_KEY }}
+
+      - name: Comment link to HTML report
+        if: ${{ !cancelled() && steps.upload-html-report-to-s3.outcome == 'success' }}
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            ${{ steps.run-e2e-tests.outcome == 'success' && ':white_check_mark: Playwright tests passed' || ':x: Playwright tests failed' }}
+
+            [🎭 Report](${{ steps.upload-html-report-to-s3.outputs.REPORT_URL }}/index.html)
+            [🐋 Docker logs](${{ steps.upload-html-report-to-s3.outputs.REPORT_URL }}/docker.log)
+          comment-tag: ${{ env.COMMENT_TAG }}
+          create-if-not-exists: '${{ steps.run-e2e-tests.outcome }}' # Don't post comment for success, but update if commented before
+          github-token: ${{ steps.generate-comment-app-token.outputs.token }}
+
+      - name: Comment link to HTML report (On failure)
+        if: ${{ !cancelled() && steps.upload-html-report-to-s3.outcome == 'failure'}}
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: 🎭 Latest playwright run was cancelled or failed
+          comment-tag: ${{ env.COMMENT_TAG }}
+          github-token: ${{ steps.generate-comment-app-token.outputs.token }}
+
+      - name: Store HTML report as GitHub Artifact
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
           name: playwright-html-report
