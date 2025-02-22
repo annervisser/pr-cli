@@ -115,7 +115,7 @@ jobs:
 
       - name: Store HTML report as GitHub Artifact
         if: ${{ !cancelled() }}
-        uses: namespace-actions/upload-artifact@757d79357144e781b6eee3045f0a3f31d7d89a63 # v0
+        uses: namespace-actions/upload-artifact@9a78c62e083914789d908952f9773e42744b9f68 # v1
         with:
           name: playwright-html-report
           path: e2e-test/playwright-report
