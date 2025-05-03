@@ -87,7 +87,7 @@ jobs:
       - name: Generate a token
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         id: generate-comment-app-token
-        uses: actions/create-github-app-token@3ff1caaa28b64c9cc276ce0a02e2ff584f3900c5 # v2
+        uses: actions/create-github-app-token@db3cdf40984fe6fd25ae19ac2bf2f4886ae8d959 # v2
         with:
           app-id: ${{ vars.PW_REPORTS_COMMENT_APP_ID }}
           private-key: ${{ secrets.PW_REPORTS_COMMENT_APP_PRIVATE_KEY }}
