@@ -23,7 +23,7 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@953fed31a6113cc2347ca69c9d823743c65bc84b # v7
 
       - name: Setup cache
-        uses: namespacelabs/nscloud-cache-action@9ff6d4004df1c3fd97cecafe010c874d77c48599 # v1
+        uses: namespacelabs/nscloud-cache-action@305bfa7ea980a858d511af4899414a84847c7991 # v1
         with:
           path: |
             ~/.npm
@@ -87,7 +87,7 @@ jobs:
       - name: Generate a token
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         id: generate-comment-app-token
-        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2
+        uses: actions/create-github-app-token@0f859bf9e69e887678d5bbfbee594437cb440ffe # v2
         with:
           app-id: ${{ vars.PW_REPORTS_COMMENT_APP_ID }}
           private-key: ${{ secrets.PW_REPORTS_COMMENT_APP_PRIVATE_KEY }}
