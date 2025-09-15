@@ -23,7 +23,7 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@953fed31a6113cc2347ca69c9d823743c65bc84b # v7
 
       - name: Setup cache
-        uses: namespacelabs/nscloud-cache-action@305bfa7ea980a858d511af4899414a84847c7991 # v1
+        uses: namespacelabs/nscloud-cache-action@a289cf5d2fcd6874376aa92f0ef7f99dc923592a # v1
         with:
           path: |
             ~/.npm
@@ -87,7 +87,7 @@ jobs:
       - name: Generate a token
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         id: generate-comment-app-token
-        uses: actions/create-github-app-token@a8d616148505b5069dccd32f177bb87d7f39123b # v2
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
         with:
           app-id: ${{ vars.PW_REPORTS_COMMENT_APP_ID }}
           private-key: ${{ secrets.PW_REPORTS_COMMENT_APP_PRIVATE_KEY }}
@@ -115,7 +115,7 @@ jobs:
 
       - name: Store HTML report as GitHub Artifact
         if: ${{ !cancelled() }}
-        uses: namespace-actions/upload-artifact@26eda190739d7e16cd991ac15f441935723a59f2 # v1
+        uses: namespace-actions/upload-artifact@10157a8677fceee2ec821ff1a02f86b8dc401b61 # v1
         with:
           name: playwright-html-report
           path: e2e-test/playwright-report
