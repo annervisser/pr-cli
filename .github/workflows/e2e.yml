@@ -25,7 +25,7 @@ jobs:
       - name: Setup cache
         uses: namespacelabs/nscloud-cache-action@caff5c9dc51d8126e7d16141fb015c478374256b # v1
         with:
-          mode: |
+          cache: |
             playwright
             apt
           path: |
