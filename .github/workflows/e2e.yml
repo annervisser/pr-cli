@@ -25,11 +25,12 @@ jobs:
       - name: Setup cache
         uses: namespacelabs/nscloud-cache-action@caff5c9dc51d8126e7d16141fb015c478374256b # v1
         with:
+          mode: |
+            playwright
+            apt
           path: |
             ~/.npm
-            ~/.cache/ms-playwright
             ./node_modules
-            /var/cache/apt
 
       - name: Stop apt cleaning cache
         run: sudo rm /etc/apt/apt.conf.d/docker-clean
