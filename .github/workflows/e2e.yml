@@ -13,7 +13,7 @@ jobs:
     runs-on: namespace-profile-playwright
     env:
       # renovate: datasource=node-version depName=node
-      NODE_VERSION: 22
+      NODE_VERSION: 24
       COMMENT_TAG: 'playwright-report-link'
     defaults:
       run:
