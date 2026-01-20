@@ -23,8 +23,10 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@9e72ae580f3c60c57941cf5f813f854db2865202 # v8
 
       - name: Setup cache
-        uses: namespacelabs/nscloud-cache-action@446d8f390563cd54ca27e8de5bdb816f63c0b706 # v1
+        uses: namespacelabs/nscloud-cache-action@652b0109faeacbfebc50004c304dfd0c2235ea17 # v1
         with:
+          space-enabled: true
+          space-version: '0.2.0-beta.1'
           cache: |
             playwright
             apt
