@@ -23,7 +23,7 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@99724ed126229e8e2a9cecf3a11c82611024862a # v8
 
       - name: Setup cache
-        uses: namespacelabs/nscloud-cache-action@a4cc4697b9de3b562bec5a856e6f3c31f94506e2 # v1
+        uses: namespacelabs/nscloud-cache-action@d985186ac29417ddff1a6e05044f69a27067b3a8 # v1
         with:
           cache: |
             playwright
