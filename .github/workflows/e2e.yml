@@ -20,10 +20,10 @@ jobs:
         working-directory: e2e-test
     steps:
       - name: Checkout
-        uses: namespacelabs/nscloud-checkout-action@99724ed126229e8e2a9cecf3a11c82611024862a # v8
+        uses: namespacelabs/nscloud-checkout-action@8d38dddb292f119b5c9afb0d930ab614dec5d46f # v8
 
       - name: Setup cache
-        uses: namespacelabs/nscloud-cache-action@4d61c33d0b4333a518e975a0c4de7633d28713bb # v1
+        uses: namespacelabs/nscloud-cache-action@a90bb5d4b27522ce881c6e98eebd7d7e6d1653f9 # v1
         with:
           cache: |
             playwright
