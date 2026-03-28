@@ -17,15 +17,15 @@
 		"@types/eslint": "9.6.1",
 		"@types/eslint__js": "8.42.3",
 		"@types/node": "24.12.0",
-		"@typescript-eslint/eslint-plugin": "8.57.1",
-		"@typescript-eslint/parser": "8.57.1",
-		"eslint": "10.0.3",
+		"@typescript-eslint/eslint-plugin": "8.57.2",
+		"@typescript-eslint/parser": "8.57.2",
+		"eslint": "10.1.0",
 		"eslint-config-prettier": "10.1.8",
-		"eslint-plugin-playwright": "2.10.0",
+		"eslint-plugin-playwright": "2.10.1",
 		"globals": "17.4.0",
 		"npm-run-all2": "8.0.4",
 		"prettier": "3.8.1",
 		"typescript": "5.9.3",
-		"typescript-eslint": "8.57.1"
+		"typescript-eslint": "8.57.2"
 	}
 }
