@@ -10,7 +10,7 @@ permissions:
 jobs:
   e2e:
     name: Run E2E test
-    runs-on: namespace-profile-playwright
+    runs-on: namespace-profile-playwright-preinstalled
     env:
       # renovate: datasource=node-version depName=node
       NODE_VERSION: 24
