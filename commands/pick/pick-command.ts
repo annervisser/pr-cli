@@ -47,7 +47,9 @@ export const pickCommand = new Command()
 	.option('--pull-remote <remote:string>', 'Remote to use for fetching')
 	.option('--push-remote <remote:string>', 'Remote to push to')
 	.group('Pull request')
-	.option('--draft', 'Mark the created pull request as Draft', { conflicts: optionsThatDisablePR })
+	.option('--draft', 'Mark the created pull request as Draft', {
+		conflicts: optionsThatDisablePR,
+	})
 	.option('--title <title:string>', 'Title for the pull request', {
 		conflicts: optionsThatDisablePR,
 	})
@@ -61,12 +63,16 @@ export const pickCommand = new Command()
 
 		if (_baseBranch) {
 			await Gum.style([
-				await Gum.styleToString(['⚠ Providing a base branch as first argument is deprecated'], {
+				await Gum.styleToString([
+					'⚠ Providing a base branch as first argument is deprecated',
+				], {
 					foreground: ColorScheme.primary,
 					bold: true,
 				}),
 				`The base branch is now automatically determined, it would be: ${
-					colors.brightWhite.bold(await getDefaultBranch(options.pullRemote, options.pushRemote))
+					colors.brightWhite.bold(
+						await getDefaultBranch(options.pullRemote, options.pushRemote),
+					)
 				}`,
 				`If you still want to specify a different base, use ${
 					colors.brightWhite.italic('--base')
@@ -126,13 +132,16 @@ export const pickCommand = new Command()
 				prompt: 'Local branch already exists, do you wish to overwrite it?',
 				startOnAffirmative: true,
 			});
-			log.info(overwriteLocalBranch ? 'Overwriting local branch!' : 'Not overwriting local branch');
+			log.info(
+				overwriteLocalBranch ? 'Overwriting local branch!' : 'Not overwriting local branch',
+			);
 		}
 
 		let forcePush = options.force === true;
 		if (!forcePush && options.push && remoteBranchExists) {
 			forcePush = await Gum.confirm({
-				prompt: `Branch on ${options.pushRemote} already exists, do you want to force push?`,
+				prompt:
+					`Branch on ${options.pushRemote} already exists, do you want to force push?`,
 				startOnAffirmative: true,
 			});
 			log.info(forcePush ? 'Force pushing!' : 'Not force pushing');
@@ -196,7 +205,11 @@ async function parseOrPromptForCommits(
 	const chosenCommits = await chooseMultipleFormatted(
 		newCommits,
 		(commit) => `${commit.sha}\t${commit.message}`,
-		{ header: `Which commits should be cherry-picked? ${colors.dim.white(`(a to select all)`)}` },
+		{
+			header: `Which commits should be cherry-picked? ${
+				colors.dim.white(`(a to select all)`)
+			}`,
+		},
 	); // select in new-old order
 	return chosenCommits.reverse(); // return in old-new order
 }

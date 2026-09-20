@@ -87,7 +87,9 @@ export async function runCherryPick(
 				log.info(colors.green('▶️ Updating pull request'));
 				await GH.editPullRequest(prSettings);
 				if (!context.existingPR || context.existingPR.isDraft !== prSettings.draftPR) {
-					log.info(colors.green(`▶️ Marking PR as ${prSettings.draftPR ? 'draft' : 'ready'}`));
+					log.info(
+						colors.green(`▶️ Marking PR as ${prSettings.draftPR ? 'draft' : 'ready'}`),
+					);
 					await GH.setPullRequestDraftStatus(prSettings.draftPR);
 				}
 			} else {

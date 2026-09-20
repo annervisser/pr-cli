@@ -10,7 +10,8 @@ export async function _gum_confirm(options?: {
 }): Promise<boolean> {
 	const args = [];
 	options?.prompt !== undefined && args.push(options.prompt);
-	options?.affirmativeLabel !== undefined && args.push(`--affirmative=${options.affirmativeLabel}`);
+	options?.affirmativeLabel !== undefined &&
+		args.push(`--affirmative=${options.affirmativeLabel}`);
 	options?.negativeLabel !== undefined && args.push(`--negative=${options.negativeLabel}`);
 	options?.timeout !== undefined && args.push(`--timeout=${options.timeout}`);
 

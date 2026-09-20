@@ -90,7 +90,9 @@ function getOptionFromMap<Option>(selected: string, options: Map<string, Option>
 	selected = normalizeOptionString(selected);
 	if (!options.has(selected)) {
 		throw new Error(
-			`Expected selected option to be one of ${JSON.stringify(options.keys())}, got ${selected}`,
+			`Expected selected option to be one of ${
+				JSON.stringify(options.keys())
+			}, got ${selected}`,
 		);
 	}
 	return options.get(selected)!;

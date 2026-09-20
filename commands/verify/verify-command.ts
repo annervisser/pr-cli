@@ -29,7 +29,9 @@ export async function dependenciesMet(): Promise<boolean> {
 
 async function printDependencyStatuses() {
 	const getStatus = async (binary: string) =>
-		await binaryExists(binary) ? colors.green('✔ Installed') : colors.red.bold('✗ Not installed');
+		await binaryExists(binary)
+			? colors.green('✔ Installed')
+			: colors.red.bold('✗ Not installed');
 
 	const table = new Table();
 	table.header(
