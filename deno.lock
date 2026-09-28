@@ -32,9 +32,9 @@
     "jsr:@std/path@^1.1.6": "1.1.6",
     "jsr:@std/semver@^1.0.3": "1.0.8",
     "jsr:@std/semver@^1.0.8": "1.0.8",
-    "jsr:@std/streams@^1.0.17": "1.1.2",
+    "jsr:@std/streams@^1.0.17": "1.2.0",
     "jsr:@std/tar@~0.1.10": "0.1.10",
-    "jsr:@std/text@^1.0.19": "1.0.19"
+    "jsr:@std/text@^1.0.19": "1.1.0"
   },
   "jsr": {
     "@annervisser/slug@1.2.1": {
@@ -152,8 +152,8 @@
     "@std/semver@1.0.8": {
       "integrity": "dc830e8b8b6a380c895d53fbfd1258dc253704ca57bbe1629ac65fd7830179b7"
     },
-    "@std/streams@1.1.2": {
-      "integrity": "0249bf9b78a999f57032ca4d8e7ccaa57579090242640b35ddc948fbb745d3af"
+    "@std/streams@1.2.0": {
+      "integrity": "256b934254778f2bf45f5713b934209ff29e9b4b7fd4ec095219966813758c5f"
     },
     "@std/tar@0.1.10": {
       "integrity": "6bf907f3a4bc8bfef42973ba132d946756a6161ef6b914a9e1c06debe664db17",
@@ -161,8 +161,8 @@
         "jsr:@std/streams"
       ]
     },
-    "@std/text@1.0.19": {
-      "integrity": "003a0e032d360e8c3a4e0410fb792c77a66bd6553fee9d60c6ec1bce30d29223"
+    "@std/text@1.1.0": {
+      "integrity": "3db511996317f63e35b76fe18fe35249723ae0ff6f8305398c78dd64ffa809a7"
     }
   },
   "workspace": {
